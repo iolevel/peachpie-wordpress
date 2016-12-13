@@ -1,6 +1,6 @@
 ## WordPress Sample
 
-The goal of this sample is to fully compile unmodified clone of WordPress into .NET/.NET Core. The project consists of several parts:
+The goal of this sample is to fully compile an unmodified clone of WordPress into .NET/.NET Core. The project consists of several parts:
 
 - `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`).
 - `wwwroot` is the web content folder.
@@ -8,11 +8,11 @@ The goal of this sample is to fully compile unmodified clone of WordPress into .
 
 ## What does it do?
 
-The PHP source in `website` are compiled to .NET Core by Peachpie compiler which is seamlessly downloaded by *dotnet* itself.
+The PHP sources in `website` are compiled to .NET Core by Peachpie compiler, which is seamlessly downloaded by *dotnet* itself.
 
-The sample instantiates Kestrel - the opensource web server - and ASP.NET Core pipeline. The pipeline handles requests to PHP files using Peachpie `RequestDelegate` by calling corresponding compiled scripts in `website.dll`.
+The sample instantiates Kestrel - the opensource web server - and the ASP.NET Core pipeline. The pipeline handles requests to PHP files using the Peachpie `RequestDelegate` by calling the corresponding compiled scripts in `website.dll`.
 
-Note the original PHP sources (*.php files) in `website` are not needed to run the compiled application.
+Note that the original PHP sources (*.php files) in `website` are not needed to run the compiled application.
 
 ## Prerequisites
 
