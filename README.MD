@@ -6,7 +6,13 @@ The goal of this sample is to fully compile an unmodified clone of WordPress int
 - `wwwroot` is the web content folder.
 - `app` project is executable sample ASP.NET Core web server bootsrapping scripts from `website`.
 
-## What does it do?
+## What does this do?
+
+This sample contains the complete source code of WordPress without any modifications. The purpose is for this code to be compiled by Peachpie, resulting in the output running on Microsoft .NET Core. 
+
+Therefore, if everything works as it should, you will see the standard unchanged WordPress in the same way as you would in the traditional PHP version. The difference is that the compiled website runs on .NET Core in the background. 
+
+## How does this work?
 
 The PHP sources in `website` are compiled to .NET Core by Peachpie compiler, which is seamlessly downloaded by *dotnet* itself.
 
