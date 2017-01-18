@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "app", "app\app.xproj", "{85D5B443-33B1-4FDC-9E3A-1BCFFE92C182}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "website", "website\website.xproj", "{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.App", "..\..\peachpie\src\Peachpie.App\Peachpie.App.xproj", "{20059EE9-94A7-4DD6-9715-1865F4349EB4}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library", "..\..\peachpie\src\Peachpie.Library\Peachpie.Library.xproj", "{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library.MySql", "..\..\peachpie\src\Peachpie.Library.MySql\Peachpie.Library.MySql.xproj", "{176EBF02-2238-4056-9422-CFAA46FFED61}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Runtime", "..\..\peachpie\src\Peachpie.Runtime\Peachpie.Runtime.xproj", "{262137A5-BB53-4B82-B7B8-E44A9898AE33}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.NETCore.Web", "..\..\peachpie\src\Peachpie.NETCore.Web\Peachpie.NETCore.Web.xproj", "{039A63A4-9A86-477A-B1C6-1C7172B90F81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85D5B443-33B1-4FDC-9E3A-1BCFFE92C182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85D5B443-33B1-4FDC-9E3A-1BCFFE92C182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85D5B443-33B1-4FDC-9E3A-1BCFFE92C182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85D5B443-33B1-4FDC-9E3A-1BCFFE92C182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20059EE9-94A7-4DD6-9715-1865F4349EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20059EE9-94A7-4DD6-9715-1865F4349EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20059EE9-94A7-4DD6-9715-1865F4349EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20059EE9-94A7-4DD6-9715-1865F4349EB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{176EBF02-2238-4056-9422-CFAA46FFED61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176EBF02-2238-4056-9422-CFAA46FFED61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176EBF02-2238-4056-9422-CFAA46FFED61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176EBF02-2238-4056-9422-CFAA46FFED61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{262137A5-BB53-4B82-B7B8-E44A9898AE33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{262137A5-BB53-4B82-B7B8-E44A9898AE33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{262137A5-BB53-4B82-B7B8-E44A9898AE33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{262137A5-BB53-4B82-B7B8-E44A9898AE33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{039A63A4-9A86-477A-B1C6-1C7172B90F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{039A63A4-9A86-477A-B1C6-1C7172B90F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{039A63A4-9A86-477A-B1C6-1C7172B90F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{039A63A4-9A86-477A-B1C6-1C7172B90F81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
