@@ -8,7 +8,7 @@
  * @subpackage streams
  */
 
-// if ( ! class_exists( 'POMO_Reader', false ) ):
+if ( ! class_exists( 'POMO_Reader', false ) ):
 class POMO_Reader {
 
 	var $endian = 'little';
@@ -132,9 +132,9 @@ class POMO_Reader {
 		return true;
 	}
 }
-// endif;
+endif;
 
-// if ( ! class_exists( 'POMO_FileReader', false ) ):
+if ( ! class_exists( 'POMO_FileReader', false ) ):
 class POMO_FileReader extends POMO_Reader {
 
 	/**
@@ -202,9 +202,9 @@ class POMO_FileReader extends POMO_Reader {
 		return $all;
 	}
 }
-// endif;
+endif;
 
-// if ( ! class_exists( 'POMO_StringReader', false ) ):
+if ( ! class_exists( 'POMO_StringReader', false ) ):
 /**
  * Provides file-like methods for manipulating a string instead
  * of a physical file.
@@ -265,9 +265,9 @@ class POMO_StringReader extends POMO_Reader {
 	}
 
 }
-// endif;
+endif;
 
-// if ( ! class_exists( 'POMO_CachedFileReader', false ) ):
+if ( ! class_exists( 'POMO_CachedFileReader', false ) ):
 /**
  * Reads the contents of the file in the beginning.
  */
@@ -290,9 +290,9 @@ class POMO_CachedFileReader extends POMO_StringReader {
 		self::__construct( $filename );
 	}
 }
-// endif;
+endif;
 
-// if ( ! class_exists( 'POMO_CachedIntFileReader', false ) ):
+if ( ! class_exists( 'POMO_CachedIntFileReader', false ) ):
 /**
  * Reads the contents of the file in the beginning.
  */
@@ -311,5 +311,5 @@ class POMO_CachedIntFileReader extends POMO_CachedFileReader {
 		self::__construct( $filename );
 	}
 }
-// endif;
+endif;
 
