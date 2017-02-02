@@ -12,7 +12,7 @@ namespace peachserver
     {
         static void Main(string[] args)
         {
-            var root = Path.GetDirectoryName(Directory.GetCurrentDirectory()) + "/wwwroot";
+            var root = Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()) + "/wwwroot";
 
             var host = new WebHostBuilder()
                 .UseKestrel()
