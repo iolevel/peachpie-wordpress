@@ -1,26 +1,26 @@
 {
-    "version": "1.0.0-*",
-    "buildOptions": {
-        "emitEntryPoint": true,
-        "debugType": "portable"
-    },
-    "dependencies": {
-        "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
-        "Microsoft.AspNetCore.StaticFiles": "1.0.0",
-        "Peachpie.NETCore.Web": "0.4.0-*",
-        "website": "1.0.0"
-    },
-    "tools": {
-        "Microsoft.DotNet.Watcher.Tools": "1.0.0-*"
-    },
-    "frameworks": {
-        "netcoreapp1.0": {
-            "dependencies": {
-                "Microsoft.NETCore.App": {
-                    "type": "platform",
-                    "version": "1.0.0"
-                }
-            }
+  "version": "1.0.0",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Peachpie.NETCore.Web": "0.5.0-*",
+    "website": "*"
+  },
+  "tools": {
+    "Microsoft.DotNet.Watcher.Tools": "1.0.0-*"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
         }
+      }
     }
+  }
 }
