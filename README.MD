@@ -6,7 +6,7 @@ The goal of this sample is to fully compile an unmodified clone of WordPress int
 
 - `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`).
 - `wwwroot` is the web content folder.
-- `app` project is executable sample ASP.NET Core web server bootsrapping scripts from `website`.
+- `app` project is executable sample ASP.NET Core web server bootstrapping scripts from `website`.
 
 ## What does this do?
 
