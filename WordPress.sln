@@ -7,15 +7,15 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "app", "app\app.xproj", "{85
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "website", "website\website.xproj", "{F040EC39-D1E0-44A5-9A35-BB93E0D496DD}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.App", "..\..\peachpie\src\Peachpie.App\Peachpie.App.xproj", "{20059EE9-94A7-4DD6-9715-1865F4349EB4}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.App", "..\peachpie\src\Peachpie.App\Peachpie.App.xproj", "{20059EE9-94A7-4DD6-9715-1865F4349EB4}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library", "..\..\peachpie\src\Peachpie.Library\Peachpie.Library.xproj", "{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library", "..\peachpie\src\Peachpie.Library\Peachpie.Library.xproj", "{6B01EDAF-56BD-4302-98FD-EDD81FA2617E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library.MySql", "..\..\peachpie\src\Peachpie.Library.MySql\Peachpie.Library.MySql.xproj", "{176EBF02-2238-4056-9422-CFAA46FFED61}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Library.MySql", "..\peachpie\src\Peachpie.Library.MySql\Peachpie.Library.MySql.xproj", "{176EBF02-2238-4056-9422-CFAA46FFED61}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Runtime", "..\..\peachpie\src\Peachpie.Runtime\Peachpie.Runtime.xproj", "{262137A5-BB53-4B82-B7B8-E44A9898AE33}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.Runtime", "..\peachpie\src\Peachpie.Runtime\Peachpie.Runtime.xproj", "{262137A5-BB53-4B82-B7B8-E44A9898AE33}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.NETCore.Web", "..\..\peachpie\src\Peachpie.NETCore.Web\Peachpie.NETCore.Web.xproj", "{039A63A4-9A86-477A-B1C6-1C7172B90F81}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Peachpie.NETCore.Web", "..\peachpie\src\Peachpie.NETCore.Web\Peachpie.NETCore.Web.xproj", "{039A63A4-9A86-477A-B1C6-1C7172B90F81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
