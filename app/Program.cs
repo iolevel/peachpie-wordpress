@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace peachserver
 {
@@ -12,7 +7,7 @@ namespace peachserver
     {
         static void Main(string[] args)
         {
-            var root = Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()) + "/wwwroot";
+            var root = Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()) + "/website";
 
             var host = new WebHostBuilder()
                 .UseKestrel()
