@@ -15,6 +15,8 @@ namespace peachserver
     {
         public void Configure(IApplicationBuilder app)
         {
+            Pchp.Core.Context.DefaultErrorHandler = new Pchp.Core.CustomErrorHandler(); // disable debug asserts
+
             app.UsePhp();
             app.UseDefaultFiles();
             app.UseStaticFiles();
