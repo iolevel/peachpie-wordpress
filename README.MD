@@ -21,6 +21,14 @@ The sample instantiates Kestrel - the opensource web server - and the ASP.NET Co
 
 Note that the original PHP sources (\*.php files) in `website` are not needed to run the compiled application, however, WordPress accesses some files using file-system functions and requires them there.
 
+## Possible Use Cases
+
+- **improve performance** - compiled code is fast and also improved by .NET 'jitter' for your actual system. Additionally .NET performance profiler may be used to resolve bottlenecks.
+- **write plugins in C#** - plugin functionality can be implemented in a separate C# project and/or PHP plugins may use .NET libraries.
+- **integrate wp into** .NET application - drive the WordPress lifecycle from a C# app, run within Kestrel Web Server.
+- **'almost' sourceless distribution** - after the compilation, most of source files are not needed.
+- **take advantage** of .NET runtime - jittered, secure and manageable platform.
+
 ## Prerequisites
 
 - .NET Core 1.0 or newer
