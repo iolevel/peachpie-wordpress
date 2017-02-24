@@ -25,7 +25,7 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 
 - **improve performance** - compiled code is fast and also improved by .NET 'jitter' for your actual system. Additionally .NET performance profiler may be used to resolve bottlenecks.
 - **write plugins in C#** - plugin functionality can be implemented in a separate C# project and/or PHP plugins may use .NET libraries.
-- **integrate wp into** .NET application - drive the WordPress lifecycle from a C# app, run within Kestrel Web Server.
+- **integrate wp into a .NET application** - drive the WordPress lifecycle from a C# app, run within Kestrel Web Server.
 - **'almost' sourceless distribution** - after the compilation, most of source files are not needed.
 - **take advantage** of .NET runtime - jittered, secure and manageable platform.
 
