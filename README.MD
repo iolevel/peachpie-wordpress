@@ -4,7 +4,7 @@
 
 The goal of this sample is to fully compile an unmodified clone of WordPress into .NET/.NET Core. The project consists of several parts:
 
-- `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`) and WordPress content files that will be server by web server.
+- `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`) and WordPress content files that will be served by web server.
 - `app` project is executable sample ASP.NET Core web server bootstrapping scripts from `website`.
 
 ## What does this do?
@@ -20,6 +20,14 @@ The PHP sources in `website` are compiled to .NET Core by Peachpie compiler, whi
 The sample instantiates Kestrel - the opensource web server - and the ASP.NET Core pipeline. The pipeline handles requests to PHP files using the Peachpie `RequestDelegate` by calling the corresponding compiled scripts in `website.dll`.
 
 Note that the original PHP sources (\*.php files) in `website` are not needed to run the compiled application, however, WordPress accesses some files using file-system functions and requires them there.
+
+## Possible Use Cases
+
+- **Improve performance**: compiled code is fast and also optimized by the .NET 'Jitter' for your actual system. Additionally, the .NET performance profiler may be used to resolve bottlenecks.
+- **Write plugins in C#**: plugin functionality can be implemented in a separate C# project and/or PHP plugins may use .NET libraries.
+- **Integrate WP into a .NET application**: drive the WordPress lifecycle from a C# app, run within the Kestrel Web Server.
+- **'Almost' sourceless distribution**: after the compilation, most of the source files are not needed.
+- **Take advantage** of the .NET runtime: jittered, secure and manageable platform.
 
 ## Prerequisites
 
