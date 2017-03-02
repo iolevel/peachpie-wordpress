@@ -39,4 +39,5 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 
 0. start mysql, at `localhost:3306`, user `root`, password `password`
 1. `dotnet restore`
-2. `dotnet run -p app`
+2. `cd app`
+3. `dotnet run`
