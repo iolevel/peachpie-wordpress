@@ -37,6 +37,6 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 
 ## How to run the project
 
-0. start mysql, at localhost:3306, user 'root', password 'password'
+0. start mysql, at `localhost:3306`, user `root`, password `password`
 1. `dotnet restore`
 2. `dotnet run -p app`
