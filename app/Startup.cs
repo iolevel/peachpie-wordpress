@@ -1,13 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Peachpie.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace peachserver
 {
@@ -17,7 +9,7 @@ namespace peachserver
         {
             Pchp.Core.Context.DefaultErrorHandler = new Pchp.Core.CustomErrorHandler(); // disable debug asserts
 
-            app.UsePhp();
+            app.UsePhp(new PhpRequestOptions() { ScriptAssembliesName = new[] { "website" } });
             app.UseDefaultFiles();
             app.UseStaticFiles();
         }
