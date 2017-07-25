@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
-    <PackageReference Include="Peachpie.NETCore.Web" Version="0.6.1-CI00002" />
+    <PackageReference Include="Peachpie.NETCore.Web" Version="0.7.0-*" />
   </ItemGroup>
 
   <ItemGroup>
