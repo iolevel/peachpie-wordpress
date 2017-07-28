@@ -1,24 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>0e51d101-0992-4aa6-a134-26ea3f2e3934</ProjectGuid>
+  </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <Description>PHP WebSite library project.</Description>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="**/*.php" />
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.7.0-CI00279" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="0.7.0-CI00279" PrivateAssets="Build" />
-	<PackageReference Include="Peachpie.Library.Graphics" Version="0.7.0-CI00279" PrivateAssets="Build" />
+    <PackageReference Include="Peachpie.Library.Graphics" Version="0.7.0-CI00279" PrivateAssets="Build" />
   </ItemGroup>
-  
-  <!-- A temporary solution, import C# Visual Studio design time targets in order to be able to load the project in Visual Studio -->
-  <PropertyGroup>
-    <CSharpDesignTimeTargetsPath Condition="'$(CSharpDesignTimeTargetsPath)'==''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\Managed\Microsoft.CSharp.DesignTime.targets</CSharpDesignTimeTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(CSharpDesignTimeTargetsPath)" Condition="Exists('$(CSharpDesignTimeTargetsPath)')" />
-
 </Project>
