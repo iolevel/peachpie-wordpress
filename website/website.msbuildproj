@@ -4,14 +4,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <Description>PHP WebSite library project.</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.7.0-CI00279" />
-    <PackageReference Include="Peachpie.NET.Sdk" Version="0.7.0-CI00279" PrivateAssets="Build" />
-    <PackageReference Include="Peachpie.Library.Graphics" Version="0.7.0-CI00279" PrivateAssets="Build" />
+    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.8.0-*" />
+    <PackageReference Include="Peachpie.NET.Sdk" Version="0.8.0-*" PrivateAssets="Build" />
+    <!--PackageReference Include="Peachpie.RequestHandler" Version="0.8.0-*" /-->
   </ItemGroup>
 </Project>
