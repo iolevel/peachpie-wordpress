@@ -11,6 +11,10 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.8.0-*" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="0.8.0-*" PrivateAssets="Build" />
+    <PackageReference Include="Peachpie.Library.Graphics" Version="0.8.0-*" />
     <!--PackageReference Include="Peachpie.RequestHandler" Version="0.8.0-*" /-->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dotnet-wp-plugin\dotnet-wp-plugin.csproj" />
   </ItemGroup>
 </Project>
