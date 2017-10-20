@@ -6,6 +6,7 @@ The goal of this sample is to fully compile an unmodified clone of WordPress int
 
 - `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`) and WordPress content files that will be served by web server.
 - `app` project is executable sample ASP.NET Core web server bootstrapping scripts from `website`.
+- `dotnet-wp-plugin` is a sample plugin for WordPress written in C#. It's entry-point (`Register` method) is invoked from `peachpieplugin.php` in WordPress plugins directory.
 
 ## What does this do?
 
@@ -28,6 +29,7 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 - **Integrate WP into a .NET application**: drive the WordPress lifecycle from a C# app, run within the Kestrel Web Server.
 - **'Almost' sourceless distribution**: after the compilation, most of the source files are not needed.
 - **Take advantage** of the .NET runtime: jittered, secure and manageable platform.
+- **Write plugins in C#** in order to provide plugins in .NET with all its advantages like sourceless distribution, type safe and compiled code which is further optimized and checked for actual platform.
 
 ## Prerequisites
 
