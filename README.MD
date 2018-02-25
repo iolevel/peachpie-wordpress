@@ -25,11 +25,10 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 ## Possible Use Cases
 
 - **Improve performance**: compiled code is fast and also optimized by the .NET 'Jitter' for your actual system. Additionally, the .NET performance profiler may be used to resolve bottlenecks.
-- **Write plugins in C#**: plugin functionality can be implemented in a separate C# project and/or PHP plugins may use .NET libraries.
+- **Write plugins in C#**: plugin functionality can be implemented in a separate C# project and/or PHP plugins may use .NET libraries. Utilize .NET with all its advantages like sourceless distribution or type safe and compiled code, which is further optimized and checked for the actual platform.
 - **Integrate WP into a .NET application**: drive the WordPress lifecycle from a C# app, run within the Kestrel Web Server.
 - **'Almost' sourceless distribution**: after the compilation, most of the source files are not needed.
 - **Take advantage** of the .NET runtime: jittered, secure and manageable platform.
-- **Write plugins in C#** in order to provide plugins in .NET with all its advantages like sourceless distribution, type safe and compiled code which is further optimized and checked for actual platform.
 
 ## Prerequisites
 
