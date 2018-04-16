@@ -32,13 +32,12 @@ Note that the original PHP sources (\*.php files) in `website` are not needed to
 
 ## Prerequisites
 
-- .NET Core 1.1 or newer
+- .NET Core 2.0 or newer
 - MySQL server running on a preconfigured port (3306)
 - Optionally - Visual Studio 2017 or Visual Studio Code using the official Peachpie for VSCode extension available on the [Marketplace](https://marketplace.visualstudio.com/items?itemName=iolevel.peachpie-vscode)
 
 ## How to run the project
 
 0. start mysql, at `localhost:3306`, user `root`, password `password`
-1. `dotnet restore`
-2. `cd app`
-3. `dotnet run`
+1. `cd app`
+2. `dotnet run`
