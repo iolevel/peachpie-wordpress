@@ -11,12 +11,16 @@ namespace Peachpie.WordPress.AspNetCore
     /// </summary>
     public class WordPressConfig
     {
+        /// <summary>MySQL database name.</summary>
         public string DbName { get; set; } = "wordpress";
 
+        /// <summary>MySQL database user name.</summary>
         public string DbUser { get; set; } = "root";
 
+        /// <summary>MySQL database password.</summary>
         public string DbPassword { get; set; }
 
+        /// <summary>MySQL host.</summary>
         public string DbHost { get; set; } = "localhost";
 
         /// <summary>

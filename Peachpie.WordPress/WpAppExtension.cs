@@ -4,8 +4,13 @@ using System.Text;
 
 namespace Peachpie.WordPress
 {
+    /// <summary>Delegate for "the_content" filter.</summary>
     public delegate string the_content_filter(string content);
+
+    /// <summary>Delegate for "the_title" filter.</summary>
     public delegate string the_title_filter(string title, int post_id);
+
+    /// <summary>Delegate for "the_permalink" filter.</summary>
     public delegate string the_permalink_filter(string link, int post_id);
 
     /// <summary>

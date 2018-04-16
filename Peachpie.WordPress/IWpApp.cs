@@ -13,7 +13,7 @@ namespace Peachpie.WordPress
         string GetVersion();
 
         /// <summary>
-        /// Calls <c>add_filter</c> function, <see cref="https://developer.wordpress.org/reference/functions/add_filter/"/>.
+        /// Calls <c>add_filter</c> function, see https://developer.wordpress.org/reference/functions/add_filter/.
         /// </summary>
         void AddFilter(string tag, Delegate @delegate);
 

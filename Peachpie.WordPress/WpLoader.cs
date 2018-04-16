@@ -15,6 +15,9 @@ namespace Peachpie.WordPress
         /// </summary>
         readonly List<IWpPlugin> _plugins = new List<IWpPlugin>();
 
+        /// <summary>
+        /// Initializes the loader object.
+        /// </summary>
         public WpLoader(params IWpPlugin[] plugins)
         {
             if (plugins != null)

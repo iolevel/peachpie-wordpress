@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\build\Settings.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-	<GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
-    <PackageReference Include="Peachpie.NETCore.Web" Version="0.9.0-ci00880" />
+    <PackageReference Include="Peachpie.NETCore.Web" Version="0.9.0-CI00884" />
   </ItemGroup>
 
   <ItemGroup>
