@@ -4,9 +4,8 @@
 
 The goal of this sample is to fully compile an unmodified clone of WordPress into .NET/.NET Core. The project consists of several parts:
 
-- `website` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`) and WordPress content files that will be served by web server.
-- `app` project is executable sample ASP.NET Core web server bootstrapping scripts from `website`.
-- `dotnet-wp-plugin` is a sample plugin for WordPress written in C#. Its entry-point (`Register` method) is invoked from `peachpieplugin.php` in WordPress plugins directory.
+- `WordPress` contains sources of WordPress that are compiled into a single .NET Core assembly (`website.dll`) and WordPress content files that will be served by web server.
+- `app` project is executable sample ASP.NET Core web server bootstrapping scripts from `WordPress`.
 
 ## What does this do?
 
