@@ -8,16 +8,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 	<GenerateDocumentationFile>false</GenerateDocumentationFile>
 	<Version>4.7-beta3-39214</Version>
+	<NoWarn>PHPX0125</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="wp-config-sample.php;wp-content/plugins/hello.php" />
 	<Content Include="**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.9.0-CI00887" />
-    <PackageReference Include="Peachpie.NET.Sdk" Version="0.9.0-CI00887" PrivateAssets="Build" />
-    <PackageReference Include="Peachpie.Library.Graphics" Version="0.9.0-CI00887" />
-    <!--PackageReference Include="Peachpie.RequestHandler" Version="0.9.0-CI00887" /-->
+    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.9.0-CI00889" />
+    <PackageReference Include="Peachpie.NET.Sdk" Version="0.9.0-CI00889" PrivateAssets="Build" />
+    <PackageReference Include="Peachpie.Library.Graphics" Version="0.9.0-CI00889" />
+    <!--PackageReference Include="Peachpie.RequestHandler" Version="0.9.0-CI00889" /-->
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Peachpie.WordPress\Peachpie.WordPress.csproj" />
