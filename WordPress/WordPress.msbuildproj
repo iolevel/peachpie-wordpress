@@ -13,10 +13,10 @@
 	<Content Include="**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.9.0-CI00884" />
-    <PackageReference Include="Peachpie.NET.Sdk" Version="0.9.0-CI00884" PrivateAssets="Build" />
-    <PackageReference Include="Peachpie.Library.Graphics" Version="0.9.0-CI00884" />
-    <!--PackageReference Include="Peachpie.RequestHandler" Version="0.9.0-CI00884" /-->
+    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="0.9.0-CI00886" />
+    <PackageReference Include="Peachpie.NET.Sdk" Version="0.9.0-CI00886" PrivateAssets="Build" />
+    <PackageReference Include="Peachpie.Library.Graphics" Version="0.9.0-CI00886" />
+    <!--PackageReference Include="Peachpie.RequestHandler" Version="0.9.0-CI00886" /-->
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Peachpie.WordPress\Peachpie.WordPress.csproj" />

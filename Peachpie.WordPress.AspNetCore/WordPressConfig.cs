@@ -35,16 +35,16 @@ namespace Peachpie.WordPress.AspNetCore
         {
             // see wp-config.php:
 
-            /** The name of the database for WordPress */
+            // The name of the database for WordPress
             ctx.DefineConstant("DB_NAME", (PhpValue)DbName); // define('DB_NAME', 'wordpress');
 
-            /** MySQL database username */
+            // MySQL database username
             ctx.DefineConstant("DB_USER", (PhpValue)DbUser); // define('DB_USER', 'root');
 
-            /** MySQL database password */
+            // MySQL database password
             ctx.DefineConstant("DB_PASSWORD", (PhpValue)DbPassword); // define('DB_PASSWORD', 'password');
 
-            /** MySQL hostname */
+            // MySQL hostname
             ctx.DefineConstant("DB_HOST", (PhpValue)DbHost); // define('DB_HOST', 'localhost');
 
             // $peachpie-wp-loader : WpLoader

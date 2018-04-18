@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Peachpie.WordPress.AspNetCore
 {
+    /// <summary>
+    /// <see cref="IApplicationBuilder"/> extension for enabling WordPress.
+    /// </summary>
     public static class RequestDelegateExtension
     {
         static void ShortUrlRule(RewriteContext context)
