@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
-    <PackageReference Include="Peachpie.NETCore.Web" Version="0.9.0-CI00889" />
+    <PackageReference Include="Peachpie.NETCore.Web" Version="0.9.0-CI00892" />
   </ItemGroup>
 
   <ItemGroup>
