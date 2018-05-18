@@ -8,7 +8,7 @@
     <VersionSuffix Condition=" '$(VersionSuffix)'=='' ">dev</VersionSuffix>
     
     <PeachpieVersion>0.9.0-CI00897</PeachpieVersion>
-    <WordPressVersion>4.7-beta3-39214</WordPressVersion>
+    <WordPressVersion>4.7-beta3</WordPressVersion>
 
     <!-- metadata generation -->
     <GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
@@ -32,6 +32,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/iolevel/peachpie-wordpress</RepositoryUrl>
     <PackageProjectUrl>https://github.com/iolevel/peachpie-wordpress</PackageProjectUrl>
+	<PackageOutputPath>$(MSBuildThisFileDirectory)../output</PackageOutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   

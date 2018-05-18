@@ -7,17 +7,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
 	<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	<Version>$(WordPressVersion)-peachpie</Version>
+	<Version>$(WordPressVersion)</Version>
 	<NoWarn>PHPX0125</NoWarn>
+	<ContentFiles>**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif</ContentFiles>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="wp-config-sample.php;wp-content/plugins/hello.php" />
-	<Content Include="**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif" />
+    <Content Include="$(ContentFiles)" Exclude="obj/**;bin/**;wp-content/uploads/**">
+		<PackagePath>contentFiles/any/netcoreapp2.0/wordpress/</PackagePath>
+		<PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="$(PeachpieVersion)" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="$(PeachpieVersion)" PrivateAssets="Build" />
     <PackageReference Include="Peachpie.Library.Graphics" Version="$(PeachpieVersion)" />
+	<PackageReference Include="Peachpie.Library.Network" Version="$(PeachpieVersion)" />
     <!--PackageReference Include="Peachpie.RequestHandler" Version="$(PeachpieVersion)" /-->
   </ItemGroup>
   <ItemGroup>
