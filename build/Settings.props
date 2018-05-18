@@ -32,8 +32,9 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/iolevel/peachpie-wordpress</RepositoryUrl>
     <PackageProjectUrl>https://github.com/iolevel/peachpie-wordpress</PackageProjectUrl>
-	<PackageOutputPath>$(MSBuildThisFileDirectory)../output</PackageOutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)../output</PackageOutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PublishDocumentationFile>true</PublishDocumentationFile>
   </PropertyGroup>
-  
+
 </Project>

@@ -14,12 +14,8 @@ namespace peachserver
     {
         static void Main(string[] args)
         {
-            var root = Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()) + "/WordPress";
-
             var host = WebHost.CreateDefaultBuilder(args)
-                .UseWebRoot(root)
                 .UseStartup<Startup>()
-                .UseContentRoot(root)
                 .UseUrls("http://*:5004/")
                 .Build();
 
@@ -75,7 +71,6 @@ namespace peachserver
             });
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();
         }
     }
 }
