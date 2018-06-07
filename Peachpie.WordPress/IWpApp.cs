@@ -18,6 +18,13 @@ namespace Peachpie.WordPress
         void AddFilter(string tag, Delegate @delegate);
 
         /// <summary>
+        /// Adds shortcode.
+        /// </summary>
+        /// <param name="tag">Shortcode tag name.</param>
+        /// <param name="delegate"><see cref="shortcode_handler"/> to process shortcode in posts.</param>
+        void AddShortcode(string tag, Delegate @delegate);
+
+        /// <summary>
         /// Writes text to the output.
         /// </summary>
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

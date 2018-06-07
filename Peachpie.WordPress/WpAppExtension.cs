@@ -13,6 +13,12 @@ namespace Peachpie.WordPress
     /// <summary>Delegate for "the_permalink" filter.</summary>
     public delegate string the_permalink_filter(string link, int post_id);
 
+    /// <summary>Delegate to handle shortcode, used in "add_shortcode" function.</summary>
+    /// <param name="attrs">Given dictionary of attributes used in shortcode.</param>
+    /// <param name="content">Content of the shortcode if any.</param>
+    /// <returns>Text to be inserted instead of the shortcode in post.</returns>
+    public delegate string shortcode_handler(System.Collections.IDictionary attrs, string content);
+
     /// <summary>
     /// Provides extension functions to <see cref="IWpApp"/> instances.
     /// </summary>

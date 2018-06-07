@@ -22,6 +22,9 @@ class WpApp implements IWpApp
 	/** Calls `add_filter`. */
 	function AddFilter(string $tag, \System\Delegate $delegate) : void { add_filter($tag, $delegate); }
 
+	/** Calls `add_shortcode`. */
+	function AddShortcode(string $tag, \System\Delegate $delegate) : void { add_shortcode($tag, $delegate); }
+
 	/** Outputs text. */
 	function Echo(string $text) : void { echo $text; }
 }
