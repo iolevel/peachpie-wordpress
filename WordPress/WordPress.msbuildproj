@@ -22,7 +22,7 @@
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="$(PeachpieVersion)" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="$(PeachpieVersion)" PrivateAssets="Build" />
     <PackageReference Include="Peachpie.Library.Graphics" Version="$(PeachpieVersion)" />
-	<PackageReference Include="Peachpie.Library.Network" Version="$(PeachpieVersion)" />
+	  <PackageReference Include="Peachpie.Library.Network" Version="$(PeachpieVersion)" />
     <!--PackageReference Include="Peachpie.RequestHandler" Version="$(PeachpieVersion)" /-->
   </ItemGroup>
   <ItemGroup>

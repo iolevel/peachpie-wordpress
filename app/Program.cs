@@ -68,7 +68,7 @@ namespace peachserver
                 DbPassword = "password",
                 DbUser = "root",
                 DbName = "wordpress",
-            });
+            }, path: "../wordpress" /* relative to current directory, can be removed after wordpress will be used from NuGet */ );
 
             app.UseDefaultFiles();
         }

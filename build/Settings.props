@@ -7,7 +7,7 @@
     <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">1.0.0</VersionPrefix>
     <VersionSuffix Condition=" '$(VersionSuffix)'=='' ">dev</VersionSuffix>
     
-    <PeachpieVersion>0.9.0-CI00897</PeachpieVersion>
+    <PeachpieVersion>0.9.0-CI00947</PeachpieVersion>
     <WordPressVersion>4.7-beta3</WordPressVersion>
 
     <!-- metadata generation -->
