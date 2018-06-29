@@ -18,6 +18,10 @@
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "justMyCode": false,
+            "symbolOptions": {
+                "searchPaths": ["C:\\Users\\jmise\\Projects\\peachpie\\src\\Peachpie.Library.Network\\bin\\Debug\\netstandard2.0"],
+                "searchMicrosoftSymbolServer": false
+            }
         },
         {
             "name": ".NET Core Attach",
