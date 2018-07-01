@@ -19,18 +19,44 @@ namespace Peachpie.WordPress.AspNetCore.Internal
         /// </summary>
         DateTime LastPostUpdate = DateTime.UtcNow;
 
+        struct Rules
+        {
+            public static bool CookieDisallowsCaching(KeyValuePair<string,string> cookie)
+            {
+                return
+                    cookie.Key.StartsWith("wordpress_logged_in", StringComparison.Ordinal) ||   // user is logged in
+                    cookie.Key.StartsWith("comment_author_", StringComparison.Ordinal);         // user commented something and his comment might be visible only to him
+            }
+        }
+
+        public bool AttemptResponseCaching(ResponseCachingContext context)
+        {
+            var req = context.HttpContext.Request;
+
+            // only GET and HEAD methods are cacheable
+            if (HttpMethods.IsGet(req.Method) || HttpMethods.IsHead(req.Method))
+            {
+                // only if wp user is not logged in
+                if (!req.Cookies.Any(Rules.CookieDisallowsCaching))
+                {
+                    // not wp-admin
+                    if (!req.Path.Value.Contains("/wp-admin"))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            //
+            return false;
+        }
+
         public bool AllowCacheLookup(ResponseCachingContext context)
         {
             var req = context.HttpContext.Request;
 
             // cache-control: nocache ?
             if (HeaderUtilities.ContainsCacheDirective(req.Headers[HeaderNames.CacheControl], CacheControlHeaderValue.NoCacheString))
-            {
-                return false;
-            }
-
-            // wp-admin ?
-            if (req.Path.Value.Contains("/wp-admin"))
             {
                 return false;
             }
@@ -43,23 +69,6 @@ namespace Peachpie.WordPress.AspNetCore.Internal
         {
             // cache-control: no-store ?
             return !HeaderUtilities.ContainsCacheDirective(context.HttpContext.Request.Headers[HeaderNames.CacheControl], CacheControlHeaderValue.NoStoreString);
-        }
-
-        public bool AttemptResponseCaching(ResponseCachingContext context)
-        {
-            var req = context.HttpContext.Request;
-
-            // only GET and HEAD methods are cacheable
-            if (HttpMethods.IsGet(req.Method) || HttpMethods.IsHead(req.Method))
-            {
-                // only if wp user is not logged in
-                if (!req.Cookies.Any(cookie => cookie.Key.StartsWith("wordpress_logged_in")))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public bool IsCachedEntryFresh(ResponseCachingContext context)
@@ -126,6 +135,10 @@ namespace Peachpie.WordPress.AspNetCore.Internal
             };
 
             app.AddFilter("save_post", updated);
+            app.AddFilter("wp_insert_comment", updated);
+            // edit_comment
+            // trashed_comment(comment id, comment)
+            // spammed_comment
         }
     }
 }

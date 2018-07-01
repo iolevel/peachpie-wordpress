@@ -8,11 +8,7 @@ namespace Peachpie.WordPress.Internal
 {
     sealed class PeachpieWpPlugin : IWpPlugin
     {
-        public static readonly PeachpieWpPlugin Instance = new PeachpieWpPlugin();
-
         public static readonly string InformationalVersion = typeof(PeachpieWpPlugin).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-
-        private PeachpieWpPlugin() { }
 
         static string GetDashboardRightNow()
         {

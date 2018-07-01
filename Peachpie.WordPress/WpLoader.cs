@@ -24,6 +24,9 @@ namespace Peachpie.WordPress
             {
                 _plugins.AddRange(plugins);
             }
+
+            // internal plugins:
+            _plugins.Add(new Internal.PeachpieWpPlugin());
         }
 
         /// <summary>
@@ -31,14 +34,11 @@ namespace Peachpie.WordPress
         /// </summary>
         public virtual void AppStarted(IWpApp app)
         {
-            // user plugins:
+            // activate plugins:
             foreach (var plugin in _plugins)
             {
                 plugin.Configure(app);
             }
-
-            // builtin plugins:
-            Internal.PeachpieWpPlugin.Instance.Configure(app);
         }
     }
 }
