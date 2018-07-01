@@ -18,7 +18,7 @@ namespace Peachpie.WordPress
         /// <summary>
         /// Initializes the loader object.
         /// </summary>
-        public WpLoader(params IWpPlugin[] plugins)
+        public WpLoader(IEnumerable<IWpPlugin> plugins)
         {
             if (plugins != null)
             {

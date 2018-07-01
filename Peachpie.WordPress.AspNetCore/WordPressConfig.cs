@@ -26,29 +26,6 @@ namespace Peachpie.WordPress.AspNetCore
         /// <summary>
         /// Set of WordPress plugins to be loaded.
         /// </summary>
-        public IWpPlugin[] Plugins { get; set; }
-
-        /// <summary>
-        /// Defines WordPress configuration constants and initializes runtime before proceeding to <c>index.php</c>.
-        /// </summary>
-        public virtual void Apply(Context ctx)
-        {
-            // see wp-config.php:
-
-            // The name of the database for WordPress
-            ctx.DefineConstant("DB_NAME", (PhpValue)DbName); // define('DB_NAME', 'wordpress');
-
-            // MySQL database username
-            ctx.DefineConstant("DB_USER", (PhpValue)DbUser); // define('DB_USER', 'root');
-
-            // MySQL database password
-            ctx.DefineConstant("DB_PASSWORD", (PhpValue)DbPassword); // define('DB_PASSWORD', 'password');
-
-            // MySQL hostname
-            ctx.DefineConstant("DB_HOST", (PhpValue)DbHost); // define('DB_HOST', 'localhost');
-
-            // $peachpie-wp-loader : WpLoader
-            ctx.Globals["peachpie_wp_loader"] = PhpValue.FromClass(new WpLoader(Plugins));
-        }
+        public IEnumerable<IWpPlugin> Plugins { get; set; }
     }
 }
