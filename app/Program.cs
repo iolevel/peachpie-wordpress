@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Configuration;
 using Peachpie.WordPress.AspNetCore;
-using System;
-using System.IO;
-using System.Linq;
 
 namespace peachserver
 {
@@ -14,6 +11,13 @@ namespace peachserver
     {
         static void Main(string[] args)
         {
+            // make sure cwd is not app\ but its parent:
+            if (Path.GetFileName(Directory.GetCurrentDirectory()) == "app")
+            {
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(Directory.GetCurrentDirectory()));
+            }
+
+            //
             var host = WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseUrls("http://*:5004/")
@@ -25,18 +29,21 @@ namespace peachserver
 
     class Startup
     {
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IConfiguration configuration)
         {
-            app.UseDeveloperExceptionPage();
-            
-            app.UseWordPress(new WordPressConfig()
+            // settings:
+            var wpconfig = new WordPressConfig();
+            configuration
+                .GetSection("WordPress")
+                .Bind(wpconfig);
+
+            //
+            if (env.IsDevelopment())
             {
-                // TODO: settings.json
-                DbHost = "localhost",
-                DbPassword = "password",
-                DbUser = "root",
-                DbName = "wordpress",
-            });
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseWordPress(wpconfig);
 
             app.UseDefaultFiles();
         }
