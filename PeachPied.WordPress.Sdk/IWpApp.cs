@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Peachpie.WordPress
+namespace PeachPied.WordPress.Sdk
 {
     /// <summary>
     /// Represents a WordPress website.

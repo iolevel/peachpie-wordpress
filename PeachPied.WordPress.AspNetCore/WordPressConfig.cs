@@ -1,9 +1,7 @@
-﻿using Pchp.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using PeachPied.WordPress.Sdk;
 
-namespace Peachpie.WordPress.AspNetCore
+namespace PeachPied.WordPress.AspNetCore
 {
     /// <summary>
     /// WordPress configuration.

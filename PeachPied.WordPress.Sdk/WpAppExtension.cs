@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peachpie.WordPress
+namespace PeachPied.WordPress.Sdk
 {
     /// <summary>Delegate for "the_content" filter.</summary>
     public delegate string the_content_filter(string content);

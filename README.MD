@@ -1,13 +1,13 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/WordPress_logo.svg/2000px-WordPress_logo.svg.png" width="400"/>
 
-## WordPress on .NET Project
+## WordPress on .NET
 
 The goal of this project is to compile an unmodified clone of WordPress into .NET/.NET Core and provide its managed abstraction to C# code. The project consists of several parts:
 
-- `WordPress` contains sources of WordPress that are compiled into a single .NET Core assembly (`wordpress.dll`). Together with its content files it is packed into a NuGet package. The project additionaly contains "must-use" plugin `peachpie-api.php` that exposes WordPress API to .NET.
-- `Peachpie.WordPress` defines abstraction layer providing .NET interfaces over PHP WordPress instance. The interface is implemented and provided by `peachpie-api.php`.
-- `Peachpie.WordPress.AspNetCore` is ASP.NET Core request handler that configures ASP.NET pipeline in which it passes requests to compiled `WordPress` scripts. The configuration includes response caching, short URL mapping and settings of WordPress database.
-- `app` project is executable sample ASP.NET Core web server making use of compiled `WordPress`.
+- `wordpress` contains sources of WordPress that are compiled into a single .NET Core assembly (`wordpress.dll`). Together with its content files it is packed into a NuGet package `PeachPied.WordPress`. The project additionaly contains "must-use" plugin `peachpie-api.php` which exposes WordPress API to .NET.
+- `PeachPied.WordPress.Sdk` defines abstraction layer providing .NET interfaces over PHP WordPress instance. The interface is implemented and provided by `peachpie-api.php`.
+- `PeachPied.WordPress.AspNetCore` is ASP.NET Core request handler that configures ASP.NET pipeline in which it passes requests to compiled `WordPress` scripts. The configuration includes response caching, short URL mapping, various .NET enhancements and settings of WordPress database.
+- `app` project is executable demo ASP.NET Core web server making use of compiled `WordPress`.
 
 ## What does this do?
 
@@ -17,9 +17,9 @@ Therefore, if everything works as it should, you will see the standard unchanged
 
 ## How does this work?
 
-The PHP sources in `wordpress` directory are compiled to .NET Core by Peachpie compiler, which is seamlessly downloaded by *dotnet* itself.
+The PHP sources in `wordpress` directory are compiled to .NET Core by PeachPie compiler, which is seamlessly downloaded by *dotnet* itself.
 
-The sample instantiates Kestrel - the opensource web server - and the ASP.NET Core pipeline. The pipeline handles requests to PHP files using the Peachpie `RequestDelegate` by calling the corresponding compiled scripts in `wordpress.dll`.
+The sample instantiates Kestrel - the opensource web server - and the ASP.NET Core pipeline. The pipeline handles requests to PHP files using the PeachPie `RequestDelegate` by calling the corresponding compiled scripts in `wordpress.dll`.
 
 Note that the original PHP sources (\*.php files) in `wordpress` are not needed to run the compiled application.
 
@@ -33,7 +33,7 @@ Note that the original PHP sources (\*.php files) in `wordpress` are not needed 
 
 ## Prerequisites
 
-- .NET Core 2.0 or newer
+- .NET Core 2.1 or newer
 - MySQL server
 - Optionally - Visual Studio 2017 or Visual Studio Code using the official Peachpie for VSCode extension available on the [Marketplace](https://marketplace.visualstudio.com/items?itemName=iolevel.peachpie-vscode)
 

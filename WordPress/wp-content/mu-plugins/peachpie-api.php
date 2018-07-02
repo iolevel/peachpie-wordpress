@@ -11,10 +11,10 @@ Author: Peachpie
 Version: 1.0
 */
 
-namespace Peachpie\WordPress;
+namespace PeachPied\WordPress\Sdk;
 
-/** Implementation of IWpApp providing functionality to .NET code. */
-class WpApp implements IWpApp
+/** Implementation of IWpApp providing functionality to .NET code */
+final class WpApp implements IWpApp
 {
 	/** Gets WordPress version string. */
 	function GetVersion() : string { return $GLOBALS['wp_version']; }
@@ -29,4 +29,5 @@ class WpApp implements IWpApp
 	function Echo(string $text) : void { echo $text; }
 }
 
-$peachpie_wp_loader->AppStarted(new WpApp); // class Peachpie.WordPress.WpLoader
+/** @var \PeachPied\WordPress\Sdk\WpLoader $peachpie_wp_loader  */
+$peachpie_wp_loader->AppStarted(new WpApp);

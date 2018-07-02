@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.FileProviders;
 using Pchp.Core;
 using Peachpie.Web;
-using Peachpie.WordPress.AspNetCore.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using PeachPied.WordPress.AspNetCore.Internal;
+using PeachPied.WordPress.Sdk;
 
-namespace Peachpie.WordPress.AspNetCore
+namespace PeachPied.WordPress.AspNetCore
 {
     /// <summary>
     /// <see cref="IApplicationBuilder"/> extension for enabling WordPress.

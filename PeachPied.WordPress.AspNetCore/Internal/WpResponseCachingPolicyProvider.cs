@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using PeachPied.WordPress.Sdk;
 
-namespace Peachpie.WordPress.AspNetCore.Internal
+namespace PeachPied.WordPress.AspNetCore.Internal
 {
     /// <summary>
     /// <see cref="IResponseCachingPolicyProvider"/> implementation for WordPress requests.

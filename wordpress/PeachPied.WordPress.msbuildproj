@@ -7,7 +7,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <VersionPrefix>$(WordPressVersion)</VersionPrefix>
-	<PackageVersion>$(WordPressVersion)-Peachpie$(VersionSuffix)</PackageVersion>
+	<PackageVersion>$(WordPressVersion)</PackageVersion>
     <NoWarn>PHPX0125</NoWarn>
     <ContentFiles>**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif</ContentFiles>
   </PropertyGroup>
@@ -26,6 +26,6 @@
     <!--PackageReference Include="Peachpie.RequestHandler" Version="$(PeachpieVersion)" /-->
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Peachpie.WordPress\Peachpie.WordPress.csproj" />
+    <ProjectReference Include="..\PeachPied.WordPress.Sdk\PeachPied.WordPress.Sdk.csproj" />
   </ItemGroup>
 </Project>

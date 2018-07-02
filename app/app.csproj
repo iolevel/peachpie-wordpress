@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Peachpie.WordPress.AspNetCore\Peachpie.WordPress.AspNetCore.csproj" />
+    <ProjectReference Include="..\PeachPied.WordPress.AspNetCore\PeachPied.WordPress.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

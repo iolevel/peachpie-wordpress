@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Peachpie.WordPress
+namespace PeachPied.WordPress.Sdk
 {
     /// <summary>
     /// Object used to be called from WordPress code,

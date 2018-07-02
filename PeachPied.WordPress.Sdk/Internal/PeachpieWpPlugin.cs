@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Peachpie.WordPress.Internal
+namespace PeachPied.WordPress.Sdk.Internal
 {
     sealed class PeachpieWpPlugin : IWpPlugin
     {

@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Primitives;
 
-namespace Peachpie.WordPress.AspNetCore.Internal
+namespace PeachPied.WordPress.AspNetCore.Internal
 {
     /// <summary>
     /// <see cref="IResponseCachingKeyProvider"/> implementation for WordPress requests.

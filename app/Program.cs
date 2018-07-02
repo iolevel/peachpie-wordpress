@@ -3,7 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Peachpie.WordPress.AspNetCore;
+using PeachPied.WordPress.AspNetCore;
 
 namespace peachserver
 {

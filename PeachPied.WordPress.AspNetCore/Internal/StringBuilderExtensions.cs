@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Peachpie.WordPress.AspNetCore.Internal
+namespace PeachPied.WordPress.AspNetCore.Internal
 {
     internal static class StringBuilderExtensions
     {
