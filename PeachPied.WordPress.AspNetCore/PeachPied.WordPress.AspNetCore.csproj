@@ -15,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wordpress\PeachPied.WordPress.msbuildproj" />
+    <ProjectReference Include="..\wordpress\PeachPied.WordPress.msbuildproj">
+      <PrivateAssets>None</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
