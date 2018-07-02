@@ -3,8 +3,8 @@ Theme Name: Twenty Seventeen
 Theme URI: https://wordpress.org/themes/twentyseventeen/
 Author: the WordPress team
 Author URI: https://wordpress.org/
-Description: Twenty Seventeen brings your site to life with immersive featured images and subtle animations. With a focus on business sites, it features multiple sections on the front page as well as widgets, navigation and social menus, a logo, and more. Personalize its asymmetrical grid with a custom color scheme and showcase your multimedia content with post formats. Our default theme for 2017 works great in many languages, for any abilities, and on any device.
-Version: 1.0
+Description: Twenty Seventeen brings your site to life with header video and immersive featured images. With a focus on business sites, it features multiple sections on the front page as well as widgets, navigation and social menus, a logo, and more. Personalize its asymmetrical grid with a custom color scheme and showcase your multimedia content with post formats. Our default theme for 2017 works great in many languages, for any abilities, and on any device.
+Version: 1.6
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: twentyseventeen
@@ -17,35 +17,37 @@ Use it to make something cool, have fun, and share what you've learned with othe
 /*--------------------------------------------------------------
 >>> TABLE OF CONTENTS:
 ----------------------------------------------------------------
-# Normalize
-# Accessibility
-# Alignments
-# Clearings
-# Typography
-# Forms
-# Formatting
-# Lists
-# Tables
-# Links
-# Featured Image Hover
-# Navigation
-# Layout
-   ## Header
-   ## Front Page
-   ## Regular Content
-   ## Posts
-   ## Pages
-   ## Footer
-# Comments
-# Widgets
-# Media
-	## Galleries
-# Customizer
-# Media Queries
+1.0 Normalize
+2.0 Accessibility
+3.0 Alignments
+4.0 Clearings
+5.0 Typography
+6.0 Forms
+7.0 Formatting
+8.0 Lists
+9.0 Tables
+10.0 Links
+11.0 Featured Image Hover
+12.0 Navigation
+13.0 Layout
+   13.1 Header
+   13.2 Front Page
+   13.3 Regular Content
+   13.4 Posts
+   13.5 Pages
+   13.6 Footer
+14.0 Comments
+15.0 Widgets
+16.0 Media
+   16.1 Galleries
+17.0 Customizer
+18.0 SVGs Fallbacks
+19.0 Media Queries
+20.0 Print
 --------------------------------------------------------------*/
 
 /*--------------------------------------------------------------
-# Normalize
+1.0 Normalize
 Styles based on Normalize v5.0.0 @link https://github.com/necolas/normalize.css
 --------------------------------------------------------------*/
 
@@ -119,7 +121,7 @@ strong {
 
 b,
 strong {
-	font-weight: bolder;
+	font-weight: 700;
 }
 
 code,
@@ -295,7 +297,7 @@ template {
 }
 
 /*--------------------------------------------------------------
-# Accessibility
+2.0 Accessibility
 --------------------------------------------------------------*/
 
 /* Text meant only for screen readers. */
@@ -332,7 +334,7 @@ template {
 }
 
 /*--------------------------------------------------------------
-# Alignments
+3.0 Alignments
 --------------------------------------------------------------*/
 
 .alignleft {
@@ -355,7 +357,7 @@ template {
 }
 
 /*--------------------------------------------------------------
-# Clearings
+4.0 Clearings
 --------------------------------------------------------------*/
 
 .clear:before,
@@ -406,7 +408,7 @@ template {
 }
 
 /*--------------------------------------------------------------
-# Typography
+5.0 Typography
 --------------------------------------------------------------*/
 
 body,
@@ -449,7 +451,8 @@ h1 {
 	font-weight: 300;
 }
 
-h2 {
+h2,
+.home.blog .entry-title {
 	color: #666;
 	font-size: 20px;
 	font-size: 1.25rem;
@@ -669,6 +672,14 @@ html[lang^="zh-"] textarea {
 	font-family: "PingFang TC", "Helvetica Neue", Helvetica, STHeitiTC-Light, Arial, sans-serif;
 }
 
+html[lang="zh-CN"] body,
+html[lang="zh-CN"] button,
+html[lang="zh-CN"] input,
+html[lang="zh-CN"] select,
+html[lang="zh-CN"] textarea {
+	font-family: "PingFang SC", "Helvetica Neue", Helvetica, STHeitiSC-Light, Arial, sans-serif;
+}
+
 html[lang^="zh-"] h1,
 html[lang^="zh-"] h2,
 html[lang^="zh-"] h3,
@@ -866,6 +877,7 @@ html[lang="th"] h4,
 html[lang="th"] h5,
 html[lang="th"] h6 {
 	line-height: 1.65;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 html[lang="th"] body,
@@ -874,6 +886,7 @@ html[lang="th"] input,
 html[lang="th"] select,
 html[lang="th"] textarea {
 	line-height: 1.8;
+	font-family: "Sukhumvit Set", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Remove letter-spacing for all non-latin alphabets */
@@ -900,7 +913,7 @@ html[lang="th"] * {
 }
 
 /*--------------------------------------------------------------
-# Forms
+6.0 Forms
 --------------------------------------------------------------*/
 
 label {
@@ -931,6 +944,7 @@ input[type="datetime-local"],
 input[type="color"],
 textarea {
 	color: #666;
+	background: #fff;
 	background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0));
 	border: 1px solid #bbb;
 	-webkit-border-radius: 3px;
@@ -1061,7 +1075,7 @@ input[type="submit"].secondary:focus {
 }
 
 /*--------------------------------------------------------------
-# Formatting
+7.0 Formatting
 --------------------------------------------------------------*/
 
 hr {
@@ -1072,7 +1086,7 @@ hr {
 }
 
 /*--------------------------------------------------------------
-# Lists
+8.0 Lists
 --------------------------------------------------------------*/
 
 ul,
@@ -1104,7 +1118,7 @@ dd {
 }
 
 /*--------------------------------------------------------------
-# Tables
+9.0 Tables
 --------------------------------------------------------------*/
 
 table {
@@ -1142,7 +1156,7 @@ td:last-child {
 }
 
 /*--------------------------------------------------------------
-# Links
+10.0 Links
 --------------------------------------------------------------*/
 
 a {
@@ -1164,6 +1178,7 @@ a:active {
 
 .entry-content a,
 .entry-summary a,
+.comment-content a,
 .widget a,
 .site-footer .widget-area a,
 .posts-navigation a,
@@ -1211,6 +1226,8 @@ a .nav-title,
 .entry-content a:hover,
 .entry-summary a:focus,
 .entry-summary a:hover,
+.comment-content a:focus,
+.comment-content a:hover,
 .widget a:focus,
 .widget a:hover,
 .site-footer .widget-area a:focus,
@@ -1262,6 +1279,7 @@ a:hover .nav-title,
 
 /* Fixes linked images */
 .entry-content a img,
+.comment-content a img,
 .widget a img {
 	-webkit-box-shadow: 0 0 0 8px #fff;
 	box-shadow: 0 0 0 8px #fff;
@@ -1273,7 +1291,7 @@ a:hover .nav-title,
 }
 
 /*--------------------------------------------------------------
-# Featured Image Hover
+11.0 Featured Image Hover
 --------------------------------------------------------------*/
 
 .post-thumbnail {
@@ -1292,7 +1310,7 @@ a:hover .nav-title,
 }
 
 /*--------------------------------------------------------------
-# Navigation
+12.0 Navigation
 --------------------------------------------------------------*/
 
 .navigation-top {
@@ -1483,7 +1501,7 @@ a:hover .nav-title,
 }
 
 /*--------------------------------------------------------------
-# Layout
+13.0 Layout
 --------------------------------------------------------------*/
 
 html {
@@ -1526,7 +1544,7 @@ body {
 }
 
 /*--------------------------------------------------------------
-## Header
+13.1 Header
 --------------------------------------------------------------*/
 
 #masthead .wrap {
@@ -1578,7 +1596,9 @@ body {
 }
 
 body.has-header-image .site-title,
-body.has-header-image .site-title a {
+body.has-header-video .site-title,
+body.has-header-image .site-title a,
+body.has-header-video .site-title a {
 	color: #fff;
 }
 
@@ -1589,7 +1609,8 @@ body.has-header-image .site-title a {
 	margin-bottom: 0;
 }
 
-body.has-header-image .site-description {
+body.has-header-image .site-description,
+body.has-header-video .site-description {
 	color: #fff;
 	opacity: 0.8;
 }
@@ -1607,7 +1628,8 @@ body.has-header-image .site-description {
 	width: auto;
 }
 
-body.home.title-tagline-hidden.has-header-image .custom-logo-link img {
+body.home.title-tagline-hidden.has-header-image .custom-logo-link img,
+body.home.title-tagline-hidden.has-header-video .custom-logo-link img {
 	max-height: 200px;
 	max-width: 100%;
 }
@@ -1627,14 +1649,16 @@ body:not(.title-tagline-hidden) .site-branding-text {
 }
 
 .has-header-image.twentyseventeen-front-page .custom-header,
-.has-header-image.home.blog .custom-header {
+.has-header-video.twentyseventeen-front-page .custom-header,
+.has-header-image.home.blog .custom-header,
+.has-header-video.home.blog .custom-header {
 	display: table;
 	height: 300px;
 	height: 75vh;
 	width: 100%;
 }
 
-.custom-header-image {
+.custom-header-media {
 	bottom: 0;
 	left: 0;
 	overflow: hidden;
@@ -1644,7 +1668,7 @@ body:not(.title-tagline-hidden) .site-branding-text {
 	width: 100%;
 }
 
-.custom-header-image:before {
+.custom-header-media:before {
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0+0,0.3+75 */
 	background: -moz-linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.3) 100%); /* FF3.6-15 */
 	background: -webkit-linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 75%, rgba(0, 0, 0, 0.3) 100%); /* Chrome10-25,Safari5.1-6 */
@@ -1660,9 +1684,9 @@ body:not(.title-tagline-hidden) .site-branding-text {
 	z-index: 2;
 }
 
-.has-header-image .custom-header-image img,
-.has-header-image .custom-header-image video,
-.has-header-image .custom-header-image iframe {
+.has-header-image .custom-header-media img,
+.has-header-video .custom-header-media video,
+.has-header-video .custom-header-media iframe {
 	position: fixed;
 	height: auto;
 	left: 50%;
@@ -1672,13 +1696,40 @@ body:not(.title-tagline-hidden) .site-branding-text {
 	min-width: 100vw; /* vw prevents 1px gap on left that 100% has */
 	width: auto;
 	top: 50%;
+	padding-bottom: 1px; /* Prevent header from extending beyond the footer */
 	-ms-transform: translateX(-50%) translateY(-50%);
 	-moz-transform: translateX(-50%) translateY(-50%);
 	-webkit-transform: translateX(-50%) translateY(-50%);
 	transform: translateX(-50%) translateY(-50%);
 }
 
-.has-header-image:not(.twentyseventeen-front-page):not(.home) .custom-header-image img {
+.wp-custom-header .wp-custom-header-video-button { /* Specificity prevents .color-dark button overrides */
+	background-color: rgba(34, 34, 34, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.6);
+	color: rgba(255, 255, 255, 0.6);
+	height: 45px;
+	overflow: hidden;
+	padding: 0;
+	position: fixed;
+	right: 30px;
+	top: 30px;
+	-webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
+	transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
+	width: 45px;
+}
+
+.wp-custom-header .wp-custom-header-video-button:hover,
+.wp-custom-header .wp-custom-header-video-button:focus { /* Specificity prevents .color-dark button overrides */
+	border-color: rgba(255, 255, 255, 0.8);
+	background-color: rgba(34, 34, 34, 0.8);
+	color: #fff;
+}
+
+.admin-bar .wp-custom-header-video-button {
+	top: 62px;
+}
+
+.has-header-image:not(.twentyseventeen-front-page):not(.home) .custom-header-media img {
 	bottom: 0;
 	position: absolute;
 	top: auto;
@@ -1688,19 +1739,42 @@ body:not(.title-tagline-hidden) .site-branding-text {
 	transform: translateX(-50%) translateY(0);
 }
 
-body:not(.has-header-image) .custom-header-image {
-	padding: 5% 0;
+/* For browsers that support 'object-fit' */
+@supports ( object-fit: cover ) {
+	.has-header-image .custom-header-media img,
+	.has-header-video .custom-header-media video,
+	.has-header-video .custom-header-media iframe,
+	.has-header-image:not(.twentyseventeen-front-page):not(.home) .custom-header-media img {
+		height: 100%;
+		left: 0;
+		-o-object-fit: cover;
+		object-fit: cover;
+		top: 0;
+		-ms-transform: none;
+		-moz-transform: none;
+		-webkit-transform: none;
+		transform: none;
+		width: 100%;
+	}
+}
+
+/* Hides div in Customizer preview when header images or videos change. */
+
+body:not(.has-header-image):not(.has-header-video) .custom-header-media {
+	display: none;
 }
 
 .has-header-image.twentyseventeen-front-page .site-branding,
-.has-header-image.home.blog .site-branding {
+.has-header-video.twentyseventeen-front-page .site-branding,
+.has-header-image.home.blog .site-branding,
+.has-header-video.home.blog .site-branding {
 	display: table-cell;
 	height: 100%;
 	vertical-align: bottom;
 }
 
 /*--------------------------------------------------------------
-## Front Page
+13.2 Front Page
 --------------------------------------------------------------*/
 
 .twentyseventeen-front-page .site-content {
@@ -1789,7 +1863,7 @@ body:not(.has-header-image) .custom-header-image {
 }
 
 /*--------------------------------------------------------------
-## Regular Content
+13.3 Regular Content
 --------------------------------------------------------------*/
 
 .site-content-contain {
@@ -1802,7 +1876,7 @@ body:not(.has-header-image) .custom-header-image {
 }
 
 /*--------------------------------------------------------------
-## Posts
+13.4 Posts
 --------------------------------------------------------------*/
 
 /* Post Landing Page */
@@ -1984,10 +2058,12 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	color: #222;
 	display: inline-block;
 	margin-left: 1em;
+	white-space: nowrap;
 }
 
 .search .page .entry-meta a.post-edit-link {
 	margin-left: 0;
+	white-space: nowrap;
 }
 
 .taxonomy-description {
@@ -2104,6 +2180,7 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	padding: 0.7em 2em;
 	-webkit-transition: background-color 0.2s ease-in-out;
 	transition: background-color 0.2s ease-in-out;
+	white-space: nowrap;
 }
 
 .entry-footer .edit-link a.post-edit-link:hover,
@@ -2140,7 +2217,6 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	transform: scale(-1, 1);
 	width: 20px;
 }
-
 
 /* Post Navigation */
 
@@ -2183,7 +2259,7 @@ body:not(.twentyseventeen-front-page) .entry-header {
 }
 
 /*--------------------------------------------------------------
-## Pages
+13.5 Pages
 --------------------------------------------------------------*/
 
 .page-header {
@@ -2205,6 +2281,10 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	margin: 0 0 1.5em;
 }
 
+.page:not(.home) #content {
+	padding-bottom: 1.5em;
+}
+
 /* 404 page */
 
 .error404 .page-content {
@@ -2217,7 +2297,7 @@ body:not(.twentyseventeen-front-page) .entry-header {
 }
 
 /*--------------------------------------------------------------
-## Footer
+13.6 Footer
 --------------------------------------------------------------*/
 
 .site-footer {
@@ -2298,8 +2378,16 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	width: 100%;
 }
 
+.site-info span[role=separator] {
+	padding: 0 0.2em 0 0.4em;
+}
+
+.site-info span[role=separator]::before {
+	content: '\002f';
+}
+
 /*--------------------------------------------------------------
-# Comments
+14.0 Comments
 --------------------------------------------------------------*/
 
 #comments {
@@ -2417,8 +2505,16 @@ body:not(.twentyseventeen-front-page) .entry-header {
 	text-align: right;
 }
 
+.comment-form #wp-comment-cookies-consent {
+	margin: 0 10px 0 0;
+}
+
+.comment-form .comment-form-cookies-consent label {
+	display: inline;
+}
+
 /*--------------------------------------------------------------
-# Widgets
+15.0 Widgets
 --------------------------------------------------------------*/
 
 #secondary {
@@ -2457,13 +2553,14 @@ h2.widget-title {
 	margin: 0;
 }
 
-.widget ul li {
+.widget ul li,
+.widget ol li {
 	border-bottom: 1px solid #ddd;
 	border-top: 1px solid #ddd;
 	padding: 0.5em 0;
 }
 
-.widget ul li + li {
+.widget:not(.widget_tag_cloud) ul li + li {
 	margin-top: -1px;
 }
 
@@ -2505,7 +2602,7 @@ h2.widget-title {
 	padding-top: 1em;
 }
 
-/* widget markup */
+/* Widget markup */
 
 .widget .post-date,
 .widget .rss-date {
@@ -2516,6 +2613,42 @@ h2.widget-title {
 
 .widget_text {
 	word-wrap: break-word;
+}
+
+.widget_text ul {
+	list-style: disc;
+	margin: 0 0 1.5em 1.5em;
+}
+
+.widget_text ol {
+	list-style: decimal;
+}
+
+.widget_text ul li,
+.widget_text ol li {
+	border: none;
+}
+
+.widget_text ul li:last-child,
+.widget_text ol li:last-child {
+	padding-bottom: 0;
+}
+
+.widget_text ul li ul {
+	margin: 0 0 0 1.5em;
+}
+
+.widget_text ul li li {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.widget_text ol li {
+	list-style-position: inside;
+}
+
+.widget_text ol li + li {
+	margin-top: -1px;
 }
 
 /* RSS Widget */
@@ -2620,6 +2753,14 @@ h2.widget-title {
 
 /* Tag cloud widget */
 
+.tagcloud ul li {
+	float: left;
+	border-top: 0;
+	border-bottom: 0;
+	padding: 0;
+	margin: 4px 4px 0 0;
+}
+
 .tagcloud,
 .widget_tag_cloud,
 .wp_widget_tag_cloud {
@@ -2632,12 +2773,8 @@ h2.widget-title {
 	border: 1px solid #ddd;
 	-webkit-box-shadow: none;
 	box-shadow: none;
-	display: inline-block;
-	float: left;
-	font-size: 14px !important; /* !important to overwrite inline styles */
-	font-size: 0.875rem !important;
-	margin: 4px 4px 0 0 !important;
-	padding: 4px 10px 5px !important;
+	display: block;
+	padding: 4px 10px 5px;
 	position: relative;
 	-webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
 	transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.3s ease-in-out;
@@ -2669,8 +2806,18 @@ h2.widget-title {
 	border: 0;
 }
 
+/* Gallery widget */
+
+.gallery-columns-5 .gallery-caption,
+.gallery-columns-6 .gallery-caption,
+.gallery-columns-7 .gallery-caption,
+.gallery-columns-8 .gallery-caption,
+.gallery-columns-9 .gallery-caption {
+	display: none;
+}
+
 /*--------------------------------------------------------------
-# Media
+16.0 Media
 --------------------------------------------------------------*/
 
 img,
@@ -2701,6 +2848,14 @@ iframe,
 object {
 	margin-bottom: 1.5em;
 	max-width: 100%;
+}
+
+/* Remove bottom on embeds that wrapped in paragraphs via wpautop. */
+
+p > embed:only-child,
+p > iframe:only-child,
+p > object:only-child {
+	margin-bottom: 0;
 }
 
 .wp-caption,
@@ -2879,7 +3034,7 @@ object {
 }
 
 /*--------------------------------------------------------------
-## Galleries
+16.1 Galleries
 --------------------------------------------------------------*/
 
 .gallery-item {
@@ -2901,11 +3056,15 @@ object {
 
 .gallery-item a,
 .gallery-item a:hover,
-.gallery-item a:focus {
+.gallery-item a:focus,
+.widget-area .gallery-item a,
+.widget-area .gallery-item a:hover,
+.widget-area .gallery-item a:focus {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	background: none;
 	display: inline-block;
+	max-width: 100%;
 }
 
 .gallery-item a img {
@@ -2932,7 +3091,7 @@ object {
 }
 
 /*--------------------------------------------------------------
-# Customizer
+17.0 Customizer
 --------------------------------------------------------------*/
 
 .highlight-front-sections.twentyseventeen-customizer.twentyseventeen-front-page .twentyseventeen-panel:after {
@@ -2973,14 +3132,9 @@ object {
 }
 
 /* Add some space around the visual edit shortcut buttons. */
-.twentyseventeen-panel .customize-partial-edit-shortcut button {
+.twentyseventeen-panel > .customize-partial-edit-shortcut > button {
 	top: 30px;
 	left: 30px;
-}
-
-/* Prevent color schemes from showing 1px dots everywhere. */
-.customize-partial-edit-shortcut {
-	background: transparent !important;
 }
 
 /* Ensure that placeholder icons are visible. */
@@ -2988,17 +3142,8 @@ object {
 	visibility: visible;
 }
 
-/* Prevent icon colors from clashing with color schemes. */
-.colors-custom .customize-partial-edit-shortcut button {
-	text-shadow: 0 -1px 1px rgba(0,0,0,.2),
-	             1px 0 1px rgba(0,0,0,.2),
-	             0 1px 1px rgba(0,0,0,.2),
-	            -1px 0 1px rgba(0,0,0,.2);
-}
-
-
 /*--------------------------------------------------------------
-## SVGs Fallbacks
+18.0 SVGs Fallbacks
 --------------------------------------------------------------*/
 
 .svg-fallback {
@@ -3019,7 +3164,7 @@ object {
 .no-svg .dropdown-toggle .svg-fallback.icon-angle-down {
 	font-size: 20px;
 	font-size: 1.25rem;
-	font-weight: normal;
+	font-weight: 400;
 	line-height: 1;
 	-webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
 	-ms-transform: rotate(180deg); /* IE 9 */
@@ -3061,8 +3206,16 @@ object {
 }
 
 /*--------------------------------------------------------------
-## Media Queries
+19.0 Media Queries
 --------------------------------------------------------------*/
+
+/* Adjust positioning of edit shortcuts, override style in customize-preview.css */
+@media screen and (min-width: 20em) {
+
+	body.customize-partial-edit-shortcuts-shown .site-header .site-title {
+		padding-left: 0;
+	}
+}
 
 @media screen and (min-width: 30em) {
 
@@ -3083,6 +3236,7 @@ object {
 	}
 
 	h2,
+	.home.blog .entry-title,
 	.page .panel-content .recent-posts .entry-title {
 		font-size: 26px;
 		font-size: 1.625rem;
@@ -3242,7 +3396,9 @@ object {
 	}
 
 	.has-header-image.twentyseventeen-front-page .site-branding,
-	.has-header-image.home.blog .site-branding {
+	.has-header-video.twentyseventeen-front-page .site-branding,
+	.has-header-image.home.blog .site-branding,
+	.has-header-video.home.blog .site-branding {
 		bottom: 0;
 		display: block;
 		left: 0;
@@ -3253,23 +3409,28 @@ object {
 	}
 
 	.has-header-image.twentyseventeen-front-page .custom-header,
-	.has-header-image.home.blog .custom-header {
+	.has-header-video.twentyseventeen-front-page .custom-header,
+	.has-header-image.home.blog .custom-header,
+	.has-header-video.home.blog .custom-header {
 		display: block;
 		height: auto;
 	}
 
-	.custom-header-image {
+	.custom-header-media {
 		height: 165px;
 		position: relative;
 	}
 
-	.twentyseventeen-front-page.has-header-image .custom-header-image,
-	.home.blog.has-header-image .custom-header-image {
+	.twentyseventeen-front-page.has-header-image .custom-header-media,
+	.twentyseventeen-front-page.has-header-video .custom-header-media,
+	.home.blog.has-header-image .custom-header-media,
+	.home.blog.has-header-video .custom-header-media {
 		height: 0;
 		position: relative;
 	}
 
-	.has-header-image:not(.twentyseventeen-front-page):not(.home) .custom-header-image {
+	.has-header-image:not(.twentyseventeen-front-page):not(.home) .custom-header-media,
+	.has-header-video:not(.twentyseventeen-front-page):not(.home) .custom-header-media {
 		bottom: 0;
 		height: auto;
 		left: 0;
@@ -3283,11 +3444,13 @@ object {
 	}
 
 	.custom-logo-link img,
-	body.home.title-tagline-hidden.has-header-image .custom-logo-link img {
+	body.home.title-tagline-hidden.has-header-image .custom-logo-link img,
+	body.home.title-tagline-hidden.has-header-video .custom-logo-link img {
 		max-width: 350px;
 	}
 
-	.title-tagline-hidden.home.has-header-image .custom-logo-link img {
+	.title-tagline-hidden.home.has-header-image .custom-logo-link img,
+	.title-tagline-hidden.home.has-header-video .custom-logo-link img {
 		max-height: 200px;
 	}
 
@@ -3549,25 +3712,33 @@ object {
 	/* Front Page */
 
 	.twentyseventeen-front-page.has-header-image .site-branding,
-	.home.blog.has-header-image .site-branding {
+	.twentyseventeen-front-page.has-header-video .site-branding,
+	.home.blog.has-header-image .site-branding,
+	.home.blog.has-header-video .site-branding {
 		margin-bottom: 70px;
 	}
 
-	.twentyseventeen-front-page.has-header-image .custom-header-image,
-	.home.blog.has-header-image .custom-header-image {
+	.twentyseventeen-front-page.has-header-image .custom-header-media,
+	.twentyseventeen-front-page.has-header-video .custom-header-media,
+	.home.blog.has-header-image .custom-header-media,
+	.home.blog.has-header-video .custom-header-media {
 		height: 1200px;
 		height: 100vh;
 		max-height: 100%;
 		overflow: hidden;
 	}
 
-	.twentyseventeen-front-page.has-header-image .custom-header-image:before,
-	.home.blog.has-header-image .custom-header-image:before {
+	.twentyseventeen-front-page.has-header-image .custom-header-media:before,
+	.twentyseventeen-front-page.has-header-video .custom-header-media:before,
+	.home.blog.has-header-image .custom-header-media:before,
+	.home.blog.has-header-video .custom-header-media:before {
 		height: 33%;
 	}
 
-	.admin-bar.twentyseventeen-front-page.has-header-image .custom-header-image,
-	.admin-bar.home.blog.has-header-image .custom-header-image {
+	.admin-bar.twentyseventeen-front-page.has-header-image .custom-header-media,
+	.admin-bar.twentyseventeen-front-page.has-header-video .custom-header-media,
+	.admin-bar.home.blog.has-header-image .custom-header-media,
+	.admin-bar.home.blog.has-header-video .custom-header-media {
 		height: calc(100vh - 32px);
 	}
 
@@ -3579,6 +3750,11 @@ object {
 	.panel-image {
 		height: 100vh;
 		max-height: 1200px;
+	}
+
+	/* With panel images 100% of the screen height, we're going to fix the background image where supported to create a parallax-like effect. */
+	.background-fixed .panel-image {
+		background-attachment: fixed;
 	}
 
 	.page-two-column .panel-content .entry-header {
@@ -3623,7 +3799,7 @@ object {
 	/* Posts */
 
 	.site-content {
-		padding: 6.5em 0 0;
+		padding: 5.5em 0 0;
 	}
 
 	.single-post .entry-title,
@@ -3782,6 +3958,10 @@ object {
 	.twentyseventeen-front-page.page-one-column .entry-header,
 	.archive.page-one-column:not(.has-sidebar) .page-header {
 		margin-bottom: 4em;
+	}
+
+	.page:not(.home) #content {
+		padding-bottom: 3.25em;
 	}
 
 	/* 404 page */
@@ -3971,13 +4151,6 @@ object {
 	}
 }
 
-@media screen and ( min-width: 85.45em ) {
-
-	.panel-image {
-		background-attachment: fixed;
-	}
-}
-
 @media screen and ( max-width: 48.875em ) and ( min-width: 48em ) {
 
 	.admin-bar .site-navigation-fixed.navigation-top,
@@ -3987,7 +4160,7 @@ object {
 }
 
 /*--------------------------------------------------------------
-# Print
+20.0 Print
 --------------------------------------------------------------*/
 
 @media print {
@@ -4079,12 +4252,14 @@ object {
 		padding: 0;
 	}
 
-	.custom-header-image {
+	.custom-header-media {
 		padding: 0;
 	}
 
 	.twentyseventeen-front-page.has-header-image .site-branding,
-	.home.blog.has-header-image .site-branding {
+	.twentyseventeen-front-page.has-header-video .site-branding,
+	.home.blog.has-header-image .site-branding,
+	.home.blog.has-header-video .site-branding {
 		position: relative;
 	}
 
@@ -4123,7 +4298,9 @@ object {
 	a,
 	.site-title a,
 	.twentyseventeen-front-page.has-header-image .site-title,
-	.twentyseventeen-front-page.has-header-image .site-title a {
+	.twentyseventeen-front-page.has-header-video .site-title,
+	.twentyseventeen-front-page.has-header-image .site-title a,
+	.twentyseventeen-front-page.has-header-video .site-title a {
 		color: #222 !important; /* Make sure color schemes don't affect to print */
 	}
 
@@ -4132,6 +4309,7 @@ object {
 	blockquote,
 	.site-description,
 	.twentyseventeen-front-page.has-header-image .site-description,
+	.twentyseventeen-front-page.has-header-video .site-description,
 	.entry-meta,
 	.entry-meta a {
 		color: #777 !important; /* Make sure color schemes don't affect to print */

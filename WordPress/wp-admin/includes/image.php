@@ -205,38 +205,73 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 	}
 	// Try to create image thumbnails for PDFs
 	else if ( 'application/pdf' === $mime_type ) {
-		$editor = wp_get_image_editor( $file );
-
 		$fallback_sizes = array(
 			'thumbnail',
 			'medium',
 			'large',
 		);
 
+		/**
+		 * Filters the image sizes generated for non-image mime types.
+		 *
+		 * @since 4.7.0
+		 *
+		 * @param array $fallback_sizes An array of image size names.
+		 * @param array $metadata       Current attachment metadata.
+		 */
+		$fallback_sizes = apply_filters( 'fallback_intermediate_image_sizes', $fallback_sizes, $metadata );
+
 		$sizes = array();
+		$_wp_additional_image_sizes = wp_get_additional_image_sizes();
 
 		foreach ( $fallback_sizes as $s ) {
-			$sizes[$s]['width']  = get_option( "{$s}_size_w" );
-			$sizes[$s]['height'] = get_option( "{$s}_size_h" );
+			if ( isset( $_wp_additional_image_sizes[ $s ]['width'] ) ) {
+				$sizes[ $s ]['width'] = intval( $_wp_additional_image_sizes[ $s ]['width'] );
+			} else {
+				$sizes[ $s ]['width'] = get_option( "{$s}_size_w" );
+			}
 
-			// Force thumbnails to be soft crops.
-			if ( ! 'thumbnail' === $s ) {
-				$sizes[$s]['crop'] = get_option( "{$s}_crop" );
+			if ( isset( $_wp_additional_image_sizes[ $s ]['height'] ) ) {
+				$sizes[ $s ]['height'] = intval( $_wp_additional_image_sizes[ $s ]['height'] );
+			} else {
+				$sizes[ $s ]['height'] = get_option( "{$s}_size_h" );
+			}
+
+			if ( isset( $_wp_additional_image_sizes[ $s ]['crop'] ) ) {
+				$sizes[ $s ]['crop'] = $_wp_additional_image_sizes[ $s ]['crop'];
+			} else {
+				// Force thumbnails to be soft crops.
+				if ( 'thumbnail' !== $s ) {
+					$sizes[ $s ]['crop'] = get_option( "{$s}_crop" );
+				}
 			}
 		}
 
-		if ( ! is_wp_error( $editor ) ) { // No support for this type of file
-			$uploaded = $editor->save( $file, 'image/jpeg' );
-			unset( $editor );
+		// Only load PDFs in an image editor if we're processing sizes.
+		if ( ! empty( $sizes ) ) {
+			$editor = wp_get_image_editor( $file );
 
-			// Resize based on the full size image, rather than the source.
-			if ( ! is_wp_error( $uploaded ) ) {
-				$editor = wp_get_image_editor( $uploaded['path'] );
-				unset( $uploaded['path'] );
+			if ( ! is_wp_error( $editor ) ) { // No support for this type of file
+				/*
+				 * PDFs may have the same file filename as JPEGs.
+				 * Ensure the PDF preview image does not overwrite any JPEG images that already exist.
+				 */
+				$dirname = dirname( $file ) . '/';
+				$ext = '.' . pathinfo( $file, PATHINFO_EXTENSION );
+				$preview_file = $dirname . wp_unique_filename( $dirname, wp_basename( $file, $ext ) . '-pdf.jpg' );
 
-				if ( ! is_wp_error( $editor ) ) {
-					$metadata['sizes'] = $editor->multi_resize( $sizes );
-					$metadata['sizes']['full'] = $uploaded;
+				$uploaded = $editor->save( $preview_file, 'image/jpeg' );
+				unset( $editor );
+
+				// Resize based on the full size image, rather than the source.
+				if ( ! is_wp_error( $uploaded ) ) {
+					$editor = wp_get_image_editor( $uploaded['path'] );
+					unset( $uploaded['path'] );
+
+					if ( ! is_wp_error( $editor ) ) {
+						$metadata['sizes'] = $editor->multi_resize( $sizes );
+						$metadata['sizes']['full'] = $uploaded;
+					}
 				}
 			}
 		}
@@ -308,7 +343,7 @@ function wp_read_image_metadata( $file ) {
 	if ( ! file_exists( $file ) )
 		return false;
 
-	list( , , $sourceImageType ) = getimagesize( $file );
+	list( , , $sourceImageType ) = @getimagesize( $file );
 
 	/*
 	 * EXIF contains a bunch of data we'll probably never need formatted in ways
@@ -337,10 +372,10 @@ function wp_read_image_metadata( $file ) {
 	 * as caption, description etc.
 	 */
 	if ( is_callable( 'iptcparse' ) ) {
-		getimagesize( $file, $info );
+		@getimagesize( $file, $info );
 
 		if ( ! empty( $info['APP13'] ) ) {
-			$iptc = iptcparse( $info['APP13'] );
+			$iptc = @iptcparse( $info['APP13'] );
 
 			// Headline, "A brief synopsis of the caption."
 			if ( ! empty( $iptc['2#105'][0] ) ) {

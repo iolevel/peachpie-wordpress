@@ -36,7 +36,7 @@ if ( ! $post_type_object )
 
 if ( ! current_user_can( $post_type_object->cap->edit_posts ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to edit posts in this post type.' ) . '</p>',
 		403
 	);
@@ -350,6 +350,11 @@ $_SERVER['REQUEST_URI'] = remove_query_arg( array( 'locked', 'skipped', 'updated
 
 <input type="hidden" name="post_status" class="post_status_page" value="<?php echo !empty($_REQUEST['post_status']) ? esc_attr($_REQUEST['post_status']) : 'all'; ?>" />
 <input type="hidden" name="post_type" class="post_type_page" value="<?php echo $post_type; ?>" />
+
+<?php if ( ! empty( $_REQUEST['author'] ) ) { ?>
+<input type="hidden" name="author" value="<?php echo esc_attr( $_REQUEST['author'] ); ?>" />
+<?php } ?>
+
 <?php if ( ! empty( $_REQUEST['show_sticky'] ) ) { ?>
 <input type="hidden" name="show_sticky" value="1" />
 <?php } ?>

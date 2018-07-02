@@ -10,15 +10,13 @@
  * WordPress Image Editor Class for Image Manipulation through Imagick PHP Module
  *
  * @since 3.5.0
- * @package WordPress
- * @subpackage Image_Editor
- * @uses WP_Image_Editor Extends class
+ *
+ * @see WP_Image_Editor
  */
 class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	/**
 	 * Imagick object.
 	 *
-	 * @access protected
 	 * @var Imagick
 	 */
 	protected $image;
@@ -40,7 +38,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * @since 3.5.0
 	 *
 	 * @static
-	 * @access public
 	 *
 	 * @param array $args
 	 * @return bool
@@ -99,7 +96,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * @since 3.5.0
 	 *
 	 * @static
-	 * @access public
 	 *
 	 * @param string $mime_type
 	 * @return bool
@@ -127,7 +123,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Loads image from $this->file into new Imagick Object.
 	 *
 	 * @since 3.5.0
-	 * @access protected
 	 *
 	 * @return true|WP_Error True if loaded; WP_Error on failure.
 	 */
@@ -146,16 +141,11 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 
 		try {
 			$this->image = new Imagick();
-			$file_parts = pathinfo( $this->file );
+			$file_extension = strtolower( pathinfo( $this->file, PATHINFO_EXTENSION ) );
 			$filename = $this->file;
 
-			// By default, PDFs are rendered in a very low resolution.
-			// We want the thumbnail to be readable, so increase the rendering dpi.
-			if ( 'pdf' == strtolower( $file_parts['extension'] ) ) {
-				$this->image->setResolution( 128, 128 );
-
-				// Only load the first page.
-				$filename .= '[0]';
+			if ( 'pdf' == $file_extension ) {
+				$filename = $this->pdf_setup();
 			}
 
 			// Reading image after Imagick instantiation because `setResolution`
@@ -187,7 +177,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Sets Image Compression quality on a 1-100% scale.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param int $quality Compression Quality. Range: [1,100]
 	 * @return true|WP_Error True if set successfully; WP_Error on failure.
@@ -220,7 +209,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Sets or updates current image size.
 	 *
 	 * @since 3.5.0
-	 * @access protected
 	 *
 	 * @param int $width
 	 * @param int $height
@@ -255,7 +243,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * maintain aspect ratio according to the provided dimension.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param  int|null $max_w Image width.
 	 * @param  int|null $max_h Image height.
@@ -291,7 +278,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * which resizes an image to given dimensions and removes any associated profiles.
 	 *
 	 * @since 4.5.0
-	 * @access protected
 	 *
 	 * @param int    $dst_w       The destination width.
 	 * @param int    $dst_h       The destination height.
@@ -423,7 +409,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Resize multiple images from a single source.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param array $sizes {
 	 *     An array of image size arrays. Default sizes are 'small', 'medium', 'medium_large', 'large'.
@@ -494,7 +479,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Crops Image.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param int  $src_x The start x position to crop from.
 	 * @param int  $src_y The start y position to crop from.
@@ -541,7 +525,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Rotates current image counter-clockwise by $angle.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param float $angle
 	 * @return true|WP_Error
@@ -553,6 +536,11 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 		 */
 		try {
 			$this->image->rotateImage( new ImagickPixel('none'), 360-$angle );
+
+			// Normalise Exif orientation data so that display is consistent across devices.
+			if ( is_callable( array( $this->image, 'setImageOrientation' ) ) && defined( 'Imagick::ORIENTATION_TOPLEFT' ) ) {
+				$this->image->setImageOrientation( Imagick::ORIENTATION_TOPLEFT );
+			}
 
 			// Since this changes the dimensions of the image, update the size.
 			$result = $this->update_size();
@@ -571,7 +559,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Flips current image.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param bool $horz Flip along Horizontal Axis
 	 * @param bool $vert Flip along Vertical Axis
@@ -595,7 +582,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Saves current image to file.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
 	 * @param string $destfilename
 	 * @param string $mime_type
@@ -665,10 +651,9 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Streams current image to browser.
 	 *
 	 * @since 3.5.0
-	 * @access public
 	 *
-	 * @param string $mime_type
-	 * @return true|WP_Error
+	 * @param string $mime_type The mime type of the image.
+	 * @return bool|WP_Error True on success, WP_Error object on failure.
 	 */
 	public function stream( $mime_type = null ) {
 		list( $filename, $extension, $mime_type ) = $this->get_output_format( null, $mime_type );
@@ -695,7 +680,6 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 	 * Strips all image meta except color profiles from an image.
 	 *
 	 * @since 4.5.0
-	 * @access protected
 	 *
 	 * @return true|WP_Error True if stripping metadata was successful. WP_Error object on error.
 	 */
@@ -741,6 +725,28 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sets up Imagick for PDF processing.
+	 * Increases rendering DPI and only loads first page.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @return string|WP_Error File to load or WP_Error on failure.
+	 */
+	protected function pdf_setup() {
+		try {
+			// By default, PDFs are rendered in a very low resolution.
+			// We want the thumbnail to be readable, so increase the rendering DPI.
+			$this->image->setResolution( 128, 128 );
+
+			// Only load the first page.
+			return $this->file . '[0]';
+		}
+		catch ( Exception $e ) {
+			return new WP_Error( 'pdf_setup_failed', $e->getMessage(), $this->file );
+		}
 	}
 
 }

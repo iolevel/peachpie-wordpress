@@ -35,7 +35,7 @@ function twentyseventeen_body_classes( $classes ) {
 	}
 
 	// Add a class if there is a custom header.
-	if ( has_header_image() || has_header_video() && is_front_page() ) {
+	if ( has_header_image() ) {
 		$classes[] = 'has-header-image';
 	}
 
@@ -80,7 +80,7 @@ function twentyseventeen_panel_count() {
 	 *
 	 * @since Twenty Seventeen 1.0
 	 *
-	 * @param $num_sections integer
+	 * @param int $num_sections Number of front page sections.
 	 */
 	$num_sections = apply_filters( 'twentyseventeen_front_page_sections', 4 );
 

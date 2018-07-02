@@ -89,8 +89,9 @@ img {
 	width: auto !important;
 }
 
-.wp-caption img {
-	display: block;
+dl.wp-caption dt.wp-caption-dt img {
+	display: inline-block;
+	margin-bottom: -1ex;
 }
 
 div.mceTemp {
@@ -159,6 +160,35 @@ img[data-mce-selected]::selection {
     background: transparent url( images/pagebreak.png ) repeat-y scroll center center;
 }
 
+/* Styles for formatting the boundaries of anchors and code elements */
+.mce-content-body a[data-mce-selected] {
+	padding: 0 2px;
+	margin: 0 -2px;
+	border-radius: 2px;
+	box-shadow: 0 0 0 1px #bfe6ff;
+	background: #bfe6ff;
+}
+
+.mce-content-body .wp-caption-dt a[data-mce-selected] {
+	outline: none;
+	padding: 0;
+	margin: 0;
+	box-shadow: none;
+	background: transparent;
+}
+
+.mce-content-body code {
+	padding: 2px 4px;
+	margin: 0;
+	border-radius: 2px;
+	color: #222;
+	background: #f2f4f5;
+}
+
+.mce-content-body code[data-mce-selected] {
+	background: #e9ebec;
+}
+
 /* Gallery, audio, video placeholders */
 .mce-content-body img.wp-media {
 	border: 1px solid #aaa;
@@ -211,6 +241,11 @@ audio {
 	visibility: hidden;
 }
 
+/* Fix for proprietary Mozilla display attribute, see #38757 */
+[_moz_abspos] {
+	outline: none;
+}
+
 a[data-wplink-url-error],
 a[data-wplink-url-error]:hover,
 a[data-wplink-url-error]:focus {
@@ -228,6 +263,11 @@ a[data-wplink-url-error]:before {
 	left: -2px;
 	outline: 2px dotted #fff;
 	z-index: -1;
+}
+
+/* Special styling for the suggestes policy text tutorial sections after they have been pasted in the editor. */
+p.wp-policy-help {
+    background-color: #ff0;
 }
 
 /**

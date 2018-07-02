@@ -1,4 +1,6 @@
 /* global _wpCustomizePreviewNavMenusExports */
+
+/** @namespace wp.customize.navMenusPreview */
 wp.customize.navMenusPreview = wp.customize.MenusCustomizerPreview = ( function( $, _, wp, api ) {
 	'use strict';
 
@@ -15,7 +17,19 @@ wp.customize.navMenusPreview = wp.customize.MenusCustomizerPreview = ( function(
 	 * Initialize nav menus preview.
 	 */
 	self.init = function() {
-		var self = this;
+		var self = this, synced = false;
+
+		/*
+		 * Keep track of whether we synced to determine whether or not bindSettingListener
+		 * should also initially fire the listener. This initial firing needs to wait until
+		 * after all of the settings have been synced from the pane in order to prevent
+		 * an infinite selective fallback-refresh. Note that this sync handler will be
+		 * added after the sync handler in customize-preview.js, so it will be triggered
+		 * after all of the settings are added.
+		 */
+		api.preview.bind( 'sync', function() {
+			synced = true;
+		} );
 
 		if ( api.selectiveRefresh ) {
 			// Listen for changes to settings related to nav menus.
@@ -23,7 +37,17 @@ wp.customize.navMenusPreview = wp.customize.MenusCustomizerPreview = ( function(
 				self.bindSettingListener( setting );
 			} );
 			api.bind( 'add', function( setting ) {
-				self.bindSettingListener( setting, { fire: true } );
+
+				/*
+				 * Handle case where an invalid nav menu item (one for which its associated object has been deleted)
+				 * is synced from the controls into the preview. Since invalid nav menu items are filtered out from
+				 * being exported to the frontend by the _is_valid_nav_menu_item filter in wp_get_nav_menu_items(),
+				 * the customizer controls will have a nav_menu_item setting where the preview will have none, and
+				 * this can trigger an infinite fallback refresh when the nav menu item lacks any valid items.
+				 */
+				if ( setting.get() && ! setting.get()._invalid ) {
+					self.bindSettingListener( setting, { fire: synced } );
+				}
 			} );
 			api.bind( 'remove', function( setting ) {
 				self.unbindSettingListener( setting );
@@ -50,11 +74,14 @@ wp.customize.navMenusPreview = wp.customize.MenusCustomizerPreview = ( function(
 		/**
 		 * Partial representing an invocation of wp_nav_menu().
 		 *
+		 * @memberOf wp.customize.navMenusPreview
+		 * @alias wp.customize.navMenusPreview.NavMenuInstancePartial
+		 *
 		 * @class
 		 * @augments wp.customize.selectiveRefresh.Partial
 		 * @since 4.5.0
 		 */
-		self.NavMenuInstancePartial = api.selectiveRefresh.Partial.extend({
+		self.NavMenuInstancePartial = api.selectiveRefresh.Partial.extend(/** @lends wp.customize.navMenusPreview.NavMenuInstancePartial.prototype */{
 
 			/**
 			 * Constructor.
@@ -397,7 +424,7 @@ wp.customize.navMenusPreview = wp.customize.MenusCustomizerPreview = ( function(
 				return;
 			}
 
-			navMenuItemParts = $( this ).attr( 'class' ).match( /(?:^|\s)menu-item-(\d+)(?:\s|$)/ );
+			navMenuItemParts = $( this ).attr( 'class' ).match( /(?:^|\s)menu-item-(-?\d+)(?:\s|$)/ );
 			if ( navMenuItemParts ) {
 				e.preventDefault();
 				e.stopPropagation(); // Make sure a sub-nav menu item will get focused instead of parent items.

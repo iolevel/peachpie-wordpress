@@ -21,10 +21,8 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	/**
 	 * The setting type.
 	 *
-	 * @var string
-	 *
 	 * @since 4.7.0
-	 * @access public
+	 * @var string
 	 */
 	public $type = 'custom_css';
 
@@ -32,8 +30,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Setting Transport
 	 *
 	 * @since 4.7.0
-	 * @access public
-	 *
 	 * @var string
 	 */
 	public $transport = 'postMessage';
@@ -42,8 +38,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Capability required to edit this setting.
 	 *
 	 * @since 4.7.0
-	 * @access public
-	 *
 	 * @var string
 	 */
 	public $capability = 'edit_css';
@@ -52,8 +46,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Stylesheet
 	 *
 	 * @since 4.7.0
-	 * @access public
-	 *
 	 * @var string
 	 */
 	public $stylesheet = '';
@@ -62,7 +54,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * WP_Customize_Custom_CSS_Setting constructor.
 	 *
 	 * @since 4.7.0
-	 * @access public
 	 *
 	 * @throws Exception If the setting ID does not match the pattern `custom_css[$stylesheet]`.
 	 *
@@ -86,7 +77,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Add filter to preview post value.
 	 *
 	 * @since 4.7.9
-	 * @access public
 	 *
 	 * @return bool False when preview short-circuits due no change needing to be previewed.
 	 */
@@ -105,7 +95,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * This is used in the preview when `wp_get_custom_css()` is called for rendering the styles.
 	 *
 	 * @since 4.7.0
-	 * @access private
 	 * @see wp_get_custom_css()
 	 *
 	 * @param string $css        Original CSS.
@@ -126,16 +115,18 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Fetch the value of the setting. Will return the previewed value when `preview()` is called.
 	 *
 	 * @since 4.7.0
-	 * @access public
 	 * @see WP_Customize_Setting::value()
 	 *
 	 * @return string
 	 */
 	public function value() {
-		$id_base = $this->id_data['base'];
-		if ( $this->is_previewed && null !== $this->post_value( null ) ) {
-			return $this->post_value();
+		if ( $this->is_previewed ) {
+			$post_value = $this->post_value( null );
+			if ( null !== $post_value ) {
+				return $post_value;
+			}
 		}
+		$id_base = $this->id_data['base'];
 		$value = '';
 		$post = wp_get_custom_css_post( $this->stylesheet );
 		if ( $post ) {
@@ -157,10 +148,8 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Checks for imbalanced braces, brackets, and comments.
 	 * Notifications are rendered when the customizer state is saved.
 	 *
-	 * @todo There are cases where valid CSS can be incorrectly marked as invalid when strings or comments include balancing characters. To fix, CSS tokenization needs to be used.
-	 *
 	 * @since 4.7.0
-	 * @access public
+	 * @since 4.9.0 Checking for balanced characters has been moved client-side via linting in code editor.
 	 *
 	 * @param string $css The input string.
 	 * @return true|WP_Error True if the input was validated, otherwise WP_Error.
@@ -170,60 +159,6 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 
 		if ( preg_match( '#</?\w+#', $css ) ) {
 			$validity->add( 'illegal_markup', __( 'Markup is not allowed in CSS.' ) );
-		}
-
-		$imbalanced = false;
-
-		// Make sure that there is a closing brace for each opening brace.
-		if ( ! $this->validate_balanced_characters( '{', '}', $css ) ) {
-			$validity->add( 'imbalanced_curly_brackets', __( 'Your curly brackets <code>{}</code> are imbalanced. Make sure there is a closing <code>}</code> for every opening <code>{</code>.' ) );
-			$imbalanced = true;
-		}
-
-		// Ensure brackets are balanced.
-		if ( ! $this->validate_balanced_characters( '[', ']', $css ) ) {
-			$validity->add( 'imbalanced_braces', __( 'Your brackets <code>[]</code> are imbalanced. Make sure there is a closing <code>]</code> for every opening <code>[</code>.' ) );
-			$imbalanced = true;
-		}
-
-		// Ensure parentheses are balanced.
-		if ( ! $this->validate_balanced_characters( '(', ')', $css ) ) {
-			$validity->add( 'imbalanced_parentheses', __( 'Your parentheses <code>()</code> are imbalanced. Make sure there is a closing <code>)</code> for every opening <code>(</code>.' ) );
-			$imbalanced = true;
-		}
-
-		// Ensure single quotes are equal.
-		if ( ! $this->validate_equal_characters( '\'', $css ) ) {
-			$validity->add( 'unequal_single_quotes', __( 'Your single quotes <code>\'</code> are uneven. Make sure there is a closing <code>\'</code> for every opening <code>\'</code>.' ) );
-			$imbalanced = true;
-		}
-
-		// Ensure single quotes are equal.
-		if ( ! $this->validate_equal_characters( '"', $css ) ) {
-			$validity->add( 'unequal_double_quotes', __( 'Your double quotes <code>"</code> are uneven. Make sure there is a closing <code>"</code> for every opening <code>"</code>.' ) );
-			$imbalanced = true;
-		}
-
-		/*
-		 * Make sure any code comments are closed properly.
-		 *
-		 * The first check could miss stray an unpaired comment closing figure, so if
-		 * The number appears to be balanced, then check for equal numbers
-		 * of opening/closing comment figures.
-		 *
-		 * Although it may initially appear redundant, we use the first method
-		 * to give more specific feedback to the user.
-		 */
-		$unclosed_comment_count = $this->validate_count_unclosed_comments( $css );
-		if ( 0 < $unclosed_comment_count ) {
-			$validity->add( 'unclosed_comment', sprintf( _n( 'There is %s unclosed code comment. Close each comment with <code>*/</code>.', 'There are %s unclosed code comments. Close each comment with <code>*/</code>.', $unclosed_comment_count ), $unclosed_comment_count ) );
-			$imbalanced = true;
-		} elseif ( ! $this->validate_balanced_characters( '/*', '*/', $css ) ) {
-			$validity->add( 'imbalanced_comments', __( 'There is an extra <code>*/</code>, indicating an end to a comment.  Be sure that there is an opening <code>/*</code> for every closing <code>*/</code>.' ) );
-			$imbalanced = true;
-		}
-		if ( $imbalanced && $this->is_possible_content_error( $css ) ) {
-			$validity->add( 'possible_false_positive', __( 'Imbalanced/unclosed character errors can be caused by <code>content: "";</code> declarations. You may need to remove this or add it to a custom CSS file.' ) );
 		}
 
 		if ( empty( $validity->errors ) ) {
@@ -236,75 +171,23 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 	 * Store the CSS setting value in the custom_css custom post type for the stylesheet.
 	 *
 	 * @since 4.7.0
-	 * @access public
 	 *
 	 * @param string $css The input value.
 	 * @return int|false The post ID or false if the value could not be saved.
 	 */
 	public function update( $css ) {
-		$setting = $this;
-
 		if ( empty( $css ) ) {
 			$css = '';
 		}
 
-		$args = array(
-			'post_content' => $css,
-			'post_content_filtered' => '',
-		);
+		$r = wp_update_custom_css_post( $css, array(
+			'stylesheet' => $this->stylesheet,
+		) );
 
-		/**
-		 * Filters the `post_content` and `post_content_filtered` args for a `custom_css` post being updated.
-		 *
-		 * This filter can be used by plugin that offer CSS pre-processors, to store the original
-		 * pre-processed CSS in `post_content_filtered` and then store processed CSS in `post_content`.
-		 * When used in this way, the `post_content_filtered` should be supplied as the setting value
-		 * instead of `post_content` via a the `customize_value_custom_css` filter, for example:
-		 *
-		 * <code>
-		 * add_filter( 'customize_value_custom_css', function( $value, $setting ) {
-		 *     $post = wp_get_custom_css_post( $setting->stylesheet );
-		 *     if ( $post && ! empty( $post->post_content_filtered ) ) {
-		 *         $css = $post->post_content_filtered;
-		 *     }
-		 *     return $css;
-		 * }, 10, 2 );
-		 * </code>
-		 *
-		 * @since 4.7.0
-		 * @param array  $args {
-		 *     Content post args (unslashed) for `wp_update_post()`/`wp_insert_post()`.
-		 *
-		 *     @type string $post_content          CSS.
-		 *     @type string $post_content_filtered Pre-processed CSS. Normally empty string.
-		 * }
-		 * @param string                          $css     Original CSS being updated.
-		 * @param WP_Customize_Custom_CSS_Setting $setting Custom CSS Setting.
-		 */
-		$args = apply_filters( 'customize_update_custom_css_post_content_args', $args, $css, $setting );
-		$args = wp_array_slice_assoc( $args, array( 'post_content', 'post_content_filtered' ) );
-
-		$args = array_merge(
-			$args,
-			array(
-				'post_title' => $this->stylesheet,
-				'post_name' => sanitize_title( $this->stylesheet ),
-				'post_type' => 'custom_css',
-				'post_status' => 'publish',
-			)
-		);
-
-		// Update post if it already exists, otherwise create a new one.
-		$post = wp_get_custom_css_post( $this->stylesheet );
-		if ( $post ) {
-			$args['ID'] = $post->ID;
-			$post_id = wp_update_post( wp_slash( $args ) );
-		} else {
-			$post_id = wp_insert_post( wp_slash( $args ) );
-		}
-		if ( ! $post_id ) {
+		if ( $r instanceof WP_Error ) {
 			return false;
 		}
+		$post_id = $r->ID;
 
 		// Cache post ID in theme mod for performance to avoid additional DB query.
 		if ( $this->manager->get_stylesheet() === $this->stylesheet ) {
@@ -312,114 +195,5 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting {
 		}
 
 		return $post_id;
-	}
-
-	/**
-	 * Ensure there are a balanced number of paired characters.
-	 *
-	 * This is used to check that the number of opening and closing
-	 * characters is equal.
-	 *
-	 * For instance, there should be an equal number of braces ("{", "}")
-	 * in the CSS.
-	 *
-	 * @since 4.7.0
-	 * @access private
-	 *
-	 * @param string $opening_char The opening character.
-	 * @param string $closing_char The closing character.
-	 * @param string $css The CSS input string.
-	 *
-	 * @return bool
-	 */
-	private function validate_balanced_characters( $opening_char, $closing_char, $css ) {
-		return substr_count( $css, $opening_char ) === substr_count( $css, $closing_char );
-	}
-
-	/**
-	 * Ensure there are an even number of paired characters.
-	 *
-	 * This is used to check that the number of a specific
-	 * character is even.
-	 *
-	 * For instance, there should be an even number of double quotes
-	 * in the CSS.
-	 *
-	 * @since 4.7.0
-	 * @access private
-	 *
-	 * @param string $char A character.
-	 * @param string $css The CSS input string.
-	 * @return bool Equality.
-	 */
-	private function validate_equal_characters( $char, $css ) {
-		$char_count = substr_count( $css, $char );
-		return ( 0 === $char_count % 2 );
-	}
-
-	/**
-	 * Count unclosed CSS Comments.
-	 *
-	 * Used during validation.
-	 *
-	 * @see self::validate()
-	 *
-	 * @since 4.7.0
-	 * @access private
-	 *
-	 * @param string $css The CSS input string.
-	 * @return int Count.
-	 */
-	private function validate_count_unclosed_comments( $css ) {
-		$count = 0;
-		$comments = explode( '/*', $css );
-
-		if ( ! is_array( $comments ) || ( 1 >= count( $comments ) ) ) {
-			return $count;
-		}
-
-		unset( $comments[0] ); // The first item is before the first comment.
-		foreach ( $comments as $comment ) {
-			if ( false === strpos( $comment, '*/' ) ) {
-				$count++;
-			}
-		}
-		return $count;
-	}
-
-	/**
-	 * Find "content:" within a string.
-	 *
-	 * Imbalanced/Unclosed validation errors may be caused
-	 * when a character is used in a "content:" declaration.
-	 *
-	 * This function is used to detect if this is a possible
-	 * cause of the validation error, so that if it is,
-	 * a notification may be added to the Validation Errors.
-	 *
-	 * Example:
-	 * .element::before {
-	 *   content: "(\"";
-	 * }
-	 * .element::after {
-	 *   content: "\")";
-	 * }
-	 *
-	 * Using ! empty() because strpos() may return non-boolean values
-	 * that evaluate to false. This would be problematic when
-	 * using a strict "false === strpos()" comparison.
-	 *
-	 * @since 4.7.0
-	 * @access private
-	 *
-	 * @param string $css The CSS input string.
-	 * @return bool
-	 */
-	private function is_possible_content_error( $css ) {
-		$found = preg_match( '/\bcontent\s*:/', $css );
-		if ( ! empty( $found ) ) {
-			return true;
-		}
-		return false;
 	}
 }

@@ -14,7 +14,7 @@ require_once(ABSPATH . 'wp-admin/includes/widgets.php');
 
 if ( ! current_user_can( 'edit_theme_options' ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to edit theme options on this site.' ) . '</p>',
 		403
 	);
@@ -22,6 +22,8 @@ if ( ! current_user_can( 'edit_theme_options' ) ) {
 
 $widgets_access = get_user_setting( 'widgets_access' );
 if ( isset($_GET['widgets-access']) ) {
+	check_admin_referer( 'widgets-access' );
+
 	$widgets_access = 'on' == $_GET['widgets-access'] ? 'on' : 'off';
 	set_user_setting( 'widgets_access', $widgets_access );
 }
@@ -344,24 +346,27 @@ $errors = array(
 require_once( ABSPATH . 'wp-admin/admin-header.php' ); ?>
 
 <div class="wrap">
-<h1>
+<h1 class="wp-heading-inline"><?php
+echo esc_html( $title );
+?></h1>
+
 <?php
-	echo esc_html( $title );
-	if ( current_user_can( 'customize' ) ) {
-		printf(
-			' <a class="page-title-action hide-if-no-customize" href="%1$s">%2$s</a>',
-			esc_url( add_query_arg(
-				array(
-					array( 'autofocus' => array( 'panel' => 'widgets' ) ),
-					'return' => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) )
-				),
-				admin_url( 'customize.php' )
-			) ),
-			__( 'Manage with Live Preview' )
-		);
-	}
+if ( current_user_can( 'customize' ) ) {
+	printf(
+		' <a class="page-title-action hide-if-no-customize" href="%1$s">%2$s</a>',
+		esc_url( add_query_arg(
+			array(
+				array( 'autofocus' => array( 'panel' => 'widgets' ) ),
+				'return' => urlencode( remove_query_arg( wp_removable_query_args(), wp_unslash( $_SERVER['REQUEST_URI'] ) ) )
+			),
+			admin_url( 'customize.php' )
+		) ),
+		__( 'Manage with Live Preview' )
+	);
+}
 ?>
-</h1>
+
+<hr class="wp-header-end">
 
 <?php if ( isset($_GET['message']) && isset($messages[$_GET['message']]) ) { ?>
 <div id="message" class="updated notice is-dismissible"><p><?php echo $messages[$_GET['message']]; ?></p></div>
@@ -382,7 +387,10 @@ do_action( 'widgets_admin_page' ); ?>
 <div id="widgets-left">
 	<div id="available-widgets" class="widgets-holder-wrap">
 		<div class="sidebar-name">
-			<div class="sidebar-name-arrow"><br /></div>
+			<button type="button" class="handlediv hide-if-no-js" aria-expanded="true">
+				<span class="screen-reader-text"><?php _e( 'Available Widgets' ); ?></span>
+				<span class="toggle-indicator" aria-hidden="true"></span>
+			</button>
 			<h2><?php _e( 'Available Widgets' ); ?> <span id="removing-widget"><?php _ex( 'Deactivate', 'removing-widget' ); ?> <span></span></span></h2>
 		</div>
 		<div class="widget-holder">

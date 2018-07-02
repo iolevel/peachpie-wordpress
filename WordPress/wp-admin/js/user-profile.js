@@ -161,7 +161,7 @@
 		// hide this
 		$('.user-pass2-wrap').hide();
 
-		$submitButton = $( '#submit' ).on( 'click', function () {
+		$submitButton = $( '#submit, #wp-submit' ).on( 'click', function () {
 			updateLock = false;
 		});
 
@@ -314,7 +314,7 @@
 
 		if ( passStrength.className ) {
 			$pass1.add( $pass1Text ).addClass( passStrength.className );
-			if ( 'short' === passStrength.className || 'bad' === passStrength.className ) {
+			if ( $( passStrength ).is( '.short, .bad' ) ) {
 				if ( ! $weakCheckbox.prop( 'checked' ) ) {
 					$submitButtons.prop( 'disabled', true );
 				}
@@ -328,7 +328,9 @@
 
 	$(document).ready( function() {
 		var $colorpicker, $stylesheet, user_id, current_user_id,
-			select = $( '#display_name' );
+			select       = $( '#display_name' ),
+			current_name = select.val(),
+			greeting     = $( '#wp-admin-bar-my-account' ).find( '.display-name' );
 
 		$('#pass1').val('').on( inputEvent + ' pwupdate', check_pass_strength );
 		$('#pass-strength-result').show();
@@ -370,6 +372,19 @@
 					}
 				});
 			});
+
+			/**
+			 * Replaces "Howdy, *" in the admin toolbar whenever the display name dropdown is updated for one's own profile.
+			 */
+			select.on( 'change', function() {
+				if ( user_id !== current_user_id ) {
+					return;
+				}
+
+				var display_name = $.trim( this.value ) || current_name;
+
+				greeting.text( display_name );
+			} );
 		}
 
 		$colorpicker = $( '#color-picker' );

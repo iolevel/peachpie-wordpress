@@ -71,7 +71,10 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 
 <label for="close_comments_for_old_posts">
 <input name="close_comments_for_old_posts" type="checkbox" id="close_comments_for_old_posts" value="1" <?php checked('1', get_option('close_comments_for_old_posts')); ?> />
-<?php printf( __('Automatically close comments on articles older than %s days'), '</label><label for="close_comments_days_old"><input name="close_comments_days_old" type="number" min="0" step="1" id="close_comments_days_old" value="' . esc_attr(get_option('close_comments_days_old')) . '" class="small-text" />'); ?>
+<?php printf(
+	__( 'Automatically close comments on articles older than %s days' ),
+	'</label> <label for="close_comments_days_old"><input name="close_comments_days_old" type="number" min="0" step="1" id="close_comments_days_old" value="' . esc_attr( get_option( 'close_comments_days_old' ) ) . '" class="small-text" />'
+); ?>
 </label>
 <br />
 <label for="thread_comments">
@@ -86,7 +89,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
  */
 $maxdeep = (int) apply_filters( 'thread_comments_depth_max', 10 );
 
-$thread_comments_depth = '</label><label for="thread_comments_depth"><select name="thread_comments_depth" id="thread_comments_depth">';
+$thread_comments_depth = '</label> <label for="thread_comments_depth"><select name="thread_comments_depth" id="thread_comments_depth">';
 for ( $i = 2; $i <= $maxdeep; $i++ ) {
 	$thread_comments_depth .= "<option value='" . esc_attr($i) . "'";
 	if ( get_option('thread_comments_depth') == $i ) $thread_comments_depth .= " selected='selected'";
@@ -101,14 +104,17 @@ printf( __('Enable threaded (nested) comments %s levels deep'), $thread_comments
 <label for="page_comments">
 <input name="page_comments" type="checkbox" id="page_comments" value="1" <?php checked( '1', get_option( 'page_comments' ) ); ?> />
 <?php
-$default_comments_page = '</label><label for="default_comments_page"><select name="default_comments_page" id="default_comments_page"><option value="newest"';
+$default_comments_page = '</label> <label for="default_comments_page"><select name="default_comments_page" id="default_comments_page"><option value="newest"';
 if ( 'newest' == get_option('default_comments_page') ) $default_comments_page .= ' selected="selected"';
 $default_comments_page .= '>' . __('last') . '</option><option value="oldest"';
 if ( 'oldest' == get_option('default_comments_page') ) $default_comments_page .= ' selected="selected"';
 $default_comments_page .= '>' . __('first') . '</option></select>';
-
-printf( __('Break comments into pages with %1$s top level comments per page and the %2$s page displayed by default'), '</label><label for="comments_per_page"><input name="comments_per_page" type="number" step="1" min="0" id="comments_per_page" value="' . esc_attr(get_option('comments_per_page')) . '" class="small-text" />', $default_comments_page );
-
+printf(
+	/* translators: 1: Form field control for number of top level comments per page, 2: Form field control for the 'first' or 'last' page */
+	__( 'Break comments into pages with %1$s top level comments per page and the %2$s page displayed by default' ),
+	'</label> <label for="comments_per_page"><input name="comments_per_page" type="number" step="1" min="0" id="comments_per_page" value="' . esc_attr( get_option( 'comments_per_page' ) ) . '" class="small-text" />',
+	$default_comments_page
+);
 ?></label>
 <br />
 <label for="comment_order"><?php
@@ -151,7 +157,7 @@ printf( __('Comments should be displayed with the %s comments at the top of each
 <td><fieldset><legend class="screen-reader-text"><span><?php _e('Comment Moderation'); ?></span></legend>
 <p><label for="comment_max_links"><?php printf(__('Hold a comment in the queue if it contains %s or more links. (A common characteristic of comment spam is a large number of hyperlinks.)'), '<input name="comment_max_links" type="number" step="1" min="0" id="comment_max_links" value="' . esc_attr(get_option('comment_max_links')) . '" class="small-text" />' ); ?></label></p>
 
-<p><label for="moderation_keys"><?php _e('When a comment contains any of these words in its content, name, URL, email, or IP, it will be held in the <a href="edit-comments.php?comment_status=moderated">moderation queue</a>. One word or IP per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.'); ?></label></p>
+<p><label for="moderation_keys"><?php _e('When a comment contains any of these words in its content, name, URL, email, or IP address, it will be held in the <a href="edit-comments.php?comment_status=moderated">moderation queue</a>. One word or IP address per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.'); ?></label></p>
 <p>
 <textarea name="moderation_keys" rows="10" cols="50" id="moderation_keys" class="large-text code"><?php echo esc_textarea( get_option( 'moderation_keys' ) ); ?></textarea>
 </p>
@@ -160,7 +166,7 @@ printf( __('Comments should be displayed with the %s comments at the top of each
 <tr>
 <th scope="row"><?php _e('Comment Blacklist'); ?></th>
 <td><fieldset><legend class="screen-reader-text"><span><?php _e('Comment Blacklist'); ?></span></legend>
-<p><label for="blacklist_keys"><?php _e('When a comment contains any of these words in its content, name, URL, email, or IP, it will be put in the trash. One word or IP per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.'); ?></label></p>
+<p><label for="blacklist_keys"><?php _e('When a comment contains any of these words in its content, name, URL, email, or IP address, it will be put in the trash. One word or IP address per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;.'); ?></label></p>
 <p>
 <textarea name="blacklist_keys" rows="10" cols="50" id="blacklist_keys" class="large-text code"><?php echo esc_textarea( get_option( 'blacklist_keys' ) ); ?></textarea>
 </p>

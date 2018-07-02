@@ -87,15 +87,17 @@ auth_redirect();
 if ( ! wp_next_scheduled( 'wp_scheduled_delete' ) && ! wp_installing() )
 	wp_schedule_event(time(), 'daily', 'wp_scheduled_delete');
 
+// Schedule Transient cleanup.
+if ( ! wp_next_scheduled( 'delete_expired_transients' ) && ! wp_installing() ) {
+	wp_schedule_event( time(), 'daily', 'delete_expired_transients' );
+}
+
 set_screen_options();
 
 $date_format = __( 'F j, Y' );
 $time_format = __( 'g:i a' );
 
 wp_enqueue_script( 'common' );
-
-
-
 
 /**
  * $pagenow is set in vars.php
@@ -221,8 +223,9 @@ if ( isset($plugin_page) ) {
 		 */
 		do_action( $page_hook );
 	} else {
-		if ( validate_file($plugin_page) )
-			wp_die(__('Invalid plugin page'));
+		if ( validate_file( $plugin_page ) ) {
+			wp_die( __( 'Invalid plugin page.' ) );
+		}
 
 		if ( !( file_exists(WP_PLUGIN_DIR . "/$plugin_page") && is_file(WP_PLUGIN_DIR . "/$plugin_page") ) && !( file_exists(WPMU_PLUGIN_DIR . "/$plugin_page") && is_file(WPMU_PLUGIN_DIR . "/$plugin_page") ) )
 			wp_die(sprintf(__('Cannot load %s.'), htmlentities($plugin_page)));

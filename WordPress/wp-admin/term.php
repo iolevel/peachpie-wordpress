@@ -34,7 +34,7 @@ if ( ! in_array( $taxonomy, get_taxonomies( array( 'show_ui' => true ) ) ) ||
      ! current_user_can( 'edit_term', $tag->term_id )
 ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to edit this item.' ) . '</p>',
 		403
 	);
@@ -62,7 +62,7 @@ get_current_screen()->set_screen_reader_content( array(
 	'heading_pagination' => $tax->labels->items_list_navigation,
 	'heading_list'       => $tax->labels->items_list,
 ) );
-
+wp_enqueue_script( 'admin-tags' );
 require_once( ABSPATH . 'wp-admin/admin-header.php' );
 include( ABSPATH . 'wp-admin/edit-tag-form.php' );
 include( ABSPATH . 'wp-admin/admin-footer.php' );

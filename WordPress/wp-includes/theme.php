@@ -35,7 +35,7 @@ function wp_get_themes( $args = array() ) {
 
 	$theme_directories = search_theme_directories();
 
-	if ( count( $wp_theme_directories ) > 1 ) {
+	if ( is_array( $wp_theme_directories ) && count( $wp_theme_directories ) > 1 ) {
 		// Make sure the current theme wins out, in case search_theme_directories() picks the wrong
 		// one in the case of a conflict. (Normally, last registered theme root wins.)
 		$current_theme = get_stylesheet();
@@ -353,8 +353,9 @@ function get_template_directory_uri() {
 function get_theme_roots() {
 	global $wp_theme_directories;
 
-	if ( count($wp_theme_directories) <= 1 )
+	if ( ! is_array( $wp_theme_directories ) || count( $wp_theme_directories ) <= 1 ) {
 		return '/themes';
+	}
 
 	$theme_roots = get_site_transient( 'theme_roots' );
 	if ( false === $theme_roots ) {
@@ -627,8 +628,9 @@ function get_theme_root_uri( $stylesheet_or_template = false, $theme_root = fals
 function get_raw_theme_root( $stylesheet_or_template, $skip_cache = false ) {
 	global $wp_theme_directories;
 
-	if ( count($wp_theme_directories) <= 1 )
+	if ( ! is_array( $wp_theme_directories ) || count( $wp_theme_directories ) <= 1 ) {
 		return '/themes';
+	}
 
 	$theme_root = false;
 
@@ -680,7 +682,10 @@ function switch_theme( $stylesheet ) {
 
 	$_sidebars_widgets = null;
 	if ( 'wp_ajax_customize_save' === current_action() ) {
-		$_sidebars_widgets = $wp_customize->post_value( $wp_customize->get_setting( 'old_sidebars_widgets_data' ) );
+		$old_sidebars_widgets_data_setting = $wp_customize->get_setting( 'old_sidebars_widgets_data' );
+		if ( $old_sidebars_widgets_data_setting ) {
+			$_sidebars_widgets = $wp_customize->post_value( $old_sidebars_widgets_data_setting );
+		}
 	} elseif ( is_array( $sidebars_widgets ) ) {
 		$_sidebars_widgets = $sidebars_widgets;
 	}
@@ -690,6 +695,7 @@ function switch_theme( $stylesheet ) {
 	}
 
 	$nav_menu_locations = get_theme_mod( 'nav_menu_locations' );
+	update_option( 'theme_switch_menu_locations', $nav_menu_locations );
 
 	if ( func_num_args() > 1 ) {
 		$stylesheet = func_get_arg( 1 );
@@ -729,13 +735,6 @@ function switch_theme( $stylesheet ) {
 		 */
 		if ( 'wp_ajax_customize_save' === current_action() ) {
 			remove_theme_mod( 'sidebars_widgets' );
-		}
-
-		if ( ! empty( $nav_menu_locations ) ) {
-			$nav_mods = get_theme_mod( 'nav_menu_locations' );
-			if ( empty( $nav_mods ) ) {
-				set_theme_mod( 'nav_menu_locations', $nav_menu_locations );
-			}
 		}
 	}
 
@@ -950,18 +949,18 @@ function remove_theme_mods() {
 }
 
 /**
- * Retrieves the custom header text color in HEX format.
+ * Retrieves the custom header text color in 3- or 6-digit hexadecimal form.
  *
  * @since 2.1.0
  *
- * @return string Header text color in HEX format (minus the hash symbol).
+ * @return string Header text color in 3- or 6-digit hexadecimal form (minus the hash symbol).
  */
 function get_header_textcolor() {
 	return get_theme_mod('header_textcolor', get_theme_support( 'custom-header', 'default-text-color' ) );
 }
 
 /**
- * Displays the custom header text color in HEX format (minus the hash symbol).
+ * Displays the custom header text color in 3- or 6-digit hexadecimal form (minus the hash symbol).
  *
  * @since 2.1.0
  */
@@ -1216,6 +1215,7 @@ function get_uploaded_header_images() {
 		$header_images[$header_index]['url'] =  $url;
 		$header_images[$header_index]['thumbnail_url'] = $url;
 		$header_images[$header_index]['alt_text'] = get_post_meta( $header->ID, '_wp_attachment_image_alt', true );
+		$header_images[$header_index]['attachment_parent'] = isset( $header_data['attachment_parent'] ) ? $header_data['attachment_parent'] : '';
 
 		if ( isset( $header_data['width'] ) )
 			$header_images[$header_index]['width'] = $header_data['width'];
@@ -1325,25 +1325,35 @@ function has_header_video() {
 	return (bool) get_header_video_url();
 }
 
-/* Retrieve header video URL for custom header.
+/**
+ * Retrieve header video URL for custom header.
  *
- * Uses a local video if present, or falls back to an external video. Returns false if there is no video.
+ * Uses a local video if present, or falls back to an external video.
  *
  * @since 4.7.0
  *
- * @return string|false
+ * @return string|false Header video URL or false if there is no video.
  */
 function get_header_video_url() {
 	$id = absint( get_theme_mod( 'header_video' ) );
 	$url = esc_url( get_theme_mod( 'external_header_video' ) );
 
-	if ( ! $id && ! $url ) {
-		return false;
-	}
-
 	if ( $id ) {
 		// Get the file URL from the attachment ID.
 		$url = wp_get_attachment_url( $id );
+	}
+
+	/**
+	 * Filters the header video URL.
+	 *
+	 * @since 4.7.3
+	 *
+	 * @param string $url Header video URL, if available.
+	 */
+	$url = apply_filters( 'get_header_video_url', $url );
+
+	if ( ! $id && ! $url ) {
+		return false;
 	}
 
 	return esc_url_raw( set_url_scheme( $url ) );
@@ -1381,6 +1391,12 @@ function get_header_video_settings() {
 		'height'    => absint( $header->height ),
 		'minWidth'  => 900,
 		'minHeight' => 500,
+		'l10n'      => array(
+			'pause'      => __( 'Pause' ),
+			'play'       => __( 'Play' ),
+			'pauseSpeak' => __( 'Video is paused.'),
+			'playSpeak'  => __( 'Video is playing.'),
+		),
 	);
 
 	if ( preg_match( '#^https?://(?:www\.)?(?:youtube\.com/watch|youtu\.be/)#', $video_url ) ) {
@@ -1400,7 +1416,7 @@ function get_header_video_settings() {
  * @return bool True if a custom header is set. False if not.
  */
 function has_custom_header() {
-	if ( has_header_image() || ( is_front_page() && has_header_video() ) ) {
+	if ( has_header_image() || ( has_header_video() && is_header_video_active() ) ) {
 		return true;
 	}
 
@@ -1408,15 +1424,49 @@ function has_custom_header() {
 }
 
 /**
- * Retrieve the markup for a custom header.
+ * Checks whether the custom header video is eligible to show on the current page.
  *
  * @since 4.7.0
  *
- * @return string|false The markup for a custom header on success. False if not.
+ * @return bool True if the custom header video should be shown. False if not.
+ */
+function is_header_video_active() {
+	if ( ! get_theme_support( 'custom-header', 'video' ) ) {
+		return false;
+	}
+
+	$video_active_cb = get_theme_support( 'custom-header', 'video-active-callback' );
+
+	if ( empty( $video_active_cb ) || ! is_callable( $video_active_cb ) ) {
+		$show_video = true;
+	} else {
+		$show_video = call_user_func( $video_active_cb );
+	}
+
+	/**
+	 * Modify whether the custom header video is eligible to show on the current page.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param bool $show_video Whether the custom header video should be shown. Returns the value
+	 *                         of the theme setting for the `custom-header`'s `video-active-callback`.
+	 *                         If no callback is set, the default value is that of `is_front_page()`.
+	 */
+	return apply_filters( 'is_header_video_active', $show_video );
+}
+
+/**
+ * Retrieve the markup for a custom header.
+ *
+ * The container div will always be returned in the Customizer preview.
+ *
+ * @since 4.7.0
+ *
+ * @return string The markup for a custom header on success.
  */
 function get_custom_header_markup() {
-	if ( ! has_custom_header() ) {
-		return false;
+	if ( ! has_custom_header() && ! is_customize_preview() ) {
+		return '';
 	}
 
 	return sprintf(
@@ -1428,15 +1478,19 @@ function get_custom_header_markup() {
 /**
  * Print the markup for a custom header.
  *
+ * A container div will always be printed in the Customizer preview.
+ *
  * @since 4.7.0
  */
 function the_custom_header_markup() {
-	if ( ! $custom_header = get_custom_header_markup() ) {
+	$custom_header = get_custom_header_markup();
+	if ( empty( $custom_header ) ) {
 		return;
 	}
+
 	echo $custom_header;
 
-	if ( has_header_video() && is_front_page() ) {
+	if ( is_header_video_active() && ( has_header_video() || is_customize_preview() ) ) {
 		wp_enqueue_script( 'wp-custom-header' );
 		wp_localize_script( 'wp-custom-header', '_wpCustomHeaderSettings', get_header_video_settings() );
 	}
@@ -1486,7 +1540,6 @@ function background_color() {
  * Default custom background callback.
  *
  * @since 3.0.0
- * @access protected
  */
 function _custom_background_cb() {
 	// $background is the saved custom image, or the default image.
@@ -1510,7 +1563,7 @@ function _custom_background_cb() {
 	$style = $color ? "background-color: #$color;" : '';
 
 	if ( $background ) {
-		$image = " background-image: url(" . wp_json_encode( $background ) . ");";
+		$image = ' background-image: url("' . esc_url_raw( $background ) . '");';
 
 		// Background Position.
 		$position_x = get_theme_mod( 'background_position_x', get_theme_support( 'custom-background', 'default-position-x' ) );
@@ -1566,7 +1619,6 @@ body.custom-background { <?php echo trim( $style ); ?> }
  * Render the Custom CSS style element.
  *
  * @since 4.7.0
- * @access public
  */
 function wp_custom_css_cb() {
 	$styles = wp_get_custom_css();
@@ -1581,7 +1633,6 @@ function wp_custom_css_cb() {
  * Fetch the `custom_css` post for a given theme.
  *
  * @since 4.7.0
- * @access public
  *
  * @param string $stylesheet Optional. A theme object stylesheet name. Defaults to the current theme.
  * @return WP_Post|null The custom_css post or null if none exists.
@@ -1595,26 +1646,31 @@ function wp_get_custom_css_post( $stylesheet = '' ) {
 		'post_type'              => 'custom_css',
 		'post_status'            => get_post_stati(),
 		'name'                   => sanitize_title( $stylesheet ),
-		'number'                 => 1,
+		'posts_per_page'         => 1,
 		'no_found_rows'          => true,
 		'cache_results'          => true,
 		'update_post_meta_cache' => false,
-		'update_term_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'lazy_load_term_meta'    => false,
 	);
 
 	$post = null;
 	if ( get_stylesheet() === $stylesheet ) {
 		$post_id = get_theme_mod( 'custom_css_post_id' );
-		if ( ! $post_id || ! get_post( $post_id ) ) {
+
+		if ( $post_id > 0 && get_post( $post_id ) ) {
+			$post = get_post( $post_id );
+		}
+
+		// `-1` indicates no post exists; no query necessary.
+		if ( ! $post && -1 !== $post_id ) {
 			$query = new WP_Query( $custom_css_query_vars );
 			$post = $query->post;
 			/*
-			 * Cache the lookup. See WP_Customize_Custom_CSS_Setting::update().
+			 * Cache the lookup. See wp_update_custom_css_post().
 			 * @todo This should get cleared if a custom_css post is added/removed.
 			 */
 			set_theme_mod( 'custom_css_post_id', $post ? $post->ID : -1 );
-		} elseif ( $post_id > 0 ) {
-			$post = get_post( $post_id );
 		}
 	} else {
 		$query = new WP_Query( $custom_css_query_vars );
@@ -1628,7 +1684,6 @@ function wp_get_custom_css_post( $stylesheet = '' ) {
  * Fetch the saved Custom CSS content for rendering.
  *
  * @since 4.7.0
- * @access public
  *
  * @param string $stylesheet Optional. A theme object stylesheet name. Defaults to the current theme.
  * @return string The Custom CSS Post content.
@@ -1646,7 +1701,7 @@ function wp_get_custom_css( $stylesheet = '' ) {
 	}
 
 	/**
-	 * Modify the Custom CSS Output into the <head>.
+	 * Filters the Custom CSS Output into the <head>.
 	 *
 	 * @since 4.7.0
 	 *
@@ -1656,6 +1711,103 @@ function wp_get_custom_css( $stylesheet = '' ) {
 	$css = apply_filters( 'wp_get_custom_css', $css, $stylesheet );
 
 	return $css;
+}
+
+/**
+ * Update the `custom_css` post for a given theme.
+ *
+ * Inserts a `custom_css` post when one doesn't yet exist.
+ *
+ * @since 4.7.0
+ *
+ * @param string $css CSS, stored in `post_content`.
+ * @param array  $args {
+ *     Args.
+ *
+ *     @type string $preprocessed Pre-processed CSS, stored in `post_content_filtered`. Normally empty string. Optional.
+ *     @type string $stylesheet   Stylesheet (child theme) to update. Optional, defaults to current theme/stylesheet.
+ * }
+ * @return WP_Post|WP_Error Post on success, error on failure.
+ */
+function wp_update_custom_css_post( $css, $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'preprocessed' => '',
+		'stylesheet' => get_stylesheet(),
+	) );
+
+	$data = array(
+		'css' => $css,
+		'preprocessed' => $args['preprocessed'],
+	);
+
+	/**
+	 * Filters the `css` (`post_content`) and `preprocessed` (`post_content_filtered`) args for a `custom_css` post being updated.
+	 *
+	 * This filter can be used by plugin that offer CSS pre-processors, to store the original
+	 * pre-processed CSS in `post_content_filtered` and then store processed CSS in `post_content`.
+	 * When used in this way, the `post_content_filtered` should be supplied as the setting value
+	 * instead of `post_content` via a the `customize_value_custom_css` filter, for example:
+	 *
+	 * <code>
+	 * add_filter( 'customize_value_custom_css', function( $value, $setting ) {
+	 *     $post = wp_get_custom_css_post( $setting->stylesheet );
+	 *     if ( $post && ! empty( $post->post_content_filtered ) ) {
+	 *         $css = $post->post_content_filtered;
+	 *     }
+	 *     return $css;
+	 * }, 10, 2 );
+	 * </code>
+	 *
+	 * @since 4.7.0
+	 * @param array $data {
+	 *     Custom CSS data.
+	 *
+	 *     @type string $css          CSS stored in `post_content`.
+	 *     @type string $preprocessed Pre-processed CSS stored in `post_content_filtered`. Normally empty string.
+	 * }
+	 * @param array $args {
+	 *     The args passed into `wp_update_custom_css_post()` merged with defaults.
+	 *
+	 *     @type string $css          The original CSS passed in to be updated.
+	 *     @type string $preprocessed The original preprocessed CSS passed in to be updated.
+	 *     @type string $stylesheet   The stylesheet (theme) being updated.
+	 * }
+	 */
+	$data = apply_filters( 'update_custom_css_data', $data, array_merge( $args, compact( 'css' ) ) );
+
+	$post_data = array(
+		'post_title' => $args['stylesheet'],
+		'post_name' => sanitize_title( $args['stylesheet'] ),
+		'post_type' => 'custom_css',
+		'post_status' => 'publish',
+		'post_content' => $data['css'],
+		'post_content_filtered' => $data['preprocessed'],
+	);
+
+	// Update post if it already exists, otherwise create a new one.
+	$post = wp_get_custom_css_post( $args['stylesheet'] );
+	if ( $post ) {
+		$post_data['ID'] = $post->ID;
+		$r = wp_update_post( wp_slash( $post_data ), true );
+	} else {
+		$r = wp_insert_post( wp_slash( $post_data ), true );
+
+		if ( ! is_wp_error( $r ) ) {
+			if ( get_stylesheet() === $args['stylesheet'] ) {
+				set_theme_mod( 'custom_css_post_id', $r );
+			}
+
+			// Trigger creation of a revision. This should be removed once #30854 is resolved.
+			if ( 0 === count( wp_get_post_revisions( $r ) ) ) {
+				wp_save_post_revision( $r );
+			}
+		}
+	}
+
+	if ( is_wp_error( $r ) ) {
+		return $r;
+	}
+	return get_post( $r );
 }
 
 /**
@@ -1780,33 +1932,60 @@ function get_editor_stylesheets() {
  */
 function get_theme_starter_content() {
 	$theme_support = get_theme_support( 'starter-content' );
-	if ( ! empty( $theme_support ) ) {
+	if ( is_array( $theme_support ) && ! empty( $theme_support[0] ) && is_array( $theme_support[0] ) ) {
 		$config = $theme_support[0];
 	} else {
 		$config = array();
 	}
 
-	$core_content = array (
+	$core_content = array(
 		'widgets' => array(
-			'text_business_info' => array ( 'text', array (
-				'title' => __( 'Find Us' ),
-				'text' => join( '', array (
-					'<p><strong>' . __( 'Address' ) . '</strong><br />',
-					__( '123 Main Street' ) . '<br />' . __( 'New York, NY 10001' ) . '</p>',
-					'<p><strong>' . __( 'Hours' ) . '</strong><br />',
-					__( 'Monday&mdash;Friday: 9:00AM&ndash;5:00PM' ) . '<br />' . __( 'Saturday &amp; Sunday: 11:00AM&ndash;3:00PM' ) . '</p>'
+			'text_business_info' => array( 'text', array(
+				'title' => _x( 'Find Us', 'Theme starter content' ),
+				'text' => join( '', array(
+					'<strong>' . _x( 'Address', 'Theme starter content' ) . "</strong>\n",
+					_x( '123 Main Street', 'Theme starter content' ) . "\n" . _x( 'New York, NY 10001', 'Theme starter content' ) . "\n\n",
+					'<strong>' . _x( 'Hours', 'Theme starter content' ) . "</strong>\n",
+					_x( 'Monday&mdash;Friday: 9:00AM&ndash;5:00PM', 'Theme starter content' ) . "\n" . _x( 'Saturday &amp; Sunday: 11:00AM&ndash;3:00PM', 'Theme starter content' )
 				) ),
+				'filter' => true,
+				'visual' => true,
 			) ),
-			'search' => array ( 'search', array (
-				'title' => __( 'Site Search' ),
+			'text_about' => array( 'text', array(
+				'title' => _x( 'About This Site', 'Theme starter content' ),
+				'text' => _x( 'This may be a good place to introduce yourself and your site or include some credits.', 'Theme starter content' ),
+				'filter' => true,
+				'visual' => true,
 			) ),
-			'text_credits' => array ( 'text', array (
-				'title' => __( 'Site Credits' ),
-				'text' => sprintf( __( 'This site was created on %s' ), get_date_from_gmt( current_time( 'mysql', 1 ), 'c' ) ),
+			'archives' => array( 'archives', array(
+				'title' => _x( 'Archives', 'Theme starter content' ),
+			) ),
+			'calendar' => array( 'calendar', array(
+				'title' => _x( 'Calendar', 'Theme starter content' ),
+			) ),
+			'categories' => array( 'categories', array(
+				'title' => _x( 'Categories', 'Theme starter content' ),
+			) ),
+			'meta' => array( 'meta', array(
+				'title' => _x( 'Meta', 'Theme starter content' ),
+			) ),
+			'recent-comments' => array( 'recent-comments', array(
+				'title' => _x( 'Recent Comments', 'Theme starter content' ),
+			) ),
+			'recent-posts' => array( 'recent-posts', array(
+				'title' => _x( 'Recent Posts', 'Theme starter content' ),
+			) ),
+			'search' => array( 'search', array(
+				'title' => _x( 'Search', 'Theme starter content' ),
 			) ),
 		),
-		'nav_menus' => array (
-			'page_home' => array(
+		'nav_menus' => array(
+			'link_home' => array(
+				'type' => 'custom',
+				'title' => _x( 'Home', 'Theme starter content' ),
+				'url' => home_url( '/' ),
+			),
+			'page_home' => array( // Deprecated in favor of link_home.
 				'type' => 'post_type',
 				'object' => 'page',
 				'object_id' => '{{home}}',
@@ -1814,65 +1993,94 @@ function get_theme_starter_content() {
 			'page_about' => array(
 				'type' => 'post_type',
 				'object' => 'page',
-				'object_id' => '{{about-us}}',
+				'object_id' => '{{about}}',
 			),
 			'page_blog' => array(
 				'type' => 'post_type',
 				'object' => 'page',
 				'object_id' => '{{blog}}',
 			),
+			'page_news' => array(
+				'type' => 'post_type',
+				'object' => 'page',
+				'object_id' => '{{news}}',
+			),
 			'page_contact' => array(
 				'type' => 'post_type',
 				'object' => 'page',
-				'object_id' => '{{contact-us}}',
+				'object_id' => '{{contact}}',
 			),
 
-			'link_yelp' => array(
-				'title' => __( 'Yelp' ),
-				'url' => 'https://www.yelp.com',
+			'link_email' => array(
+				'title' => _x( 'Email', 'Theme starter content' ),
+				'url' => 'mailto:wordpress@example.com',
 			),
 			'link_facebook' => array(
-				'title' => __( 'Facebook' ),
+				'title' => _x( 'Facebook', 'Theme starter content' ),
 				'url' => 'https://www.facebook.com/wordpress',
 			),
-			'link_twitter' => array(
-				'title' => __( 'Twitter' ),
-				'url' => 'https://twitter.com/wordpress',
+			'link_foursquare' => array(
+				'title' => _x( 'Foursquare', 'Theme starter content' ),
+				'url' => 'https://foursquare.com/',
+			),
+			'link_github' => array(
+				'title' => _x( 'GitHub', 'Theme starter content' ),
+				'url' => 'https://github.com/wordpress/',
 			),
 			'link_instagram' => array(
-				'title' => __( 'Instagram' ),
+				'title' => _x( 'Instagram', 'Theme starter content' ),
 				'url' => 'https://www.instagram.com/explore/tags/wordcamp/',
 			),
-			'link_email' => array(
-				'title' => __( 'Email' ),
-				'url' => 'mailto:wordpress@example.com',
+			'link_linkedin' => array(
+				'title' => _x( 'LinkedIn', 'Theme starter content' ),
+				'url' => 'https://www.linkedin.com/company/1089783',
+			),
+			'link_pinterest' => array(
+				'title' => _x( 'Pinterest', 'Theme starter content' ),
+				'url' => 'https://www.pinterest.com/',
+			),
+			'link_twitter' => array(
+				'title' => _x( 'Twitter', 'Theme starter content' ),
+				'url' => 'https://twitter.com/wordpress',
+			),
+			'link_yelp' => array(
+				'title' => _x( 'Yelp', 'Theme starter content' ),
+				'url' => 'https://www.yelp.com',
+			),
+			'link_youtube' => array(
+				'title' => _x( 'YouTube', 'Theme starter content' ),
+				'url' => 'https://www.youtube.com/channel/UCdof4Ju7amm1chz1gi1T2ZA',
 			),
 		),
 		'posts' => array(
 			'home' => array(
 				'post_type' => 'page',
-				'post_title' => __( 'Homepage' ),
-				'post_content' => __( 'Welcome home.' ),
+				'post_title' => _x( 'Home', 'Theme starter content' ),
+				'post_content' => _x( 'Welcome to your site! This is your homepage, which is what most visitors will see when they come to your site for the first time.', 'Theme starter content' ),
 			),
-			'about-us' => array(
+			'about' => array(
 				'post_type' => 'page',
-				'post_title' => __( 'About Us' ),
-				'post_content' => __( 'More than you ever wanted to know.' ),
+				'post_title' => _x( 'About', 'Theme starter content' ),
+				'post_content' => _x( 'You might be an artist who would like to introduce yourself and your work here or maybe you&rsquo;re a business with a mission to describe.', 'Theme starter content' ),
 			),
-			'contact-us' => array(
+			'contact' => array(
 				'post_type' => 'page',
-				'post_title' => __( 'Contact Us' ),
-				'post_content' => __( 'Call us at 999-999-9999.' ),
+				'post_title' => _x( 'Contact', 'Theme starter content' ),
+				'post_content' => _x( 'This is a page with some basic contact information, such as an address and phone number. You might also try a plugin to add a contact form.', 'Theme starter content' ),
 			),
 			'blog' => array(
 				'post_type' => 'page',
-				'post_title' => __( 'Blog' ),
+				'post_title' => _x( 'Blog', 'Theme starter content' ),
+			),
+			'news' => array(
+				'post_type' => 'page',
+				'post_title' => _x( 'News', 'Theme starter content' ),
 			),
 
 			'homepage-section' => array(
 				'post_type' => 'page',
-				'post_title' => __( 'A homepage section' ),
-				'post_content' => __( 'This is an example of a homepage section, which are managed in theme options.' ),
+				'post_title' => _x( 'A homepage section', 'Theme starter content' ),
+				'post_content' => _x( 'This is an example of a homepage section. Homepage sections can be any page other than the homepage itself, including the page that shows your latest blog posts.', 'Theme starter content' ),
 			),
 		),
 	);
@@ -1881,48 +2089,97 @@ function get_theme_starter_content() {
 
 	foreach ( $config as $type => $args ) {
 		switch( $type ) {
-			// Use options and theme_mods as-is
+			// Use options and theme_mods as-is.
 			case 'options' :
 			case 'theme_mods' :
 				$content[ $type ] = $config[ $type ];
 				break;
 
-			// Widgets are an extra level down due to groupings
+			// Widgets are grouped into sidebars.
 			case 'widgets' :
-				foreach ( $config[ $type ] as $group => $items ) {
-					foreach ( $items as $id ) {
-						if ( ! empty( $core_content[ $type ] ) && ! empty( $core_content[ $type ][ $id ] ) ) {
-							$content[ $type ][ $group ][ $id ] = $core_content[ $type ][ $id ];
+				foreach ( $config[ $type ] as $sidebar_id => $widgets ) {
+					foreach ( $widgets as $id => $widget ) {
+						if ( is_array( $widget ) ) {
+
+							// Item extends core content.
+							if ( ! empty( $core_content[ $type ][ $id ] ) ) {
+								$widget = array(
+									$core_content[ $type ][ $id ][0],
+									array_merge( $core_content[ $type ][ $id ][1], $widget ),
+								);
+							}
+
+							$content[ $type ][ $sidebar_id ][] = $widget;
+						} elseif ( is_string( $widget ) && ! empty( $core_content[ $type ] ) && ! empty( $core_content[ $type ][ $widget ] ) ) {
+							$content[ $type ][ $sidebar_id ][] = $core_content[ $type ][ $widget ];
 						}
 					}
 				}
 				break;
 
-			// And nav menus are yet another level down
+			// And nav menu items are grouped into nav menus.
 			case 'nav_menus' :
-				foreach ( $config[ $type ] as $group => $args2 ) {
-					// Menu groups need a name
-					if ( empty( $args['name'] ) ) {
-						$args2['name'] = $group;
+				foreach ( $config[ $type ] as $nav_menu_location => $nav_menu ) {
+
+					// Ensure nav menus get a name.
+					if ( empty( $nav_menu['name'] ) ) {
+						$nav_menu['name'] = $nav_menu_location;
 					}
 
-					$content[ $type ][ $group ]['name'] = $args2['name'];
+					$content[ $type ][ $nav_menu_location ]['name'] = $nav_menu['name'];
 
-					// Do we need to check if this is empty?
-					foreach ( $args2['items'] as $id ) {
-						if ( ! empty( $core_content[ $type ] ) && ! empty( $core_content[ $type ][ $id ] ) ) {
-							$content[ $type ][ $group ]['items'][ $id ] = $core_content[ $type ][ $id ];
+					foreach ( $nav_menu['items'] as $id => $nav_menu_item ) {
+						if ( is_array( $nav_menu_item ) ) {
+
+							// Item extends core content.
+							if ( ! empty( $core_content[ $type ][ $id ] ) ) {
+								$nav_menu_item = array_merge( $core_content[ $type ][ $id ], $nav_menu_item );
+							}
+
+							$content[ $type ][ $nav_menu_location ]['items'][] = $nav_menu_item;
+						} elseif ( is_string( $nav_menu_item ) && ! empty( $core_content[ $type ] ) && ! empty( $core_content[ $type ][ $nav_menu_item ] ) ) {
+							$content[ $type ][ $nav_menu_location ]['items'][] = $core_content[ $type ][ $nav_menu_item ];
 						}
 					}
 				}
 				break;
 
+			// Attachments are posts but have special treatment.
+			case 'attachments' :
+				foreach ( $config[ $type ] as $id => $item ) {
+					if ( ! empty( $item['file'] ) ) {
+						$content[ $type ][ $id ] = $item;
+					}
+				}
+				break;
 
-			// Everything else should map at the next level
-			default :
-				foreach( $config[ $type ] as $id ) {
-					if ( ! empty( $core_content[ $type ] ) && ! empty( $core_content[ $type ][ $id ] ) ) {
-						$content[ $type ][ $id ] = $core_content[ $type ][ $id ];
+			// All that's left now are posts (besides attachments). Not a default case for the sake of clarity and future work.
+			case 'posts' :
+				foreach ( $config[ $type ] as $id => $item ) {
+					if ( is_array( $item ) ) {
+
+						// Item extends core content.
+						if ( ! empty( $core_content[ $type ][ $id ] ) ) {
+							$item = array_merge( $core_content[ $type ][ $id ], $item );
+						}
+
+						// Enforce a subset of fields.
+						$content[ $type ][ $id ] = wp_array_slice_assoc(
+							$item,
+							array(
+								'post_type',
+								'post_title',
+								'post_excerpt',
+								'post_name',
+								'post_content',
+								'menu_order',
+								'comment_status',
+								'thumbnail',
+								'template',
+							)
+						);
+					} elseif ( is_string( $item ) && ! empty( $core_content[ $type ][ $item ] ) ) {
+						$content[ $type ][ $item ] = $core_content[ $type ][ $item ];
 					}
 				}
 				break;
@@ -2052,6 +2309,7 @@ function add_theme_support( $feature ) {
 				'admin-head-callback' => '',
 				'admin-preview-callback' => '',
 				'video' => false,
+				'video-active-callback' => 'is_front_page',
 			);
 
 			$jit = isset( $args[0]['__jit'] );
@@ -2313,10 +2571,13 @@ function _remove_theme_support( $feature ) {
 			if ( ! did_action( 'wp_loaded' ) )
 				break;
 			$support = get_theme_support( 'custom-header' );
-			if ( $support[0]['wp-head-callback'] )
+			if ( isset( $support[0]['wp-head-callback'] ) ) {
 				remove_action( 'wp_head', $support[0]['wp-head-callback'] );
-			remove_action( 'admin_menu', array( $GLOBALS['custom_image_header'], 'init' ) );
-			unset( $GLOBALS['custom_image_header'] );
+			}
+			if ( isset( $GLOBALS['custom_image_header'] ) ) {
+				remove_action( 'admin_menu', array( $GLOBALS['custom_image_header'], 'init' ) );
+				unset( $GLOBALS['custom_image_header'] );
+			}
 			break;
 
 		case 'custom-background' :
@@ -2464,8 +2725,9 @@ function check_theme_switched() {
 	if ( $stylesheet = get_option( 'theme_switched' ) ) {
 		$old_theme = wp_get_theme( $stylesheet );
 
-		// Prevent retrieve_widgets() from running since Customizer already called it up front
+		// Prevent widget & menu mapping from running since Customizer already called it up front
 		if ( get_option( 'theme_switched_via_customizer' ) ) {
+			remove_action( 'after_switch_theme', '_wp_menus_changed' );
 			remove_action( 'after_switch_theme', '_wp_sidebars_changed' );
 			update_option( 'theme_switched_via_customizer', false );
 		}
@@ -2487,7 +2749,7 @@ function check_theme_switched() {
 			do_action( 'after_switch_theme', $old_theme->get( 'Name' ), $old_theme );
 		} else {
 			/** This action is documented in wp-includes/theme.php */
-			do_action( 'after_switch_theme', $stylesheet );
+			do_action( 'after_switch_theme', $stylesheet, $old_theme );
 		}
 		flush_rewrite_rules();
 
@@ -2528,15 +2790,17 @@ function _wp_customize_include() {
 	 * called before wp_magic_quotes() gets called. Besides this fact, none of
 	 * the values should contain any characters needing slashes anyway.
 	 */
-	$keys = array( 'changeset_uuid', 'customize_changeset_uuid', 'customize_theme', 'theme', 'customize_messenger_channel' );
+	$keys = array( 'changeset_uuid', 'customize_changeset_uuid', 'customize_theme', 'theme', 'customize_messenger_channel', 'customize_autosaved' );
 	$input_vars = array_merge(
 		wp_array_slice_assoc( $_GET, $keys ),
 		wp_array_slice_assoc( $_POST, $keys )
 	);
 
 	$theme = null;
-	$changeset_uuid = null;
+	$changeset_uuid = false; // Value false indicates UUID should be determined after_setup_theme to either re-use existing saved changeset or else generate a new UUID if none exists.
 	$messenger_channel = null;
+	$autosaved = null;
+	$branching = false; // Set initially fo false since defaults to true for back-compat; can be overridden via the customize_changeset_branching filter.
 
 	if ( $is_customize_admin_page && isset( $input_vars['changeset_uuid'] ) ) {
 		$changeset_uuid = sanitize_key( $input_vars['changeset_uuid'] );
@@ -2550,16 +2814,43 @@ function _wp_customize_include() {
 	} elseif ( isset( $input_vars['customize_theme'] ) ) {
 		$theme = $input_vars['customize_theme'];
 	}
+
+	if ( ! empty( $input_vars['customize_autosaved'] ) ) {
+		$autosaved = true;
+	}
+
 	if ( isset( $input_vars['customize_messenger_channel'] ) ) {
 		$messenger_channel = sanitize_key( $input_vars['customize_messenger_channel'] );
 	}
 
+	/*
+	 * Note that settings must be previewed even outside the customizer preview
+	 * and also in the customizer pane itself. This is to enable loading an existing
+	 * changeset into the customizer. Previewing the settings only has to be prevented
+	 * here in the case of a customize_save action because this will cause WP to think
+	 * there is nothing changed that needs to be saved.
+	 */
+	$is_customize_save_action = (
+		wp_doing_ajax()
+		&&
+		isset( $_REQUEST['action'] )
+		&&
+		'customize_save' === wp_unslash( $_REQUEST['action'] )
+	);
+	$settings_previewed = ! $is_customize_save_action;
+
 	require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-	$GLOBALS['wp_customize'] = new WP_Customize_Manager( compact( 'changeset_uuid', 'theme', 'messenger_channel' ) );
+	$GLOBALS['wp_customize'] = new WP_Customize_Manager( compact( 'changeset_uuid', 'theme', 'messenger_channel', 'settings_previewed', 'autosaved', 'branching' ) );
 }
 
 /**
- * Publish a snapshot's changes.
+ * Publishes a snapshot's changes.
+ *
+ * @since 4.7.0
+ * @access private
+ *
+ * @global wpdb                 $wpdb         WordPress database abstraction object.
+ * @global WP_Customize_Manager $wp_customize Customizer instance.
  *
  * @param string  $new_status     New post status.
  * @param string  $old_status     Old post status.
@@ -2581,7 +2872,10 @@ function _wp_customize_publish_changeset( $new_status, $old_status, $changeset_p
 
 	if ( empty( $wp_customize ) ) {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-		$wp_customize = new WP_Customize_Manager( array( 'changeset_uuid' => $changeset_post->post_name ) );
+		$wp_customize = new WP_Customize_Manager( array(
+			'changeset_uuid' => $changeset_post->post_name,
+			'settings_previewed' => false,
+		) );
 	}
 
 	if ( ! did_action( 'customize_register' ) ) {
@@ -2617,47 +2911,7 @@ function _wp_customize_publish_changeset( $new_status, $old_status, $changeset_p
 	 * and thus garbage collected.
 	 */
 	if ( ! wp_revisions_enabled( $changeset_post ) ) {
-		$post = $changeset_post;
-		$post_id = $changeset_post->ID;
-
-		/*
-		 * The following re-formulates the logic from wp_trash_post() as done in
-		 * wp_publish_post(). The reason for bypassing wp_trash_post() is that it
-		 * will mutate the the post_content and the post_name when they should be
-		 * untouched.
-		 */
-		if ( ! EMPTY_TRASH_DAYS ) {
-			wp_delete_post( $post_id, true );
-		} else {
-			/** This action is documented in wp-includes/post.php */
-			do_action( 'wp_trash_post', $post_id );
-
-			add_post_meta( $post_id, '_wp_trash_meta_status', $post->post_status );
-			add_post_meta( $post_id, '_wp_trash_meta_time', time() );
-
-			$old_status = $post->post_status;
-			$new_status = 'trash';
-			$wpdb->update( $wpdb->posts, array( 'post_status' => $new_status ), array( 'ID' => $post->ID ) );
-			clean_post_cache( $post->ID );
-
-			$post->post_status = $new_status;
-			wp_transition_post_status( $new_status, $old_status, $post );
-
-			/** This action is documented in wp-includes/post.php */
-			do_action( 'edit_post', $post->ID, $post );
-
-			/** This action is documented in wp-includes/post.php */
-			do_action( "save_post_{$post->post_type}", $post->ID, $post, true );
-
-			/** This action is documented in wp-includes/post.php */
-			do_action( 'save_post', $post->ID, $post, true );
-
-			/** This action is documented in wp-includes/post.php */
-			do_action( 'wp_insert_post', $post->ID, $post, true );
-
-			/** This action is documented in wp-includes/post.php */
-			do_action( 'trashed_post', $post_id );
-		}
+		$wp_customize->trash_changeset_post( $changeset_post->ID );
 	}
 }
 
@@ -2796,4 +3050,95 @@ function is_customize_preview() {
 	global $wp_customize;
 
 	return ( $wp_customize instanceof WP_Customize_Manager ) && $wp_customize->is_preview();
+}
+
+/**
+ * Make sure that auto-draft posts get their post_date bumped or status changed to draft to prevent premature garbage-collection.
+ *
+ * When a changeset is updated but remains an auto-draft, ensure the post_date
+ * for the auto-draft posts remains the same so that it will be
+ * garbage-collected at the same time by `wp_delete_auto_drafts()`. Otherwise,
+ * if the changeset is updated to be a draft then update the posts
+ * to have a far-future post_date so that they will never be garbage collected
+ * unless the changeset post itself is deleted.
+ *
+ * When a changeset is updated to be a persistent draft or to be scheduled for
+ * publishing, then transition any dependent auto-drafts to a draft status so
+ * that they likewise will not be garbage-collected but also so that they can
+ * be edited in the admin before publishing since there is not yet a post/page
+ * editing flow in the Customizer. See #39752.
+ *
+ * @link https://core.trac.wordpress.org/ticket/39752
+ *
+ * @since 4.8.0
+ * @access private
+ * @see wp_delete_auto_drafts()
+ *
+ * @param string   $new_status Transition to this post status.
+ * @param string   $old_status Previous post status.
+ * @param \WP_Post $post       Post data.
+ * @global wpdb $wpdb
+ */
+function _wp_keep_alive_customize_changeset_dependent_auto_drafts( $new_status, $old_status, $post ) {
+	global $wpdb;
+	unset( $old_status );
+
+	// Short-circuit if not a changeset or if the changeset was published.
+	if ( 'customize_changeset' !== $post->post_type || 'publish' === $new_status ) {
+		return;
+	}
+
+	$data = json_decode( $post->post_content, true );
+	if ( empty( $data['nav_menus_created_posts']['value'] ) ) {
+		return;
+	}
+
+	/*
+	 * Actually, in lieu of keeping alive, trash any customization drafts here if the changeset itself is
+	 * getting trashed. This is needed because when a changeset transitions to a draft, then any of the
+	 * dependent auto-draft post/page stubs will also get transitioned to customization drafts which
+	 * are then visible in the WP Admin. We cannot wait for the deletion of the changeset in which
+	 * _wp_delete_customize_changeset_dependent_auto_drafts() will be called, since they need to be
+	 * trashed to remove from visibility immediately.
+	 */
+	if ( 'trash' === $new_status ) {
+		foreach ( $data['nav_menus_created_posts']['value'] as $post_id ) {
+			if ( ! empty( $post_id ) && 'draft' === get_post_status( $post_id ) ) {
+				wp_trash_post( $post_id );
+			}
+		}
+		return;
+	}
+
+	$post_args = array();
+	if ( 'auto-draft' === $new_status ) {
+		/*
+		 * Keep the post date for the post matching the changeset
+		 * so that it will not be garbage-collected before the changeset.
+		 */
+		$post_args['post_date'] = $post->post_date; // Note wp_delete_auto_drafts() only looks at this date.
+	} else {
+		/*
+		 * Since the changeset no longer has an auto-draft (and it is not published)
+		 * it is now a persistent changeset, a long-lived draft, and so any
+		 * associated auto-draft posts should likewise transition into having a draft
+		 * status. These drafts will be treated differently than regular drafts in
+		 * that they will be tied to the given changeset. The publish metabox is
+		 * replaced with a notice about how the post is part of a set of customized changes
+		 * which will be published when the changeset is published.
+		 */
+		$post_args['post_status'] = 'draft';
+	}
+
+	foreach ( $data['nav_menus_created_posts']['value'] as $post_id ) {
+		if ( empty( $post_id ) || 'auto-draft' !== get_post_status( $post_id ) ) {
+			continue;
+		}
+		$wpdb->update(
+			$wpdb->posts,
+			$post_args,
+			array( 'ID' => $post_id )
+		);
+		clean_post_cache( $post_id );
+	}
 }

@@ -79,9 +79,9 @@ $document.ready(function(){columns.init();});
 validateForm = function( form ) {
 	return !$( form )
 		.find( '.form-required' )
-		.filter( function() { return $( 'input:visible', this ).val() === ''; } )
+		.filter( function() { return $( ':input:visible', this ).val() === ''; } )
 		.addClass( 'form-invalid' )
-		.find( 'input:visible' )
+		.find( ':input:visible' )
 		.change( function() { $( this ).closest( '.form-invalid' ).removeClass( 'form-invalid' ); } )
 		.length;
 };
@@ -174,6 +174,129 @@ $('.contextual-help-tabs').delegate('a', 'click', function(e) {
 	$('.help-tab-content').not( panel ).removeClass('active').hide();
 	panel.addClass('active').show();
 });
+
+/**
+ * Update custom permalink structure via buttons.
+ */
+
+var permalinkStructureFocused = false,
+    $permalinkStructure       = $( '#permalink_structure' ),
+    $permalinkStructureInputs = $( '.permalink-structure input:radio' ),
+    $permalinkCustomSelection = $( '#custom_selection' ),
+    $availableStructureTags   = $( '.form-table.permalink-structure .available-structure-tags button' );
+
+// Change permalink structure input when selecting one of the common structures.
+$permalinkStructureInputs.on( 'change', function() {
+	if ( 'custom' === this.value ) {
+		return;
+	}
+
+	$permalinkStructure.val( this.value );
+
+	// Update button states after selection.
+	$availableStructureTags.each( function() {
+		changeStructureTagButtonState( $( this ) );
+	} );
+} );
+
+$permalinkStructure.on( 'click input', function() {
+	$permalinkCustomSelection.prop( 'checked', true );
+} );
+
+// Check if the permalink structure input field has had focus at least once.
+$permalinkStructure.on( 'focus', function( event ) {
+	permalinkStructureFocused = true;
+	$( this ).off( event );
+} );
+
+/**
+ * Enables or disables a structure tag button depending on its usage.
+ *
+ * If the structure is already used in the custom permalink structure,
+ * it will be disabled.
+ *
+ * @param {object} button Button jQuery object.
+ */
+function changeStructureTagButtonState( button ) {
+	if ( -1 !== $permalinkStructure.val().indexOf( button.text().trim() ) ) {
+		button.attr( 'data-label', button.attr( 'aria-label' ) );
+		button.attr( 'aria-label', button.attr( 'data-used' ) );
+		button.attr( 'aria-pressed', true );
+		button.addClass( 'active' );
+	} else if ( button.attr( 'data-label' ) ) {
+		button.attr( 'aria-label', button.attr( 'data-label' ) );
+		button.attr( 'aria-pressed', false );
+		button.removeClass( 'active' );
+	}
+}
+
+// Check initial button state.
+$availableStructureTags.each( function() {
+	changeStructureTagButtonState( $( this ) );
+} );
+
+// Observe permalink structure field and disable buttons of tags that are already present.
+$permalinkStructure.on( 'change', function() {
+	$availableStructureTags.each( function() {
+		changeStructureTagButtonState( $( this ) );
+	} );
+} );
+
+$availableStructureTags.on( 'click', function() {
+	var permalinkStructureValue = $permalinkStructure.val(),
+	    selectionStart          = $permalinkStructure[ 0 ].selectionStart,
+	    selectionEnd            = $permalinkStructure[ 0 ].selectionEnd,
+	    textToAppend            = $( this ).text().trim(),
+	    textToAnnounce          = $( this ).attr( 'data-added' ),
+	    newSelectionStart;
+
+	// Remove structure tag if already part of the structure.
+	if ( -1 !== permalinkStructureValue.indexOf( textToAppend ) ) {
+		permalinkStructureValue = permalinkStructureValue.replace( textToAppend + '/', '' );
+
+		$permalinkStructure.val( '/' === permalinkStructureValue ? '' : permalinkStructureValue );
+
+		// Announce change to screen readers.
+		$( '#custom_selection_updated' ).text( textToAnnounce );
+
+		// Disable button.
+		changeStructureTagButtonState( $( this ) );
+
+		return;
+	}
+
+	// Input field never had focus, move selection to end of input.
+	if ( ! permalinkStructureFocused && 0 === selectionStart && 0 === selectionEnd ) {
+		selectionStart = selectionEnd = permalinkStructureValue.length;
+	}
+
+	$permalinkCustomSelection.prop( 'checked', true );
+
+	// Prepend and append slashes if necessary.
+	if ( '/' !== permalinkStructureValue.substr( 0, selectionStart ).substr( -1 ) ) {
+		textToAppend = '/' + textToAppend;
+	}
+
+	if ( '/' !== permalinkStructureValue.substr( selectionEnd, 1 ) ) {
+		textToAppend = textToAppend + '/';
+	}
+
+	// Insert structure tag at the specified position.
+	$permalinkStructure.val( permalinkStructureValue.substr( 0, selectionStart ) + textToAppend + permalinkStructureValue.substr( selectionEnd ) );
+
+	// Announce change to screen readers.
+	$( '#custom_selection_updated' ).text( textToAnnounce );
+
+	// Disable button.
+	changeStructureTagButtonState( $( this ) );
+
+	// If input had focus give it back with cursor right after appended text.
+	if ( permalinkStructureFocused && $permalinkStructure[0].setSelectionRange ) {
+		newSelectionStart = ( permalinkStructureValue.substr( 0, selectionStart ) + textToAppend ).length;
+		$permalinkStructure[0].setSelectionRange( newSelectionStart, newSelectionStart );
+		$permalinkStructure.focus();
+	}
+} );
 
 $document.ready( function() {
 	var checks, first, last, checked, sliced, mobileEvent, transitionTimeout, focusedRowActions,
@@ -418,7 +541,7 @@ $document.ready( function() {
 	screenMeta.init();
 
 	// This event needs to be delegated. Ticket #37973.
-	$body.on( 'click', 'tbody .check-column :checkbox', function( event ) {
+	$body.on( 'click', 'tbody > tr > .check-column :checkbox', function( event ) {
 		// Shift click to select a range of checkboxes.
 		if ( 'undefined' == event.shiftKey ) { return true; }
 		if ( event.shiftKey ) {
@@ -897,7 +1020,7 @@ $document.ready( function() {
 	/**
 	 * @summary Get the viewport width.
 	 *
-	 * @since 4.7
+	 * @since 4.7.0
 	 *
 	 * @returns {number|boolean} The current viewport width or false if the
 	 *                           browser doesn't support innerWidth (IE < 9).
@@ -919,7 +1042,7 @@ $document.ready( function() {
 	 * Sets the global variable `menuState` and triggers a custom event passing
 	 * the current menu state.
 	 *
-	 * @since 4.7
+	 * @since 4.7.0
 	 *
 	 * @returns {void}
 	 */
@@ -947,7 +1070,7 @@ $document.ready( function() {
 	 * `aria-label` attributes of the button to give feedback to assistive
 	 * technologies. In the responsive view, the button is always hidden.
 	 *
-	 * @since 4.7
+	 * @since 4.7.0
 	 *
 	 * @returns {void}
 	 */
@@ -978,6 +1101,25 @@ $document.ready( function() {
 
 	// Set initial focus on a specific element.
 	$( '.wp-initial-focus' ).focus();
+
+	// Toggle update details on update-core.php.
+	$body.on( 'click', '.js-update-details-toggle', function() {
+		var $updateNotice = $( this ).closest( '.js-update-details' ),
+			$progressDiv = $( '#' + $updateNotice.data( 'update-details' ) );
+
+		/*
+		 * When clicking on "Show details" move the progress div below the update
+		 * notice. Make sure it gets moved just the first time.
+		 */
+		if ( ! $progressDiv.hasClass( 'update-details-moved' ) ) {
+			$progressDiv.insertAfter( $updateNotice ).addClass( 'update-details-moved' );
+		}
+
+		// Toggle the progress div visibility.
+		$progressDiv.toggle();
+		// Toggle the Show Details button expanded state.
+		$( this ).attr( 'aria-expanded', $progressDiv.is( ':visible' ) );
+	});
 });
 
 // Fire a custom jQuery event at the end of window resize

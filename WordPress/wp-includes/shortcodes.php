@@ -42,51 +42,25 @@
 $shortcode_tags = array();
 
 /**
- * Add hook for shortcode tag.
+ * Adds a new shortcode.
  *
- * There can only be one hook for each shortcode. Which means that if another
- * plugin has a similar shortcode, it will override yours or yours will override
- * theirs depending on which order the plugins are included and/or ran.
- *
- * Simplest example of a shortcode tag using the API:
- *
- *     // [footag foo="bar"]
- *     function footag_func( $atts ) {
- *         return "foo = {
- *             $atts[foo]
- *         }";
- *     }
- *     add_shortcode( 'footag', 'footag_func' );
- *
- * Example with nice attribute defaults:
- *
- *     // [bartag foo="bar"]
- *     function bartag_func( $atts ) {
- *         $args = shortcode_atts( array(
- *             'foo' => 'no foo',
- *             'baz' => 'default baz',
- *         ), $atts );
- *
- *         return "foo = {$args['foo']}";
- *     }
- *     add_shortcode( 'bartag', 'bartag_func' );
- *
- * Example with enclosed content:
- *
- *     // [baztag]content[/baztag]
- *     function baztag_func( $atts, $content = '' ) {
- *         return "content = $content";
- *     }
- *     add_shortcode( 'baztag', 'baztag_func' );
+ * Care should be taken through prefixing or other means to ensure that the
+ * shortcode tag being added is unique and will not conflict with other,
+ * already-added shortcode tags. In the event of a duplicated tag, the tag
+ * loaded last will take precedence.
  *
  * @since 2.5.0
  *
  * @global array $shortcode_tags
  *
- * @param string   $tag  Shortcode tag to be searched in post content.
- * @param callable $func Hook to run when shortcode is found.
+ * @param string   $tag      Shortcode tag to be searched in post content.
+ * @param callable $callback The callback function to run when the shortcode is found.
+ *                           Every shortcode callback is passed three parameters by default,
+ *                           including an array of attributes (`$atts`), the shortcode content
+ *                           or null if not set (`$content`), and finally the shortcode tag
+ *                           itself (`$shortcode_tag`), in that order.
  */
-function add_shortcode($tag, $func) {
+function add_shortcode( $tag, $callback ) {
 	global $shortcode_tags;
 
 	if ( '' == trim( $tag ) ) {
@@ -102,7 +76,7 @@ function add_shortcode($tag, $func) {
 		return;
 	}
 
-	$shortcode_tags[ $tag ] = $func;
+	$shortcode_tags[ $tag ] = $callback;
 }
 
 /**
@@ -244,10 +218,11 @@ function do_shortcode( $content, $ignore_html = false ) {
  * 6 - An extra ] to allow for escaping shortcodes with double [[]]
  *
  * @since 2.5.0
+ * @since 4.4.0 Added the `$tagnames` parameter.
  *
  * @global array $shortcode_tags
  *
- * @param array $tagnames List of shortcodes to find. Optional. Defaults to all registered shortcodes.
+ * @param array $tagnames Optional. List of shortcodes to find. Defaults to all registered shortcodes.
  * @return string The shortcode search regular expression
  */
 function get_shortcode_regex( $tagnames = null ) {
@@ -330,9 +305,9 @@ function do_shortcode_tag( $m ) {
 	 * @since 4.7.0
 	 *
 	 * @param bool|string $return      Short-circuit return value. Either false or the value to replace the shortcode with.
-	 * @param string      $tag         Shortcode name.
-	 * @param array       $attr        Shortcode attributes array,
-	 * @param array       $m           Regular expression match array.
+	 * @param string       $tag         Shortcode name.
+	 * @param array|string $attr        Shortcode attributes array or empty string.
+	 * @param array        $m           Regular expression match array.
 	 */
 	$return = apply_filters( 'pre_do_shortcode_tag', false, $tag, $attr, $m );
 	if ( false !== $return ) {
@@ -348,10 +323,10 @@ function do_shortcode_tag( $m ) {
 	 *
 	 * @since 4.7.0
 	 *
-	 * @param string $output Shortcode output.
-	 * @param string $tag    Shortcode name.
-	 * @param array  $attr   Shortcode attributes array,
-	 * @param array  $m      Regular expression match array.
+	 * @param string       $output Shortcode output.
+	 * @param string       $tag    Shortcode name.
+	 * @param array|string $attr   Shortcode attributes array or empty string.
+	 * @param array        $m      Regular expression match array.
 	 */
 	return apply_filters( 'do_shortcode_tag', $output, $tag, $attr, $m );
 }
@@ -486,7 +461,7 @@ function unescape_invalid_shortcodes( $content ) {
  * @return string The shortcode attribute regular expression
  */
 function get_shortcode_atts_regex() {
-	return '/([\w-]+)\s*=\s*"([^"]*)"(?:\s|$)|([\w-]+)\s*=\s*\'([^\']*)\'(?:\s|$)|([\w-]+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|(\S+)(?:\s|$)/';
+	return '/([\w-]+)\s*=\s*"([^"]*)"(?:\s|$)|([\w-]+)\s*=\s*\'([^\']*)\'(?:\s|$)|([\w-]+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|\'([^\']*)\'(?:\s|$)|(\S+)(?:\s|$)/';
 }
 
 /**
@@ -518,8 +493,10 @@ function shortcode_parse_atts($text) {
 				$atts[strtolower($m[5])] = stripcslashes($m[6]);
 			elseif (isset($m[7]) && strlen($m[7]))
 				$atts[] = stripcslashes($m[7]);
-			elseif (isset($m[8]))
+			elseif (isset($m[8]) && strlen($m[8]))
 				$atts[] = stripcslashes($m[8]);
+			elseif (isset($m[9]))
+				$atts[] = stripcslashes($m[9]);
 		}
 
 		// Reject any unclosed HTML elements

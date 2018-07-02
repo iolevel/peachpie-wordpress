@@ -214,7 +214,7 @@ function wp_popular_terms_checklist( $taxonomy, $default = 0, $number = 10, $ech
 				<input id="in-<?php echo $id; ?>" type="checkbox" <?php echo $checked; ?> value="<?php echo (int) $term->term_id; ?>" <?php disabled( ! current_user_can( $tax->cap->assign_terms ) ); ?> />
 				<?php
 				/** This filter is documented in wp-includes/category-template.php */
-				echo esc_html( apply_filters( 'the_category', $term->name ) );
+				echo esc_html( apply_filters( 'the_category', $term->name, '', '' ) );
 				?>
 			</label>
 		</li>
@@ -255,7 +255,7 @@ function wp_link_category_checklist( $link_id = 0 ) {
 		$cat_id = $category->term_id;
 
 		/** This filter is documented in wp-includes/category-template.php */
-		$name = esc_html( apply_filters( 'the_category', $category->name ) );
+		$name = esc_html( apply_filters( 'the_category', $category->name, '', '' ) );
 		$checked = in_array( $cat_id, $checked_categories ) ? ' checked="checked"' : '';
 		echo '<li id="link-category-', $cat_id, '"><label for="in-link-category-', $cat_id, '" class="selectit"><input value="', $cat_id, '" type="checkbox" name="link_category[]" id="in-link-category-', $cat_id, '"', $checked, '/> ', $name, "</label></li>";
 	}
@@ -423,15 +423,21 @@ function wp_comment_reply( $position = 1, $checkbox = false, $mode = 'single', $
 		</div>
 	</div>
 
-	<p id="replysubmit" class="submit">
-	<a href="#comments-form" class="save button button-primary alignright">
-	<span id="addbtn" style="display:none;"><?php _e('Add Comment'); ?></span>
-	<span id="savebtn" style="display:none;"><?php _e('Update Comment'); ?></span>
-	<span id="replybtn" style="display:none;"><?php _e('Submit Reply'); ?></span></a>
-	<a href="#comments-form" class="cancel button alignleft"><?php _e('Cancel'); ?></a>
-	<span class="waiting spinner"></span>
-	<span class="error" style="display:none;"></span>
-	</p>
+	<div id="replysubmit" class="submit">
+		<p>
+			<a href="#comments-form" class="save button button-primary alignright">
+				<span id="addbtn" style="display: none;"><?php _e( 'Add Comment' ); ?></span>
+				<span id="savebtn" style="display: none;"><?php _e( 'Update Comment' ); ?></span>
+				<span id="replybtn" style="display: none;"><?php _e( 'Submit Reply' ); ?></span>
+			</a>
+			<a href="#comments-form" class="cancel button alignleft"><?php _e( 'Cancel' ); ?></a>
+			<span class="waiting spinner"></span>
+		</p>
+		<br class="clear" />
+		<div class="notice notice-error notice-alt inline hidden">
+			<p class="error"></p>
+		</div>
+	</div>
 
 	<input type="hidden" name="action" id="action" value="" />
 	<input type="hidden" name="comment_ID" id="comment_ID" value="" />
@@ -772,7 +778,7 @@ function page_template_dropdown( $default = '', $post_type = 'page' ) {
 	ksort( $templates );
 	foreach ( array_keys( $templates ) as $template ) {
 		$selected = selected( $default, $templates[ $template ], false );
-		echo "\n\t<option value='" . $templates[ $template ] . "' $selected>$template</option>";
+		echo "\n\t<option value='" . esc_attr( $templates[ $template ] ) . "' $selected>" . esc_html( $template ) . "</option>";
 	}
 }
 
@@ -821,19 +827,21 @@ function parent_dropdown( $default = 0, $parent = 0, $level = 0, $post = null ) 
  * @param string $selected Slug for the role that should be already selected.
  */
 function wp_dropdown_roles( $selected = '' ) {
-	$p = '';
 	$r = '';
 
 	$editable_roles = array_reverse( get_editable_roles() );
 
 	foreach ( $editable_roles as $role => $details ) {
 		$name = translate_user_role($details['name'] );
-		if ( $selected == $role ) // preselect specified role
-			$p = "\n\t<option selected='selected' value='" . esc_attr($role) . "'>$name</option>";
-		else
-			$r .= "\n\t<option value='" . esc_attr($role) . "'>$name</option>";
+		// preselect specified role
+		if ( $selected == $role ) {
+			$r .= "\n\t<option selected='selected' value='" . esc_attr( $role ) . "'>$name</option>";
+		} else {
+			$r .= "\n\t<option value='" . esc_attr( $role ) . "'>$name</option>";
+		}
 	}
-	echo $p . $r;
+
+	echo $r;
 }
 
 /**
@@ -890,7 +898,10 @@ function wp_import_upload_form( $action ) {
  * @param string|array|WP_Screen $screen        Optional. The screen or screens on which to show the box
  *                                              (such as a post type, 'link', or 'comment'). Accepts a single
  *                                              screen ID, WP_Screen object, or array of screen IDs. Default
- *                                              is the current screen.
+ *                                              is the current screen.  If you have used add_menu_page() or
+ *                                              add_submenu_page() to create a new screen (and hence screen_id),
+ *                                              make sure your menu slug conforms to the limits of sanitize_key()
+ *                                              otherwise the 'screen' menu may not correctly render on your page.
  * @param string                 $context       Optional. The context within the screen where the boxes
  *                                              should display. Available contexts vary from screen to
  *                                              screen. Post edit screen contexts include 'normal', 'side',
@@ -985,7 +996,11 @@ function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advan
  * @global array $wp_meta_boxes
  *
  * @staticvar bool $already_sorted
- * @param string|WP_Screen $screen  Screen identifier
+ *
+ * @param string|WP_Screen $screen  Screen identifier. If you have used add_menu_page() or
+ *                                  add_submenu_page() to create a new screen (and hence screen_id)
+ *                                  make sure your menu slug conforms to the limits of sanitize_key()
+ *                                  otherwise the 'screen' menu may not correctly render on your page.
  * @param string           $context box context
  * @param mixed            $object  gets passed to the box callback function as first parameter
  * @return int number of meta_boxes
@@ -1003,7 +1018,7 @@ function do_meta_boxes( $screen, $context, $object ) {
 
 	$hidden = get_hidden_meta_boxes( $screen );
 
-	printf('<div id="%s-sortables" class="meta-box-sortables">', htmlspecialchars($context));
+	printf( '<div id="%s-sortables" class="meta-box-sortables">', esc_attr( $context ) );
 
 	// Grab the ones the user has manually sorted. Pull them out of their previous context/priority and into the one the user chose
 	if ( ! $already_sorted && $sorted = get_user_option( "meta-box-order_$page" ) ) {
@@ -1038,7 +1053,7 @@ function do_meta_boxes( $screen, $context, $object ) {
 							unset( $box[ 'args' ][ '__widget_basename' ] );
 						}
 
-						echo '<button type="button" class="handlediv button-link" aria-expanded="true">';
+						echo '<button type="button" class="handlediv" aria-expanded="true">';
 						echo '<span class="screen-reader-text">' . sprintf( __( 'Toggle panel: %s' ), $widget_title ) . '</span>';
 						echo '<span class="toggle-indicator" aria-hidden="true"></span>';
 						echo '</button>';
@@ -1207,12 +1222,22 @@ function add_settings_section($id, $title, $callback, $page) {
 	global $wp_settings_sections;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'misc' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'privacy' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1258,12 +1283,22 @@ function add_settings_field($id, $title, $callback, $page, $section = 'default',
 	global $wp_settings_fields;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', __( 'The miscellaneous options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', __( 'The privacy options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1422,8 +1457,9 @@ function get_settings_errors( $setting = '', $sanitize = false ) {
 	}
 
 	// Check global in case errors have been added on this pageload.
-	if ( ! count( $wp_settings_errors ) )
+	if ( empty( $wp_settings_errors ) ) {
 		return array();
+	}
 
 	// Filter the results to those of a specific setting if one was set.
 	if ( $setting ) {
@@ -1498,7 +1534,7 @@ function find_posts_div($found_action = '') {
 	<div id="find-posts" class="find-box" style="display: none;">
 		<div id="find-posts-head" class="find-box-head">
 			<?php _e( 'Attach to existing content' ); ?>
-			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></button>
+			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></span></button>
 		</div>
 		<div class="find-box-inside">
 			<div class="find-box-search">
@@ -1701,8 +1737,15 @@ function _post_states($post) {
 		$post_states['protected'] = __('Password protected');
 	if ( 'private' == $post->post_status && 'private' != $post_status )
 		$post_states['private'] = __('Private');
-	if ( 'draft' == $post->post_status && 'draft' != $post_status )
-		$post_states['draft'] = __('Draft');
+	if ( 'draft' === $post->post_status ) {
+		if ( get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ) {
+			$post_states[] = __( 'Customization Draft' );
+		} elseif ( 'draft' !== $post_status ) {
+			$post_states['draft'] = __( 'Draft' );
+		}
+	} elseif ( 'trash' === $post->post_status && get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ) {
+		$post_states[] = __( 'Customization Draft' );
+	}
 	if ( 'pending' == $post->post_status && 'pending' != $post_status )
 		$post_states['pending'] = _x('Pending', 'post status');
 	if ( is_sticky($post->ID) )
@@ -1726,6 +1769,7 @@ function _post_states($post) {
 	 * Filters the default post display states used in the posts list table.
 	 *
 	 * @since 2.8.0
+	 * @since 3.6.0 Added the `$post` parameter.
 	 *
 	 * @param array   $post_states An array of post display states.
 	 * @param WP_Post $post        The current post object.
@@ -1794,7 +1838,7 @@ function _media_states( $post ) {
 		$media_states[] = __( 'Site Icon' );
 	}
 
-	if ( $post->ID == get_theme_mod( 'site_logo' ) ) {
+	if ( $post->ID == get_theme_mod( 'custom_logo' ) ) {
 		$media_states[] = __( 'Logo' );
 	}
 
@@ -1802,11 +1846,13 @@ function _media_states( $post ) {
 	 * Filters the default media display states for items in the Media list table.
 	 *
 	 * @since 3.2.0
+	 * @since 4.8.0 Added the `$post` parameter.
 	 *
-	 * @param array $media_states An array of media states. Default 'Header Image',
-	 *                            'Background Image', 'Site Icon', 'Logo'.
+	 * @param array   $media_states An array of media states. Default 'Header Image',
+	 *                              'Background Image', 'Site Icon', 'Logo'.
+	 * @param WP_Post $post         The current attachment object.
 	 */
-	$media_states = apply_filters( 'display_media_states', $media_states );
+	$media_states = apply_filters( 'display_media_states', $media_states, $post );
 
 	if ( ! empty( $media_states ) ) {
 		$state_count = count( $media_states );
@@ -1893,7 +1939,7 @@ function compression_test() {
  *
  * @param string       $text             The text of the button (defaults to 'Save Changes')
  * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
- *                                       include 'primary', 'secondary', 'delete'. Default 'primary'
+ *                                       include 'primary', 'small', and 'large'. Default 'primary'.
  * @param string       $name             The HTML name of the submit button. Defaults to "submit". If no
  *                                       id attribute is given in $other_attributes below, $name will be
  *                                       used as the button's id.
@@ -1916,8 +1962,8 @@ function submit_button( $text = null, $type = 'primary', $name = 'submit', $wrap
  * @since 3.1.0
  *
  * @param string       $text             Optional. The text of the button. Default 'Save Changes'.
- * @param string       $type             Optional. The type of button. Accepts 'primary', 'secondary',
- *                                       or 'delete'. Default 'primary large'.
+ * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
+ *                                       include 'primary', 'small', and 'large'. Default 'primary large'.
  * @param string       $name             Optional. The HTML name of the submit button. Defaults to "submit".
  *                                       If no id attribute is given in $other_attributes below, `$name` will
  *                                       be used as the button's id. Default 'submit'.
@@ -2022,7 +2068,17 @@ function _wp_admin_html_begin() {
  */
 function convert_to_screen( $hook_name ) {
 	if ( ! class_exists( 'WP_Screen' ) ) {
-		_doing_it_wrong( 'convert_to_screen(), add_meta_box()', __( "Likely direct inclusion of wp-admin/includes/template.php in order to use add_meta_box(). This is very wrong. Hook the add_meta_box() call into the add_meta_boxes action instead." ), '3.3.0' );
+		_doing_it_wrong(
+			'convert_to_screen(), add_meta_box()',
+			sprintf(
+				/* translators: 1: wp-admin/includes/template.php 2: add_meta_box() 3: add_meta_boxes */
+				__( 'Likely direct inclusion of %1$s in order to use %2$s. This is very wrong. Hook the %2$s call into the %3$s action instead.' ),
+				'<code>wp-admin/includes/template.php</code>',
+				'<code>add_meta_box()</code>',
+				'<code>add_meta_boxes</code>'
+			),
+			'3.3.0'
+		);
 		return (object) array( 'id' => '_invalid', 'base' => '_are_belong_to_us' );
 	}
 
@@ -2062,14 +2118,15 @@ function _local_storage_notice() {
  * @param array $args {
  *     Optional. Array of star ratings arguments.
  *
- *     @type int    $rating The rating to display, expressed in either a 0.5 rating increment,
- *                          or percentage. Default 0.
- *     @type string $type   Format that the $rating is in. Valid values are 'rating' (default),
- *                          or, 'percent'. Default 'rating'.
- *     @type int    $number The number of ratings that makes up this rating. Default 0.
- *     @type bool   $echo   Whether to echo the generated markup. False to return the markup instead
- *                          of echoing it. Default true.
+ *     @type int|float $rating The rating to display, expressed in either a 0.5 rating increment,
+ *                             or percentage. Default 0.
+ *     @type string    $type   Format that the $rating is in. Valid values are 'rating' (default),
+ *                             or, 'percent'. Default 'rating'.
+ *     @type int       $number The number of ratings that makes up this rating. Default 0.
+ *     @type bool      $echo   Whether to echo the generated markup. False to return the markup instead
+ *                             of echoing it. Default true.
  * }
+ * @return string Star rating HTML.
  */
 function wp_star_rating( $args = array() ) {
 	$defaults = array(
@@ -2080,11 +2137,11 @@ function wp_star_rating( $args = array() ) {
 	);
 	$r = wp_parse_args( $args, $defaults );
 
-	// Non-english decimal places when the $rating is coming from a string
-	$rating = str_replace( ',', '.', $r['rating'] );
+	// Non-English decimal places when the $rating is coming from a string
+	$rating = (float) str_replace( ',', '.', $r['rating'] );
 
 	// Convert Percentage to star rating, 0..5 in .5 increments
-	if ( 'percent' == $r['type'] ) {
+	if ( 'percent' === $r['type'] ) {
 		$rating = round( $rating / 10, 0 ) / 2;
 	}
 

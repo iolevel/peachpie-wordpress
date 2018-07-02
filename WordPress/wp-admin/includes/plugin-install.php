@@ -19,7 +19,7 @@
  * an object is returned.
  *
  * The second filter, {@see 'plugins_api'}, allows a plugin to override the WordPress.org
- * Plugin Install API entirely. If `$action` is 'query_plugins' or 'plugin_information',
+ * Plugin Installation API entirely. If `$action` is 'query_plugins' or 'plugin_information',
  * an object MUST be passed. If `$action` is 'hot_tags' or 'hot_categories', an array MUST
  * be passed.
  *
@@ -89,7 +89,7 @@
  *         @type bool $reviews           Whether to return the plugin reviews. Default false.
  *         @type bool $banners           Whether to return the banner images links. Default false.
  *         @type bool $icons             Whether to return the icon links. Default false.
- *         @type bool $active_installs   Whether to return the number of active installs. Default false.
+ *         @type bool $active_installs   Whether to return the number of active installations. Default false.
  *         @type bool $group             Whether to return the assigned group. Default false.
  *         @type bool $contributors      Whether to return the list of contributors. Default false.
  *     }
@@ -113,19 +113,19 @@ function plugins_api( $action, $args = array() ) {
 	}
 
 	/**
-	 * Filters the WordPress.org Plugin Install API arguments.
+	 * Filters the WordPress.org Plugin Installation API arguments.
 	 *
 	 * Important: An object MUST be returned to this filter.
 	 *
 	 * @since 2.7.0
 	 *
 	 * @param object $args   Plugin API arguments.
-	 * @param string $action The type of information being requested from the Plugin Install API.
+	 * @param string $action The type of information being requested from the Plugin Installation API.
 	 */
 	$args = apply_filters( 'plugins_api_args', $args, $action );
 
 	/**
-	 * Filters the response for the current WordPress.org Plugin Install API request.
+	 * Filters the response for the current WordPress.org Plugin Installation API request.
 	 *
 	 * Passing a non-false value will effectively short-circuit the WordPress.org API request.
 	 *
@@ -135,18 +135,22 @@ function plugins_api( $action, $args = array() ) {
 	 * @since 2.7.0
 	 *
 	 * @param false|object|array $result The result object or array. Default false.
-	 * @param string             $action The type of information being requested from the Plugin Install API.
+	 * @param string             $action The type of information being requested from the Plugin Installation API.
 	 * @param object             $args   Plugin API arguments.
 	 */
 	$res = apply_filters( 'plugins_api', false, $action, $args );
 
 	if ( false === $res ) {
+		// include an unmodified $wp_version
+		include( ABSPATH . WPINC . '/version.php' );
+
 		$url = $http_url = 'http://api.wordpress.org/plugins/info/1.0/';
 		if ( $ssl = wp_http_supports( array( 'ssl' ) ) )
 			$url = set_url_scheme( $url, 'https' );
 
 		$http_args = array(
 			'timeout' => 15,
+			'user-agent' => 'WordPress/' . $wp_version . '; ' . home_url( '/' ),
 			'body' => array(
 				'action' => $action,
 				'request' => serialize( $args )
@@ -155,28 +159,50 @@ function plugins_api( $action, $args = array() ) {
 		$request = wp_remote_post( $url, $http_args );
 
 		if ( $ssl && is_wp_error( $request ) ) {
-			trigger_error( __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ) . ' ' . __( '(WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.)' ), headers_sent() || WP_DEBUG ? E_USER_WARNING : E_USER_NOTICE );
+			trigger_error(
+				sprintf(
+					/* translators: %s: support forums URL */
+					__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+					__( 'https://wordpress.org/support/' )
+				) . ' ' . __( '(WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.)' ),
+				headers_sent() || WP_DEBUG ? E_USER_WARNING : E_USER_NOTICE
+			);
 			$request = wp_remote_post( $http_url, $http_args );
 		}
 
 		if ( is_wp_error($request) ) {
-			$res = new WP_Error('plugins_api_failed', __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ), $request->get_error_message() );
+			$res = new WP_Error( 'plugins_api_failed',
+				sprintf(
+					/* translators: %s: support forums URL */
+					__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+					__( 'https://wordpress.org/support/' )
+				),
+				$request->get_error_message()
+			);
 		} else {
 			$res = maybe_unserialize( wp_remote_retrieve_body( $request ) );
-			if ( ! is_object( $res ) && ! is_array( $res ) )
-				$res = new WP_Error('plugins_api_failed', __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ), wp_remote_retrieve_body( $request ) );
+			if ( ! is_object( $res ) && ! is_array( $res ) ) {
+				$res = new WP_Error( 'plugins_api_failed',
+					sprintf(
+						/* translators: %s: support forums URL */
+						__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+						__( 'https://wordpress.org/support/' )
+					),
+					wp_remote_retrieve_body( $request )
+				);
+			}
 		}
 	} elseif ( !is_wp_error($res) ) {
 		$res->external = true;
 	}
 
 	/**
-	 * Filters the Plugin Install API response results.
+	 * Filters the Plugin Installation API response results.
 	 *
 	 * @since 2.7.0
 	 *
 	 * @param object|WP_Error $res    Response object or WP_Error.
-	 * @param string          $action The type of information being requested from the Plugin Install API.
+	 * @param string          $action The type of information being requested from the Plugin Installation API.
 	 * @param object          $args   Plugin API arguments.
 	 */
 	return apply_filters( 'plugins_api_result', $res, $action, $args );
@@ -458,9 +484,10 @@ function install_plugin_information() {
 		'abbr' => array( 'title' => array() ), 'acronym' => array( 'title' => array() ),
 		'code' => array(), 'pre' => array(), 'em' => array(), 'strong' => array(),
 		'div' => array( 'class' => array() ), 'span' => array( 'class' => array() ),
-		'p' => array(), 'ul' => array(), 'ol' => array(), 'li' => array(),
+		'p' => array(), 'br' => array(), 'ul' => array(), 'ol' => array(), 'li' => array(),
 		'h1' => array(), 'h2' => array(), 'h3' => array(), 'h4' => array(), 'h5' => array(), 'h6' => array(),
-		'img' => array( 'src' => array(), 'class' => array(), 'alt' => array() )
+		'img' => array( 'src' => array(), 'class' => array(), 'alt' => array() ),
+		'blockquote' => array( 'cite' => true ),
 	);
 
 	$plugins_section_titles = array(
@@ -492,7 +519,7 @@ function install_plugin_information() {
 		$section = reset( $section_titles );
 	}
 
-	iframe_header( __( 'Plugin Install' ) );
+	iframe_header( __( 'Plugin Installation' ) );
 
 	$_with_banner = '';
 
@@ -557,18 +584,26 @@ function install_plugin_information() {
 				<li>
 					<strong><?php _e( 'Requires WordPress Version:' ); ?></strong>
 					<?php
-					/* translators: %s: WordPress version */
+					/* translators: %s: version number */
 					printf( __( '%s or higher' ), $api->requires );
 					?>
 				</li>
 			<?php } if ( ! empty( $api->tested ) ) { ?>
 				<li><strong><?php _e( 'Compatible up to:' ); ?></strong> <?php echo $api->tested; ?></li>
+			<?php } if ( ! empty( $api->requires_php ) ) { ?>
+				<li>
+					<strong><?php _e( 'Requires PHP Version:' ); ?></strong>
+					<?php
+					/* translators: %s: version number */
+					printf( __( '%s or higher' ), $api->requires_php );
+					?>
+				</li>
 			<?php } if ( isset( $api->active_installs ) ) { ?>
-				<li><strong><?php _e( 'Active Installs:' ); ?></strong> <?php
+				<li><strong><?php _e( 'Active Installations:' ); ?></strong> <?php
 					if ( $api->active_installs >= 1000000 ) {
-						_ex( '1+ Million', 'Active plugin installs' );
+						_ex( '1+ Million', 'Active plugin installations' );
 					} elseif ( 0 == $api->active_installs ) {
-						_ex( 'Less Than 10', 'Active plugin installs' );
+						_ex( 'Less Than 10', 'Active plugin installations' );
 					} else {
 						echo number_format_i18n( $api->active_installs ) . '+';
 					}
@@ -601,7 +636,7 @@ function install_plugin_information() {
 				) );
 				?>
 				<div class="counter-container">
-						<span class="counter-label"><a href="https://wordpress.org/support/view/plugin-reviews/<?php echo $api->slug; ?>?filter=<?php echo $key; ?>"
+						<span class="counter-label"><a href="https://wordpress.org/support/plugin/<?php echo $api->slug; ?>/reviews/?filter=<?php echo $key; ?>"
 						                               target="_blank" aria-label="<?php echo $aria_label; ?>"><?php printf( _n( '%d star', '%d stars', $key ), $key ); ?></a></span>
 						<span class="counter-back">
 							<span class="counter-bar" style="width: <?php echo 92 * $_rating; ?>px;"></span>

@@ -32,6 +32,9 @@ add_action( 'network_site_users_created_user', 'wp_send_new_user_notifications' 
 add_action( 'network_user_new_created_user',   'wp_send_new_user_notifications' );
 add_filter( 'sanitize_user', 'strtolower' );
 
+// Roles
+add_action( 'switch_blog', 'wp_switch_roles_and_user', 1, 2 );
+
 // Blogs
 add_filter( 'wpmu_validate_blog_signup', 'signup_nonce_check' );
 add_action( 'wpmu_new_blog', 'wpmu_log_new_registrations', 10, 2 );
@@ -51,15 +54,15 @@ add_filter( 'term_id_filter', 'global_terms', 10, 2 );
 add_action( 'delete_post', '_update_posts_count_on_delete' );
 add_action( 'delete_post', '_update_blog_date_on_post_delete' );
 add_action( 'transition_post_status', '_update_blog_date_on_post_publish', 10, 3 );
-add_action( 'transition_post_status', '_update_posts_count_on_transition_post_status', 10, 2 );
+add_action( 'transition_post_status', '_update_posts_count_on_transition_post_status', 10, 3 );
 
 // Counts
 add_action( 'admin_init', 'wp_schedule_update_network_counts');
-add_action( 'update_network_counts', 'wp_update_network_counts');
+add_action( 'update_network_counts', 'wp_update_network_counts', 10, 0 );
 foreach ( array( 'user_register', 'deleted_user', 'wpmu_new_user', 'make_spam_user', 'make_ham_user' ) as $action )
-	add_action( $action, 'wp_maybe_update_network_user_counts' );
+	add_action( $action, 'wp_maybe_update_network_user_counts', 10, 0 );
 foreach ( array( 'make_spam_blog', 'make_ham_blog', 'archive_blog', 'unarchive_blog', 'make_delete_blog', 'make_undelete_blog' ) as $action )
-	add_action( $action, 'wp_maybe_update_network_site_counts' );
+	add_action( $action, 'wp_maybe_update_network_site_counts', 10, 0 );
 unset( $action );
 
 // Files
@@ -84,10 +87,11 @@ add_filter( 'force_filtered_html_on_import', '__return_true' );
 remove_filter( 'option_siteurl', '_config_wp_siteurl' );
 remove_filter( 'option_home',    '_config_wp_home'    );
 
-// Some options changes should trigger blog details refresh.
-add_action( 'update_option_blogname',   'refresh_blog_details', 10, 0 );
-add_action( 'update_option_siteurl',    'refresh_blog_details', 10, 0 );
-add_action( 'update_option_post_count', 'refresh_blog_details', 10, 0 );
+// Some options changes should trigger site details refresh.
+add_action( 'update_option_blogname',   'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_siteurl',    'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_post_count', 'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_home',       'clean_site_details_cache', 10, 0 );
 
 // If the network upgrade hasn't run yet, assume ms-files.php rewriting is used.
 add_filter( 'default_site_option_ms_files_rewriting', '__return_true' );

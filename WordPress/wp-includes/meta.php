@@ -364,12 +364,11 @@ function delete_metadata($meta_type, $object_id, $meta_key, $meta_value = '', $d
 		return false;
 
 	if ( $delete_all ) {
-		$value_clause = '';
 		if ( '' !== $meta_value && null !== $meta_value && false !== $meta_value ) {
-			$value_clause = $wpdb->prepare( " AND meta_value = %s", $meta_value );
+			$object_ids = $wpdb->get_col( $wpdb->prepare( "SELECT $type_column FROM $table WHERE meta_key = %s AND meta_value = %s", $meta_key, $meta_value ) );
+		} else {
+			$object_ids = $wpdb->get_col( $wpdb->prepare( "SELECT $type_column FROM $table WHERE meta_key = %s", $meta_key ) );
 		}
-
-		$object_ids = $wpdb->get_col( $wpdb->prepare( "SELECT $type_column FROM $table WHERE meta_key = %s $value_clause", $meta_key ) );
 	}
 
 	/**
@@ -974,6 +973,7 @@ function sanitize_meta( $meta_key, $meta_value, $object_type ) {
  *     Data used to describe the meta key when registered.
  *
  *     @type string $type              The type of data associated with this meta key.
+ *                                     Valid values are 'string', 'boolean', 'integer', and 'number'.
  *     @type string $description       A description of the data attached to this meta key.
  *     @type bool   $single            Whether the meta key has one value per object, or an array of values per object.
  *     @type string $sanitize_callback A function or method to call when sanitizing `$meta_key` data.

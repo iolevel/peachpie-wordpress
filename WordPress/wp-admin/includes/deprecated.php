@@ -222,6 +222,8 @@ function use_codepress() {
  *
  * @deprecated 3.1.0 Use get_users()
  *
+ * @global wpdb $wpdb WordPress database abstraction object.
+ *
  * @return array List of user IDs.
  */
 function get_author_user_ids() {
@@ -240,6 +242,8 @@ function get_author_user_ids() {
  * Gets author users who can edit posts.
  *
  * @deprecated 3.1.0 Use get_users()
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param int $user_id User ID.
  * @return array|bool List of editable authors. False if no editable users.
@@ -265,6 +269,8 @@ function get_editable_authors( $user_id ) {
  * Gets the IDs of any users who can edit posts.
  *
  * @deprecated 3.1.0 Use get_users()
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param int  $user_id       User ID.
  * @param bool $exclude_zeros Optional. Whether to exclude zeroes. Default true.
@@ -302,6 +308,8 @@ function get_editable_user_ids( $user_id, $exclude_zeros = true, $post_type = 'p
  * Gets all users who are not authors.
  *
  * @deprecated 3.1.0 Use get_users()
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  */
 function get_nonauthor_user_ids() {
 	_deprecated_function( __FUNCTION__, '3.1.0', 'get_users()' );
@@ -663,6 +671,8 @@ endif;
  * @since 2.3.0
  * @deprecated 3.1.0 Use get_posts()
  * @see get_posts()
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param int    $user_id User ID to not retrieve posts from.
  * @param string $type    Optional. Post type to retrieve. Accepts 'draft', 'pending' or 'any' (all).
@@ -1210,22 +1220,23 @@ function the_attachment_links( $id = false ) {
  * Displays a screen icon.
  *
  * @since 2.7.0
- * @since 3.8.0 Screen icons are no longer used in WordPress. This function no longer produces output.
- * @deprecated 3.8.0 Use get_screen_icon()
- * @see get_screen_icon()
+ * @deprecated 3.8.0
  */
 function screen_icon() {
+	_deprecated_function( __FUNCTION__, '3.8.0' );
 	echo get_screen_icon();
 }
 
 /**
  * Retrieves the screen icon (no longer used in 3.8+).
  *
+ * @since 3.2.0
  * @deprecated 3.8.0
  *
- * @return string
+ * @return string An HTML comment explaining that icons are no longer used.
  */
 function get_screen_icon() {
+	_deprecated_function( __FUNCTION__, '3.8.0' );
 	return '<!-- Screen icons are no longer used as of WordPress 3.8. -->';
 }
 
@@ -1293,6 +1304,88 @@ function wp_dashboard_secondary() {}
  * @deprecated 3.8.0
  */
 function wp_dashboard_secondary_control() {}
+
+/**
+ * Display plugins text for the WordPress news widget.
+ *
+ * @since 2.5.0
+ * @deprecated 4.8.0
+ *
+ * @param string $rss  The RSS feed URL.
+ * @param array  $args Array of arguments for this RSS feed.
+ */
+function wp_dashboard_plugins_output( $rss, $args = array() ) {
+	_deprecated_function( __FUNCTION__, '4.8.0' );
+
+	// Plugin feeds plus link to install them
+	$popular = fetch_feed( $args['url']['popular'] );
+
+	if ( false === $plugin_slugs = get_transient( 'plugin_slugs' ) ) {
+		$plugin_slugs = array_keys( get_plugins() );
+		set_transient( 'plugin_slugs', $plugin_slugs, DAY_IN_SECONDS );
+	}
+
+	echo '<ul>';
+
+	foreach ( array( $popular ) as $feed ) {
+		if ( is_wp_error( $feed ) || ! $feed->get_item_quantity() )
+			continue;
+
+		$items = $feed->get_items(0, 5);
+
+		// Pick a random, non-installed plugin
+		while ( true ) {
+			// Abort this foreach loop iteration if there's no plugins left of this type
+			if ( 0 == count($items) )
+				continue 2;
+
+			$item_key = array_rand($items);
+			$item = $items[$item_key];
+
+			list($link, $frag) = explode( '#', $item->get_link() );
+
+			$link = esc_url($link);
+			if ( preg_match( '|/([^/]+?)/?$|', $link, $matches ) )
+				$slug = $matches[1];
+			else {
+				unset( $items[$item_key] );
+				continue;
+			}
+
+			// Is this random plugin's slug already installed? If so, try again.
+			reset( $plugin_slugs );
+			foreach ( $plugin_slugs as $plugin_slug ) {
+				if ( $slug == substr( $plugin_slug, 0, strlen( $slug ) ) ) {
+					unset( $items[$item_key] );
+					continue 2;
+				}
+			}
+
+			// If we get to this point, then the random plugin isn't installed and we can stop the while().
+			break;
+		}
+
+		// Eliminate some common badly formed plugin descriptions
+		while ( ( null !== $item_key = array_rand($items) ) && false !== strpos( $items[$item_key]->get_description(), 'Plugin Name:' ) )
+			unset($items[$item_key]);
+
+		if ( !isset($items[$item_key]) )
+			continue;
+
+		$raw_title = $item->get_title();
+
+		$ilink = wp_nonce_url('plugin-install.php?tab=plugin-information&plugin=' . $slug, 'install-plugin_' . $slug) . '&amp;TB_iframe=true&amp;width=600&amp;height=800';
+		echo '<li class="dashboard-news-plugin"><span>' . __( 'Popular Plugin' ) . ':</span> ' . esc_html( $raw_title ) .
+			'&nbsp;<a href="' . $ilink . '" class="thickbox open-plugin-details-modal" aria-label="' .
+			/* translators: %s: plugin name */
+			esc_attr( sprintf( __( 'Install %s' ), $raw_title ) ) . '">(' . __( 'Install' ) . ')</a></li>';
+
+		$feed->__destruct();
+		unset( $feed );
+	}
+
+	echo '</ul>';
+}
 
 /**
  * This was once used to move child posts to a new parent.
@@ -1382,7 +1475,9 @@ function add_utility_page( $page_title, $menu_title, $capability, $menu_slug, $f
  * Replaced with wp_page_reload_on_back_button_js() that also fixes this problem.
  *
  * @since 4.0.0
- * $deprecated 4.6.0
+ * @deprecated 4.6.0
+ *
+ * @link https://core.trac.wordpress.org/ticket/35852
  *
  * @global bool $is_safari
  * @global bool $is_chrome
@@ -1395,4 +1490,27 @@ function post_form_autocomplete_off() {
 	if ( $is_safari || $is_chrome ) {
 		echo ' autocomplete="off"';
 	}
+}
+
+/**
+ * Display JavaScript on the page.
+ *
+ * @since 3.5.0
+ * @deprecated 4.9.0
+ */
+function options_permalink_add_js() {
+	?>
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+			jQuery('.permalink-structure input:radio').change(function() {
+				if ( 'custom' == this.value )
+					return;
+				jQuery('#permalink_structure').val( this.value );
+			});
+			jQuery( '#permalink_structure' ).on( 'click input', function() {
+				jQuery( '#custom_selection' ).prop( 'checked', true );
+			});
+		});
+	</script>
+	<?php
 }

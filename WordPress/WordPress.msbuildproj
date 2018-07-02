@@ -6,7 +6,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <Version>$(WordPressVersion)</Version>
+    <VersionPrefix>$(WordPressVersion)</VersionPrefix>
     <NoWarn>PHPX0125</NoWarn>
     <ContentFiles>**/*.js;**/*.css;**/*.png;**/*.svg;**/*.gif</ContentFiles>
   </PropertyGroup>
@@ -22,7 +22,6 @@
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="$(PeachpieVersion)" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="$(PeachpieVersion)" PrivateAssets="Build" />
     <PackageReference Include="Peachpie.Library.Graphics" Version="$(PeachpieVersion)" />
-    <PackageReference Include="Peachpie.Library.Network" Version="$(PeachpieVersion)" />
     <!--PackageReference Include="Peachpie.RequestHandler" Version="$(PeachpieVersion)" /-->
   </ItemGroup>
   <ItemGroup>

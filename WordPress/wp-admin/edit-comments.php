@@ -10,7 +10,7 @@
 require_once( dirname( __FILE__ ) . '/admin.php' );
 if ( ! current_user_can( 'edit_posts' ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to edit comments.' ) . '</p>',
 		403
 	);
@@ -83,11 +83,15 @@ if ( $doaction ) {
 	}
 
 	if ( ! in_array( $doaction, array( 'approve', 'unapprove', 'spam', 'unspam', 'trash', 'delete' ), true ) ) {
+		$screen = get_current_screen()->id;
+
 		/**
 		 * Fires when a custom bulk action should be handled.
 		 *
 		 * The redirect link should be modified with success or failure feedback
 		 * from the action to be used to display feedback to the user.
+		 *
+		 * The dynamic portion of the hook name, `$screen`, refers to the current screen ID.
 		 *
 		 * @since 4.7.0
 		 *
@@ -95,7 +99,7 @@ if ( $doaction ) {
 		 * @param string $doaction     The action being taken.
 		 * @param array  $items        The items to take the action on.
 		 */
-		$redirect_to = apply_filters( 'handle_bulk_actions-' . get_current_screen()->id, $redirect_to, $doaction, $comment_ids );
+		$redirect_to = apply_filters( "handle_bulk_actions-{$screen}", $redirect_to, $doaction, $comment_ids );
 	}
 
 	wp_defer_comment_counting( false );
@@ -194,7 +198,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 ?>
 
 <div class="wrap">
-<h1><?php
+<h1 class="wp-heading-inline"><?php
 if ( $post_id ) {
 	/* translators: %s: link to post */
 	printf( __( 'Comments on &#8220;%s&#8221;' ),
@@ -206,7 +210,9 @@ if ( $post_id ) {
 } else {
 	_e( 'Comments' );
 }
+?></h1>
 
+<?php
 if ( isset($_REQUEST['s']) && strlen( $_REQUEST['s'] ) ) {
 	echo '<span class="subtitle">';
 	/* translators: %s: search keywords */
@@ -215,7 +221,9 @@ if ( isset($_REQUEST['s']) && strlen( $_REQUEST['s'] ) ) {
 	);
 	echo '</span>';
 }
-?></h1>
+?>
+
+<hr class="wp-header-end">
 
 <?php
 if ( isset( $_REQUEST['error'] ) ) {

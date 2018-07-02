@@ -1,13 +1,11 @@
 .customize-partial-refreshing {
 	opacity: 0.25;
-	-webkit-transition: opacity 0.25s;
 	transition: opacity 0.25s;
 	cursor: progress;
 }
 
 /* Override highlight when refreshing */
 .customize-partial-refreshing.widget-customizer-highlighted-widget {
-	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 
@@ -23,16 +21,9 @@
 	border: 0;
 	background: transparent;
 	color: transparent;
-	-webkit-box-shadow: none;
 	box-shadow: none;
 	outline: none;
 	z-index: 5;
-}
-
-.widget .customize-partial-edit-shortcut button:active,
-.customize-partial-edit-shortcut button:active {
-	padding: 3px;
-	border: 1px solid #0085ba;
 }
 
 /**
@@ -50,14 +41,12 @@
 	height: 30px;
 	min-width: 30px;
 	min-height: 30px;
+	line-height: 1em !important;
 	font-size: 18px;
 	z-index: 5;
-	background-color: #0085ba;
-	background: #0085ba;
-	-webkit-border-radius: 50%;
+	background: #0085ba !important;
 	border-radius: 50%;
 	border: 2px solid #fff;
-	-webkit-box-shadow: 0 2px 1px rgba(46,68,83,0.15);
 	box-shadow: 0 2px 1px rgba(46,68,83,0.15);
 	text-align: center;
 	cursor: pointer;
@@ -74,6 +63,9 @@
 	             0 1px 1px #006799,
 	             1px 0 1px #006799;
 }
+.wp-custom-header .customize-partial-edit-shortcut button {
+	right: 2px
+}
 
 .customize-partial-edit-shortcut button svg {
 	fill: #fff;
@@ -84,10 +76,12 @@
 	margin: auto;
 }
 
-.customize-partial-edit-shortcut button:hover,
+.customize-partial-edit-shortcut button:hover {
+	background: #008ec2 !important; /* matches primary buttons */
+}
+
 .customize-partial-edit-shortcut button:focus {
-    background: #008ec2; /* matches primary buttons */
-	border-color: #191e23; /* provides visual focus style with 4.5 contrast against background color */
+	box-shadow: 0 0 0 2px #008ec2;
 }
 
 body.customize-partial-edit-shortcuts-shown .customize-partial-edit-shortcut button {
@@ -250,14 +244,6 @@ body.customize-partial-edit-shortcuts-hidden .customize-partial-edit-shortcut bu
 }
 
 @media screen and (max-width:320px) {
-	.site-title {
-		padding-right: 10px;
-	}
-
-	.widget-area .widget {
-		padding-right: 10px;
-	}
-
 	.widget .customize-partial-edit-shortcut button,
 	.customize-partial-edit-shortcut button {
 		right: -30px;

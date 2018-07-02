@@ -18,13 +18,13 @@ if ( ! $tax )
 	wp_die( __( 'Invalid taxonomy.' ) );
 
 if ( ! in_array( $tax->name, get_taxonomies( array( 'show_ui' => true ) ) ) ) {
-   wp_die( __( 'Sorry, you are not allowed to manage these items.' ) );
+   wp_die( __( 'Sorry, you are not allowed to edit terms in this taxonomy.' ) );
 }
 
 if ( ! current_user_can( $tax->cap->manage_terms ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'Sorry, you are not allowed to manage these items.' ) . '</p>',
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
+		'<p>' . __( 'Sorry, you are not allowed to manage terms in this taxonomy.' ) . '</p>',
 		403
 	);
 }
@@ -65,7 +65,6 @@ if ( ! $referer ) { // For POST requests.
 	$referer = wp_unslash( $_SERVER['REQUEST_URI'] );
 }
 $referer = remove_query_arg( array( '_wp_http_referer', '_wpnonce', 'error', 'message', 'paged' ), $referer );
-
 switch ( $wp_list_table->current_action() ) {
 
 case 'add-tag':
@@ -73,15 +72,15 @@ case 'add-tag':
 
 	if ( ! current_user_can( $tax->cap->edit_terms ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-			'<p>' . __( 'Sorry, you are not allowed to add this item.' ) . '</p>',
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
+			'<p>' . __( 'Sorry, you are not allowed to create terms in this taxonomy.' ) . '</p>',
 			403
 		);
 	}
 
 	$ret = wp_insert_term( $_POST['tag-name'], $taxonomy, $_POST );
 	if ( $ret && !is_wp_error( $ret ) )
-		$location = add_query_arg( 'message', 1, $location );
+		$location = add_query_arg( 'message', 1, $referer );
 	else
 		$location = add_query_arg( array( 'error' => true, 'message' => 4 ), $referer );
 
@@ -97,7 +96,7 @@ case 'delete':
 
 	if ( ! current_user_can( 'delete_term', $tag_ID ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to delete this item.' ) . '</p>',
 			403
 		);
@@ -107,6 +106,9 @@ case 'delete':
 
 	$location = add_query_arg( 'message', 2, $referer );
 
+	// When deleting a term, prevent the action from redirecting back to a term that no longer exists.
+	$location = remove_query_arg( array( 'tag_ID', 'action' ), $location );
+
 	break;
 
 case 'bulk-delete':
@@ -114,7 +116,7 @@ case 'bulk-delete':
 
 	if ( ! current_user_can( $tax->cap->delete_terms ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to delete these items.' ) . '</p>',
 			403
 		);
@@ -150,7 +152,7 @@ case 'editedtag':
 
 	if ( ! current_user_can( 'edit_term', $tag_ID ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to edit this item.' ) . '</p>',
 			403
 		);
@@ -290,13 +292,16 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 ?>
 
 <div class="wrap nosubsub">
-<h1><?php echo esc_html( $title );
+<h1 class="wp-heading-inline"><?php echo esc_html( $title ); ?></h1>
+
+<?php
 if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
 	/* translators: %s: search keywords */
 	printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( wp_unslash( $_REQUEST['s'] ) ) );
 }
 ?>
-</h1>
+
+<hr class="wp-header-end">
 
 <?php if ( $message ) : ?>
 <div id="message" class="<?php echo $class; ?> notice is-dismissible"><p><?php echo $message; ?></p></div>
@@ -396,7 +401,7 @@ do_action( "{$taxonomy}_term_new_form_tag" );
 <?php endif; // global_terms_enabled() ?>
 <?php if ( is_taxonomy_hierarchical($taxonomy) ) : ?>
 <div class="form-field term-parent-wrap">
-	<label for="parent"><?php _ex( 'Parent', 'term parent' ); ?></label>
+	<label for="parent"><?php echo esc_html( $tax->labels->parent_item ); ?></label>
 	<?php
 	$dropdown_args = array(
 		'hide_empty'       => 0,
@@ -433,8 +438,10 @@ do_action( "{$taxonomy}_term_new_form_tag" );
 
 	wp_dropdown_categories( $dropdown_args );
 	?>
-	<?php if ( 'category' == $taxonomy ) : // @todo: Generic text for hierarchical taxonomies ?>
-		<p><?php _e('Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.'); ?></p>
+	<?php if ( 'category' == $taxonomy ) : ?>
+		<p><?php _e( 'Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.' ); ?></p>
+	<?php else : ?>
+		<p><?php _e( 'Assign a parent term to create a hierarchy. The term Jazz, for example, would be the parent of Bebop and Big Band.' ); ?></p>
 	<?php endif; ?>
 </div>
 <?php endif; // is_taxonomy_hierarchical() ?>
@@ -520,6 +527,9 @@ do_action( "{$taxonomy}_add_form", $taxonomy );
 
 <div id="col-right">
 <div class="col-wrap">
+
+<?php $wp_list_table->views(); ?>
+
 <form id="posts-filter" method="post">
 <input type="hidden" name="taxonomy" value="<?php echo esc_attr( $taxonomy ); ?>" />
 <input type="hidden" name="post_type" value="<?php echo esc_attr( $post_type ); ?>" />
@@ -537,7 +547,7 @@ do_action( "{$taxonomy}_add_form", $taxonomy );
 		/* translators: %s: default category */
 		__( 'Deleting a category does not delete the posts in that category. Instead, posts that were only assigned to the deleted category are set to the category %s.' ),
 		/** This filter is documented in wp-includes/category-template.php */
-		'<strong>' . apply_filters( 'the_category', get_cat_name( get_option( 'default_category') ) ) . '</strong>'
+		'<strong>' . apply_filters( 'the_category', get_cat_name( get_option( 'default_category') ), '', '' ) . '</strong>'
 	);
 	?>
 </p>

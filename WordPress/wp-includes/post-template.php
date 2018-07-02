@@ -398,15 +398,15 @@ function get_the_excerpt( $post = null ) {
 }
 
 /**
- * Whether post has excerpt.
+ * Whether the post has a custom excerpt.
  *
  * @since 2.3.0
  *
- * @param int|WP_Post $id Optional. Post ID or post object.
- * @return bool
+ * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global $post.
+ * @return bool True if the post has a custom excerpt, false otherwise.
  */
-function has_excerpt( $id = 0 ) {
-	$post = get_post( $id );
+function has_excerpt( $post = 0 ) {
+	$post = get_post( $post );
 	return ( !empty( $post->post_excerpt ) );
 }
 
@@ -784,15 +784,16 @@ function post_password_required( $post = null ) {
 	$post = get_post($post);
 
 	if ( empty( $post->post_password ) ) {
-		/** This filter is documented in wp-includes/post.php */
+		/** This filter is documented in wp-includes/post-template.php */
 		return apply_filters( 'post_password_required', false, $post );
 	}
 
 	if ( ! isset( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] ) ) {
-		/** This filter is documented in wp-includes/post.php */
+		/** This filter is documented in wp-includes/post-template.php */
 		return apply_filters( 'post_password_required', true, $post );
 	}
 
+	require_once ABSPATH . WPINC . '/class-phpass.php';
 	$hasher = new PasswordHash( 8, true );
 
 	$hash = wp_unslash( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] );
@@ -1017,11 +1018,19 @@ function the_meta() {
 	if ( $keys = get_post_custom_keys() ) {
 		echo "<ul class='post-meta'>\n";
 		foreach ( (array) $keys as $key ) {
-			$keyt = trim($key);
-			if ( is_protected_meta( $keyt, 'post' ) )
+			$keyt = trim( $key );
+			if ( is_protected_meta( $keyt, 'post' ) ) {
 				continue;
-			$values = array_map('trim', get_post_custom_values($key));
-			$value = implode($values,', ');
+			}
+
+			$values = array_map( 'trim', get_post_custom_values( $key ) );
+			$value = implode( $values, ', ' );
+
+			$html = sprintf( "<li><span class='post-meta-key'>%s</span> %s</li>\n",
+				/* translators: %s: Post custom field name */
+				sprintf( _x( '%s:', 'Post custom field name' ), $key ),
+				$value
+			);
 
 			/**
 			 * Filters the HTML output of the li element in the post custom fields list.
@@ -1032,7 +1041,7 @@ function the_meta() {
 			 * @param string $key   Meta key.
 			 * @param string $value Meta value.
 			 */
-			echo apply_filters( 'the_meta_key', "<li><span class='post-meta-key'>$key:</span> $value</li>\n", $key, $value );
+			echo apply_filters( 'the_meta_key', $html, $key, $value );
 		}
 		echo "</ul>\n";
 	}
@@ -1126,7 +1135,7 @@ function wp_dropdown_pages( $args = '' ) {
 }
 
 /**
- * Retrieve or display list of pages in list (li) format.
+ * Retrieve or display list of pages (or hierarchical post type items) in list (li) format.
  *
  * @since 1.5.0
  * @since 4.7.0 Added the `item_spacing` argument.
@@ -1266,7 +1275,7 @@ function wp_list_pages( $args = '' ) {
  * @param array|string $args {
  *     Optional. Arguments to generate a page menu. See wp_list_pages() for additional arguments.
  *
- *     @type string          $sort_column  How to short the list of pages. Accepts post column names.
+ *     @type string          $sort_column  How to sort the list of pages. Accepts post column names.
  *                                         Default 'menu_order, post_title'.
  *     @type string          $menu_id      ID for the div containing the page list. Default is empty string.
  *     @type string          $menu_class   Class to use for the element containing the page list. Default 'menu'.
@@ -1631,6 +1640,10 @@ function get_the_password_form( $post = 0 ) {
  * @return bool True on success, false on failure.
  */
 function is_page_template( $template = '' ) {
+	if ( ! is_singular() ) {
+		return false;
+	}
+
 	$page_template = get_page_template_slug( get_queried_object_id() );
 
 	if ( empty( $template ) )

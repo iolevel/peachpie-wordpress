@@ -274,7 +274,8 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 
 	$time = current_time('mysql');
 	if ( $post = get_post($post_id) ) {
-		if ( substr( $post->post_date, 0, 4 ) > 0 )
+		// The post date doesn't usually matter for pages, so don't backdate this upload.
+		if ( 'page' !== $post->post_type && substr( $post->post_date, 0, 4 ) > 0 )
 			$time = $post->post_date;
 	}
 
@@ -313,6 +314,7 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 				/* translators: 1: audio track title, 2: artist name */
 				$content .= sprintf( __( '"%1$s" by %2$s.' ), $title, $meta['artist'] );
 			} else {
+				/* translators: 1: audio track title */
 				$content .= sprintf( __( '"%s".' ), $title );
 			}
 
@@ -331,22 +333,29 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 
 		}
 
-		if ( ! empty( $meta['year'] ) )
+		if ( ! empty( $meta['year'] ) ) {
+			/* translators: Audio file track information. 1: Year of audio track release */
 			$content .= ' ' . sprintf( __( 'Released: %d.' ), $meta['year'] );
+		}
 
 		if ( ! empty( $meta['track_number'] ) ) {
 			$track_number = explode( '/', $meta['track_number'] );
-			if ( isset( $track_number[1] ) )
+			if ( isset( $track_number[1] ) ) {
+				/* translators: Audio file track information. 1: Audio track number, 2: Total audio tracks */
 				$content .= ' ' . sprintf( __( 'Track %1$s of %2$s.' ), number_format_i18n( $track_number[0] ), number_format_i18n( $track_number[1] ) );
-			else
+			} else {
+				/* translators: Audio file track information. 1: Audio track number */
 				$content .= ' ' . sprintf( __( 'Track %1$s.' ), number_format_i18n( $track_number[0] ) );
+			}
 		}
 
-		if ( ! empty( $meta['genre'] ) )
+		if ( ! empty( $meta['genre'] ) ) {
+			/* translators: Audio file genre information. 1: Audio genre name */
 			$content .= ' ' . sprintf( __( 'Genre: %s.' ), $meta['genre'] );
+		}
 
 	// Use image exif/iptc data for title and caption defaults if possible.
-	} elseif ( 0 === strpos( $type, 'image/' ) && $image_meta = @wp_read_image_metadata( $file ) ) {
+	} elseif ( 0 === strpos( $type, 'image/' ) && $image_meta = wp_read_image_metadata( $file ) ) {
 		if ( trim( $image_meta['title'] ) && ! is_numeric( sanitize_title( $image_meta['title'] ) ) ) {
 			$title = $image_meta['title'];
 		}
@@ -370,7 +379,7 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 	unset( $attachment['ID'] );
 
 	// Save the data
-	$id = wp_insert_attachment($attachment, $file, $post_id);
+	$id = wp_insert_attachment( $attachment, $file, $post_id, true );
 	if ( !is_wp_error($id) ) {
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) );
 	}
@@ -410,7 +419,7 @@ function media_handle_sideload( $file_array, $post_id, $desc = null, $post_data 
 	$content = '';
 
 	// Use image exif/iptc data for title and caption defaults if possible.
-	if ( $image_meta = @wp_read_image_metadata($file) ) {
+	if ( $image_meta = wp_read_image_metadata( $file ) ) {
 		if ( trim( $image_meta['title'] ) && ! is_numeric( sanitize_title( $image_meta['title'] ) ) )
 			$title = $image_meta['title'];
 		if ( trim( $image_meta['caption'] ) )
@@ -844,11 +853,12 @@ function wp_media_upload_handler() {
  *
  * @since 2.6.0
  * @since 4.2.0 Introduced the `$return` parameter.
+ * @since 4.8.0 Introduced the 'id' option within the `$return` parameter.
  *
  * @param string $file    The URL of the image to download.
  * @param int    $post_id The post ID the media is to be associated with.
  * @param string $desc    Optional. Description of the image.
- * @param string $return  Optional. Accepts 'html' (image tag html) or 'src' (URL). Default 'html'.
+ * @param string $return  Optional. Accepts 'html' (image tag html) or 'src' (URL), or 'id' (attachment ID). Default 'html'.
  * @return string|WP_Error Populated HTML img tag on success, WP_Error object otherwise.
  */
 function media_sideload_image( $file, $post_id, $desc = null, $return = 'html' ) {
@@ -877,6 +887,9 @@ function media_sideload_image( $file, $post_id, $desc = null, $return = 'html' )
 		// If error storing permanently, unlink.
 		if ( is_wp_error( $id ) ) {
 			@unlink( $file_array['tmp_name'] );
+			return $id;
+		// If attachment id was requested, return it early.
+		} elseif ( $return === 'id' ) {
 			return $id;
 		}
 
@@ -1856,15 +1869,16 @@ $post_params = array(
  */
 $post_params = apply_filters( 'upload_post_params', $post_params );
 
+/*
+ * Since 4.9 the `runtimes` setting is hardcoded in our version of Plupload to `html5,html4`,
+ * and the `flash_swf_url` and `silverlight_xap_url` are not used.
+ */
 $plupload_init = array(
-	'runtimes'            => 'html5,flash,silverlight,html4',
 	'browse_button'       => 'plupload-browse-button',
 	'container'           => 'plupload-upload-ui',
 	'drop_element'        => 'drag-drop-area',
 	'file_data_name'      => 'async-upload',
 	'url'                 => $upload_action_url,
-	'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
-	'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
 	'filters' => array(
 		'max_file_size'   => $max_upload_size . 'b',
 	),
@@ -2886,6 +2900,10 @@ function attachment_submitbox_metadata() {
 		endif;
 
 	if ( preg_match( '#^(audio|video)/#', $post->post_mime_type ) ) {
+		$fields = array(
+			'length_formatted' => __( 'Length:' ),
+			'bitrate'          => __( 'Bitrate:' ),
+		);
 
 		/**
 		 * Filters the audio and video metadata fields to be shown in the publish meta box.
@@ -2894,13 +2912,12 @@ function attachment_submitbox_metadata() {
 		 * metadata key, and the value should be the desired label.
 		 *
 		 * @since 3.7.0
+		 * @since 4.9.0 Added the `$post` parameter.
 		 *
-		 * @param array $fields An array of the attachment metadata keys and labels.
+		 * @param array   $fields An array of the attachment metadata keys and labels.
+		 * @param WP_Post $post   WP_Post object for the current attachment.
 		 */
-		$fields = apply_filters( 'media_submitbox_misc_sections', array(
-			'length_formatted' => __( 'Length:' ),
-			'bitrate'          => __( 'Bitrate:' ),
-		) );
+		$fields = apply_filters( 'media_submitbox_misc_sections', $fields, $post );
 
 		foreach ( $fields as $key => $label ) {
 			if ( empty( $meta[ $key ] ) ) {
@@ -2925,6 +2942,11 @@ function attachment_submitbox_metadata() {
 	<?php
 		}
 
+		$fields = array(
+			'dataformat' => __( 'Audio Format:' ),
+			'codec'      => __( 'Audio Codec:' )
+		);
+
 		/**
 		 * Filters the audio attachment metadata fields to be shown in the publish meta box.
 		 *
@@ -2932,13 +2954,12 @@ function attachment_submitbox_metadata() {
 		 * metadata key, and the value should be the desired label.
 		 *
 		 * @since 3.7.0
+		 * @since 4.9.0 Added the `$post` parameter.
 		 *
-		 * @param array $fields An array of the attachment metadata keys and labels.
+		 * @param array   $fields An array of the attachment metadata keys and labels.
+		 * @param WP_Post $post   WP_Post object for the current attachment.
 		 */
-		$audio_fields = apply_filters( 'audio_submitbox_misc_sections', array(
-			'dataformat' => __( 'Audio Format:' ),
-			'codec'      => __( 'Audio Codec:' )
-		) );
+		$audio_fields = apply_filters( 'audio_submitbox_misc_sections', $fields, $post );
 
 		foreach ( $audio_fields as $key => $label ) {
 			if ( empty( $meta['audio'][ $key ] ) ) {
@@ -2974,7 +2995,7 @@ function wp_add_id3_tag_data( &$metadata, $data ) {
 		if ( ! empty( $data[$version]['comments'] ) ) {
 			foreach ( $data[$version]['comments'] as $key => $list ) {
 				if ( 'length' !== $key && ! empty( $list ) ) {
-					$metadata[$key] = reset( $list );
+					$metadata[$key] = wp_kses_post( reset( $list ) );
 					// Fix bug in byte stream analysis.
 					if ( 'terms_of_use' === $key && 0 === strpos( $metadata[$key], 'yright notice.' ) )
 						$metadata[$key] = 'Cop' . $metadata[$key];
@@ -3062,9 +3083,32 @@ function wp_read_video_metadata( $file ) {
 		$metadata['audio'] = $data['audio'];
 	}
 
+	if ( empty( $metadata['created_timestamp'] ) ) {
+		$created_timestamp = wp_get_media_creation_timestamp( $data );
+
+		if ( $created_timestamp !== false ) {
+			$metadata['created_timestamp'] = $created_timestamp;
+		}
+	}
+
 	wp_add_id3_tag_data( $metadata, $data );
 
-	return $metadata;
+	$file_format = isset( $metadata['fileformat'] ) ? $metadata['fileformat'] : null;
+
+	/**
+	 * Filters the array of metadata retrieved from a video.
+	 *
+	 * In core, usually this selection is what is stored.
+	 * More complete data can be parsed from the `$data` parameter.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param array  $metadata       Filtered Video metadata.
+	 * @param string $file           Path to video file.
+	 * @param string $file_format    File format of video, as analyzed by getID3.
+	 * @param string $data           Raw metadata from getID3.
+	 */
+	return apply_filters( 'wp_read_video_metadata', $metadata, $file, $file_format, $data );
 }
 
 /**
@@ -3110,6 +3154,55 @@ function wp_read_audio_metadata( $file ) {
 	wp_add_id3_tag_data( $metadata, $data );
 
 	return $metadata;
+}
+
+/**
+ * Parse creation date from media metadata.
+ *
+ * The getID3 library doesn't have a standard method for getting creation dates,
+ * so the location of this data can vary based on the MIME type.
+ *
+ * @since 4.9.0
+ *
+ * @link https://github.com/JamesHeinrich/getID3/blob/master/structure.txt
+ *
+ * @param array $metadata The metadata returned by getID3::analyze().
+ * @return int|bool A UNIX timestamp for the media's creation date if available
+ *                  or a boolean FALSE if a timestamp could not be determined.
+ */
+function wp_get_media_creation_timestamp( $metadata ) {
+	$creation_date = false;
+
+	if ( empty( $metadata['fileformat'] ) ) {
+		return $creation_date;
+	}
+
+	switch ( $metadata['fileformat'] ) {
+		case 'asf':
+			if ( isset( $metadata['asf']['file_properties_object']['creation_date_unix'] ) ) {
+				$creation_date = (int) $metadata['asf']['file_properties_object']['creation_date_unix'];
+			}
+			break;
+
+		case 'matroska':
+		case 'webm':
+			if ( isset( $metadata['matroska']['comments']['creation_time']['0'] ) ) {
+				$creation_date = strtotime( $metadata['matroska']['comments']['creation_time']['0'] );
+			}
+			elseif ( isset( $metadata['matroska']['info']['0']['DateUTC_unix'] ) ) {
+				$creation_date = (int) $metadata['matroska']['info']['0']['DateUTC_unix'];
+			}
+			break;
+
+		case 'quicktime':
+		case 'mp4':
+			if ( isset( $metadata['quicktime']['moov']['subatoms']['0']['creation_time_unix'] ) ) {
+				$creation_date = (int) $metadata['quicktime']['moov']['subatoms']['0']['creation_time_unix'];
+			}
+			break;
+	}
+
+	return $creation_date;
 }
 
 /**

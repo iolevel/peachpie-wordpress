@@ -55,6 +55,9 @@ function twentyseventeen_setup() {
 
 	add_image_size( 'twentyseventeen-thumbnail-avatar', 100, 100, true );
 
+	// Set the default content width.
+	$GLOBALS['content_width'] = 525;
+
 	// This theme uses wp_nav_menu() in two locations.
 	register_nav_menus( array(
 		'top'    => __( 'Top Menu', 'twentyseventeen' ),
@@ -103,56 +106,92 @@ function twentyseventeen_setup() {
  	 */
 	add_editor_style( array( 'assets/css/editor-style.css', twentyseventeen_fonts_url() ) );
 
-	add_theme_support( 'starter-content', array(
+	// Define and register starter content to showcase the theme on new sites.
+	$starter_content = array(
 		'widgets' => array(
+			// Place three core-defined widgets in the sidebar area.
 			'sidebar-1' => array(
 				'text_business_info',
 				'search',
-				'text_credits',
+				'text_about',
 			),
 
+			// Add the core-defined business info widget to the footer 1 area.
 			'sidebar-2' => array(
 				'text_business_info',
 			),
 
+			// Put two core-defined widgets in the footer 2 area.
 			'sidebar-3' => array(
-				'text_credits',
+				'text_about',
+				'search',
 			),
 		),
 
+		// Specify the core-defined pages to create and add custom thumbnails to some of them.
 		'posts' => array(
 			'home',
-			'about-us',
-			'contact-us',
-			'blog',
-			'homepage-section',
+			'about' => array(
+				'thumbnail' => '{{image-sandwich}}',
+			),
+			'contact' => array(
+				'thumbnail' => '{{image-espresso}}',
+			),
+			'blog' => array(
+				'thumbnail' => '{{image-coffee}}',
+			),
+			'homepage-section' => array(
+				'thumbnail' => '{{image-espresso}}',
+			),
 		),
 
+		// Create the custom image attachments used as post thumbnails for pages.
+		'attachments' => array(
+			'image-espresso' => array(
+				'post_title' => _x( 'Espresso', 'Theme starter content', 'twentyseventeen' ),
+				'file' => 'assets/images/espresso.jpg', // URL relative to the template directory.
+			),
+			'image-sandwich' => array(
+				'post_title' => _x( 'Sandwich', 'Theme starter content', 'twentyseventeen' ),
+				'file' => 'assets/images/sandwich.jpg',
+			),
+			'image-coffee' => array(
+				'post_title' => _x( 'Coffee', 'Theme starter content', 'twentyseventeen' ),
+				'file' => 'assets/images/coffee.jpg',
+			),
+		),
+
+		// Default to a static front page and assign the front and posts pages.
 		'options' => array(
 			'show_on_front' => 'page',
 			'page_on_front' => '{{home}}',
 			'page_for_posts' => '{{blog}}',
 		),
 
+		// Set the front page section theme mods to the IDs of the core-registered pages.
 		'theme_mods' => array(
 			'panel_1' => '{{homepage-section}}',
-			'panel_2' => '{{about-us}}',
+			'panel_2' => '{{about}}',
 			'panel_3' => '{{blog}}',
-			'panel_4' => '{{contact-us}}',
+			'panel_4' => '{{contact}}',
 		),
 
+		// Set up nav menus for each of the two areas registered in the theme.
 		'nav_menus' => array(
+			// Assign a menu to the "top" location.
 			'top' => array(
-				'name' => __( 'Top', 'twentyseventeen' ),
+				'name' => __( 'Top Menu', 'twentyseventeen' ),
 				'items' => array(
-					'page_home',
+					'link_home', // Note that the core "home" page is actually a link in case a static front page is not used.
 					'page_about',
 					'page_blog',
 					'page_contact',
 				),
 			),
+
+			// Assign a menu to the "social" location.
 			'social' => array(
-				'name' => __( 'Social', 'twentyseventeen' ),
+				'name' => __( 'Social Links Menu', 'twentyseventeen' ),
 				'items' => array(
 					'link_yelp',
 					'link_facebook',
@@ -162,7 +201,18 @@ function twentyseventeen_setup() {
 				),
 			),
 		),
-	) );
+	);
+
+	/**
+	 * Filters Twenty Seventeen array of starter content.
+	 *
+	 * @since Twenty Seventeen 1.1
+	 *
+	 * @param array $starter_content Array of starter content.
+	 */
+	$starter_content = apply_filters( 'twentyseventeen_starter_content', $starter_content );
+
+	add_theme_support( 'starter-content', $starter_content );
 }
 add_action( 'after_setup_theme', 'twentyseventeen_setup' );
 
@@ -175,10 +225,23 @@ add_action( 'after_setup_theme', 'twentyseventeen_setup' );
  */
 function twentyseventeen_content_width() {
 
-	$content_width = 700;
+	$content_width = $GLOBALS['content_width'];
 
-	if ( twentyseventeen_is_frontpage() ) {
-		$content_width = 1120;
+	// Get layout.
+	$page_layout = get_theme_mod( 'page_layout' );
+
+	// Check if layout is one column.
+	if ( 'one-column' === $page_layout ) {
+		if ( twentyseventeen_is_frontpage() ) {
+			$content_width = 644;
+		} elseif ( is_page() ) {
+			$content_width = 740;
+		}
+	}
+
+	// Check if is single post and there is no sidebar.
+	if ( is_single() && ! is_active_sidebar( 'sidebar-1' ) ) {
+		$content_width = 740;
 	}
 
 	/**
@@ -186,11 +249,11 @@ function twentyseventeen_content_width() {
 	 *
 	 * @since Twenty Seventeen 1.0
 	 *
-	 * @param $content_width integer
+	 * @param int $content_width Content width in pixels.
 	 */
 	$GLOBALS['content_width'] = apply_filters( 'twentyseventeen_content_width', $content_width );
 }
-add_action( 'after_setup_theme', 'twentyseventeen_content_width', 0 );
+add_action( 'template_redirect', 'twentyseventeen_content_width', 0 );
 
 /**
  * Register custom fonts.
@@ -198,7 +261,7 @@ add_action( 'after_setup_theme', 'twentyseventeen_content_width', 0 );
 function twentyseventeen_fonts_url() {
 	$fonts_url = '';
 
-	/**
+	/*
 	 * Translators: If there are characters in your language that are not
 	 * supported by Libre Franklin, translate this to 'off'. Do not translate
 	 * into your own language.
@@ -249,9 +312,9 @@ add_filter( 'wp_resource_hints', 'twentyseventeen_resource_hints', 10, 2 );
  */
 function twentyseventeen_widgets_init() {
 	register_sidebar( array(
-		'name'          => __( 'Sidebar', 'twentyseventeen' ),
+		'name'          => __( 'Blog Sidebar', 'twentyseventeen' ),
 		'id'            => 'sidebar-1',
-		'description'   => __( 'Add widgets here to appear in your sidebar.', 'twentyseventeen' ),
+		'description'   => __( 'Add widgets here to appear in your sidebar on blog posts and archive pages.', 'twentyseventeen' ),
 		'before_widget' => '<section id="%1$s" class="widget %2$s">',
 		'after_widget'  => '</section>',
 		'before_title'  => '<h2 class="widget-title">',
@@ -286,6 +349,7 @@ add_action( 'widgets_init', 'twentyseventeen_widgets_init' );
  *
  * @since Twenty Seventeen 1.0
  *
+ * @param string $link Link to single post/page.
  * @return string 'Continue reading' link prepended with an ellipsis.
  */
 function twentyseventeen_excerpt_more( $link ) {
@@ -356,6 +420,12 @@ function twentyseventeen_scripts() {
 		wp_enqueue_style( 'twentyseventeen-colors-dark', get_theme_file_uri( '/assets/css/colors-dark.css' ), array( 'twentyseventeen-style' ), '1.0' );
 	}
 
+	// Load the Internet Explorer 9 specific stylesheet, to fix display issues in the Customizer.
+	if ( is_customize_preview() ) {
+		wp_enqueue_style( 'twentyseventeen-ie9', get_theme_file_uri( '/assets/css/ie9.css' ), array( 'twentyseventeen-style' ), '1.0' );
+		wp_style_add_data( 'twentyseventeen-ie9', 'conditional', 'IE 9' );
+	}
+
 	// Load the Internet Explorer 8 specific stylesheet.
 	wp_enqueue_style( 'twentyseventeen-ie8', get_theme_file_uri( '/assets/css/ie8.css' ), array( 'twentyseventeen-style' ), '1.0' );
 	wp_style_add_data( 'twentyseventeen-ie8', 'conditional', 'lt IE 9' );
@@ -371,7 +441,7 @@ function twentyseventeen_scripts() {
 	);
 
 	if ( has_nav_menu( 'top' ) ) {
-		wp_enqueue_script( 'twentyseventeen-navigation', get_theme_file_uri( '/assets/js/navigation.js' ), array(), '1.0', true );
+		wp_enqueue_script( 'twentyseventeen-navigation', get_theme_file_uri( '/assets/js/navigation.js' ), array( 'jquery' ), '1.0', true );
 		$twentyseventeen_l10n['expand']         = __( 'Expand child menu', 'twentyseventeen' );
 		$twentyseventeen_l10n['collapse']       = __( 'Collapse child menu', 'twentyseventeen' );
 		$twentyseventeen_l10n['icon']           = twentyseventeen_get_svg( array( 'icon' => 'angle-down', 'fallback' => true ) );
@@ -418,6 +488,24 @@ function twentyseventeen_content_image_sizes_attr( $sizes, $size ) {
 add_filter( 'wp_calculate_image_sizes', 'twentyseventeen_content_image_sizes_attr', 10, 2 );
 
 /**
+ * Filter the `sizes` value in the header image markup.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param string $html   The HTML image tag markup being filtered.
+ * @param object $header The custom header object returned by 'get_custom_header()'.
+ * @param array  $attr   Array of the attributes for the image tag.
+ * @return string The filtered header image HTML.
+ */
+function twentyseventeen_header_image_tag( $html, $header, $attr ) {
+	if ( isset( $attr['sizes'] ) ) {
+		$html = str_replace( $attr['sizes'], '100vw', $html );
+	}
+	return $html;
+}
+add_filter( 'get_header_image_tag', 'twentyseventeen_header_image_tag', 10, 3 );
+
+/**
  * Add custom image sizes attribute to enhance responsive image functionality
  * for post thumbnails.
  *
@@ -426,7 +514,7 @@ add_filter( 'wp_calculate_image_sizes', 'twentyseventeen_content_image_sizes_att
  * @param array $attr       Attributes for the image markup.
  * @param int   $attachment Image attachment ID.
  * @param array $size       Registered image size or flat array of height and width dimensions.
- * @return string A source size value for use in a post thumbnail 'sizes' attribute.
+ * @return array The filtered attributes for the image markup.
  */
 function twentyseventeen_post_thumbnail_sizes_attr( $attr, $attachment, $size ) {
 	if ( is_archive() || is_search() || is_home() ) {
@@ -452,6 +540,25 @@ function twentyseventeen_front_page_template( $template ) {
 	return is_home() ? '' : $template;
 }
 add_filter( 'frontpage_template',  'twentyseventeen_front_page_template' );
+
+/**
+ * Modifies tag cloud widget arguments to display all tags in the same font size
+ * and use list format for better accessibility.
+ *
+ * @since Twenty Seventeen 1.4
+ *
+ * @param array $args Arguments for tag cloud widget.
+ * @return array The filtered arguments for tag cloud widget.
+ */
+function twentyseventeen_widget_tag_cloud_args( $args ) {
+	$args['largest']  = 1;
+	$args['smallest'] = 1;
+	$args['unit']     = 'em';
+	$args['format']   = 'list';
+
+	return $args;
+}
+add_filter( 'widget_tag_cloud_args', 'twentyseventeen_widget_tag_cloud_args' );
 
 /**
  * Implement the Custom Header feature.

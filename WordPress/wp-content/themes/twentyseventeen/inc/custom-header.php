@@ -2,7 +2,7 @@
 /**
  * Custom header implementation
  *
- * @link http://codex.wordpress.org/Custom_Headers
+ * @link https://codex.wordpress.org/Custom_Headers
  *
  * @package WordPress
  * @subpackage Twenty_Seventeen
@@ -35,7 +35,6 @@ function twentyseventeen_custom_header_setup() {
 	 */
 	add_theme_support( 'custom-header', apply_filters( 'twentyseventeen_custom_header_args', array(
 		'default-image'      => get_parent_theme_file_uri( '/assets/images/header.jpg' ),
-		'default-text-color' => 'ffffff',
 		'width'              => 2000,
 		'height'             => 1200,
 		'flex-height'        => true,
@@ -70,7 +69,7 @@ function twentyseventeen_header_style() {
 
 	// If we get this far, we have custom styles. Let's do this.
 	?>
-	<style type="text/css">
+	<style id="twentyseventeen-custom-header-styles" type="text/css">
 	<?php
 		// Has the text been hidden?
 		if ( 'blank' === $header_text_color ) :
@@ -85,10 +84,23 @@ function twentyseventeen_header_style() {
 		else :
 	?>
 		.site-title a,
-		.twentyseventeen-front-page:not(.no-header-image) .site-title,
-		.twentyseventeen-front-page:not(.no-header-image) .site-title a,
+		.colors-dark .site-title a,
+		.colors-custom .site-title a,
+		body.has-header-image .site-title a,
+		body.has-header-video .site-title a,
+		body.has-header-image.colors-dark .site-title a,
+		body.has-header-video.colors-dark .site-title a,
+		body.has-header-image.colors-custom .site-title a,
+		body.has-header-video.colors-custom .site-title a,
 		.site-description,
-		.twentyseventeen-front-page:not(.no-header-image) .site-description {
+		.colors-dark .site-description,
+		.colors-custom .site-description,
+		body.has-header-image .site-description,
+		body.has-header-video .site-description,
+		body.has-header-image.colors-dark .site-description,
+		body.has-header-video.colors-dark .site-description,
+		body.has-header-image.colors-custom .site-description,
+		body.has-header-video.colors-custom .site-description {
 			color: #<?php echo esc_attr( $header_text_color ); ?>;
 		}
 	<?php endif; ?>
@@ -96,3 +108,16 @@ function twentyseventeen_header_style() {
 	<?php
 }
 endif; // End of twentyseventeen_header_style.
+
+/**
+ * Customize video play/pause button in the custom header.
+ *
+ * @param array $settings Video settings.
+ * @return array The filtered video settings.
+ */
+function twentyseventeen_video_controls( $settings ) {
+	$settings['l10n']['play'] = '<span class="screen-reader-text">' . __( 'Play background video', 'twentyseventeen' ) . '</span>' . twentyseventeen_get_svg( array( 'icon' => 'play' ) );
+	$settings['l10n']['pause'] = '<span class="screen-reader-text">' . __( 'Pause background video', 'twentyseventeen' ) . '</span>' . twentyseventeen_get_svg( array( 'icon' => 'pause' ) );
+	return $settings;
+}
+add_filter( 'header_video_settings', 'twentyseventeen_video_controls' );

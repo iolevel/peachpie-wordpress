@@ -1,5 +1,5 @@
 <?php
-//if ( ! class_exists( 'Services_JSON' ) ) :
+if ( ! class_exists( 'Services_JSON' ) ) :
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 /**
  * Converts to and from JSON format.
@@ -912,8 +912,8 @@ class Services_JSON
     }
 
 }
-/*
-if (class_exists('PEAR_Error')) {
+
+/*if (class_exists('PEAR_Error')) {
 
     class Services_JSON_Error extends PEAR_Error
     {
@@ -929,8 +929,8 @@ if (class_exists('PEAR_Error')) {
                                      $mode = null, $options = null, $userinfo = null);
 	}
     }
-*/
-//} else {
+
+} else {*/
 
     /**
      * @todo Ultimately, this class shall be descended from PEAR_Error
@@ -955,6 +955,6 @@ if (class_exists('PEAR_Error')) {
 		}
     }
     
-//}
+/*}*/
 
-//endif;
+endif;

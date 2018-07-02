@@ -234,40 +234,6 @@ function get_theme_feature_list( $api = true ) {
 	// Hard-coded list is used if api not accessible.
 	$features = array(
 
-		__( 'Layout' ) => array(
-			'grid-layout'   => __( 'Grid Layout' ),
-			'one-column'    => __( 'One Column' ),
-			'two-columns'   => __( 'Two Columns' ),
-			'three-columns' => __( 'Three Columns' ),
-			'four-columns'  => __( 'Four Columns' ),
-			'left-sidebar'  => __( 'Left Sidebar' ),
-			'right-sidebar' => __( 'Right Sidebar' ),
-		),
-
-		__( 'Features' ) => array(
-			'accessibility-ready'   => __( 'Accessibility Ready' ),
-			'buddypress'            => __( 'BuddyPress' ),
-			'custom-background'     => __( 'Custom Background' ),
-			'custom-colors'         => __( 'Custom Colors' ),
-			'custom-header'         => __( 'Custom Header' ),
-			'custom-logo'           => __( 'Custom Logo' ),
-			'custom-menu'           => __( 'Custom Menu' ),
-			'editor-style'          => __( 'Editor Style' ),
-			'featured-image-header' => __( 'Featured Image Header' ),
-			'featured-images'       => __( 'Featured Images' ),
-			'flexible-header'       => __( 'Flexible Header' ),
-			'footer-widgets'        => __( 'Footer Widgets' ),
-			'front-page-post-form'  => __( 'Front Page Posting' ),
-			'full-width-template'   => __( 'Full Width Template' ),
-			'microformats'          => __( 'Microformats' ),
-			'post-formats'          => __( 'Post Formats' ),
-			'rtl-language-support'  => __( 'RTL Language Support' ),
-			'sticky-post'           => __( 'Sticky Post' ),
-			'theme-options'         => __( 'Theme Options' ),
-			'threaded-comments'     => __( 'Threaded Comments' ),
-			'translation-ready'     => __( 'Translation Ready' ),
-		),
-
 		__( 'Subject' )  => array(
 			'blog'           => __( 'Blog' ),
 			'e-commerce'     => __( 'E-Commerce' ),
@@ -278,7 +244,34 @@ function get_theme_feature_list( $api = true ) {
 			'news'           => __( 'News' ),
 			'photography'    => __( 'Photography' ),
 			'portfolio'      => __( 'Portfolio' ),
+		),
+
+		__( 'Features' ) => array(
+			'accessibility-ready'   => __( 'Accessibility Ready' ),
+			'custom-background'     => __( 'Custom Background' ),
+			'custom-colors'         => __( 'Custom Colors' ),
+			'custom-header'         => __( 'Custom Header' ),
+			'custom-logo'           => __( 'Custom Logo' ),
+			'editor-style'          => __( 'Editor Style' ),
+			'featured-image-header' => __( 'Featured Image Header' ),
+			'featured-images'       => __( 'Featured Images' ),
+			'footer-widgets'        => __( 'Footer Widgets' ),
+			'full-width-template'   => __( 'Full Width Template' ),
+			'post-formats'          => __( 'Post Formats' ),
+			'sticky-post'           => __( 'Sticky Post' ),
+			'theme-options'         => __( 'Theme Options' ),
+		),
+
+		__( 'Layout' ) => array(
+			'grid-layout'   => __( 'Grid Layout' ),
+			'one-column'    => __( 'One Column' ),
+			'two-columns'   => __( 'Two Columns' ),
+			'three-columns' => __( 'Three Columns' ),
+			'four-columns'  => __( 'Four Columns' ),
+			'left-sidebar'  => __( 'Left Sidebar' ),
+			'right-sidebar' => __( 'Right Sidebar' ),
 		)
+
 	);
 
 	if ( ! $api || ! current_user_can( 'install_themes' ) )
@@ -448,11 +441,15 @@ function themes_api( $action, $args = array() ) {
 	$res = apply_filters( 'themes_api', false, $action, $args );
 
 	if ( ! $res ) {
+		// include an unmodified $wp_version
+		include( ABSPATH . WPINC . '/version.php' );
+
 		$url = $http_url = 'http://api.wordpress.org/themes/info/1.0/';
 		if ( $ssl = wp_http_supports( array( 'ssl' ) ) )
 			$url = set_url_scheme( $url, 'https' );
 
 		$http_args = array(
+			'user-agent' => 'WordPress/' . $wp_version . '; ' . home_url( '/' ),
 			'body' => array(
 				'action' => $action,
 				'request' => serialize( $args )
@@ -462,17 +459,39 @@ function themes_api( $action, $args = array() ) {
 
 		if ( $ssl && is_wp_error( $request ) ) {
 			if ( ! wp_doing_ajax() ) {
-				trigger_error( __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ) . ' ' . __( '(WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.)' ), headers_sent() || WP_DEBUG ? E_USER_WARNING : E_USER_NOTICE );
+				trigger_error(
+					sprintf(
+						/* translators: %s: support forums URL */
+						__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+						__( 'https://wordpress.org/support/' )
+					) . ' ' . __( '(WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.)' ),
+					headers_sent() || WP_DEBUG ? E_USER_WARNING : E_USER_NOTICE
+				);
 			}
 			$request = wp_remote_post( $http_url, $http_args );
 		}
 
 		if ( is_wp_error($request) ) {
-			$res = new WP_Error('themes_api_failed', __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ), $request->get_error_message() );
+			$res = new WP_Error( 'themes_api_failed',
+				sprintf(
+					/* translators: %s: support forums URL */
+					__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+					__( 'https://wordpress.org/support/' )
+				),
+				$request->get_error_message()
+			);
 		} else {
 			$res = maybe_unserialize( wp_remote_retrieve_body( $request ) );
-			if ( ! is_object( $res ) && ! is_array( $res ) )
-				$res = new WP_Error('themes_api_failed', __( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ), wp_remote_retrieve_body( $request ) );
+			if ( ! is_object( $res ) && ! is_array( $res ) ) {
+				$res = new WP_Error( 'themes_api_failed',
+					sprintf(
+						/* translators: %s: support forums URL */
+						__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+						__( 'https://wordpress.org/support/' )
+					),
+					wp_remote_retrieve_body( $request )
+				);
+			}
 		}
 	}
 
@@ -548,15 +567,16 @@ function wp_prepare_themes_for_js( $themes = null ) {
 
 		$parent = false;
 		if ( $theme->parent() ) {
-			$parent = $theme->parent()->display( 'Name' );
-			$parents[ $slug ] = $theme->parent()->get_stylesheet();
+			$parent = $theme->parent();
+			$parents[ $slug ] = $parent->get_stylesheet();
+			$parent = $parent->display( 'Name' );
 		}
 
 		$customize_action = null;
 		if ( current_user_can( 'edit_theme_options' ) && current_user_can( 'customize' ) ) {
 			$customize_action = esc_url( add_query_arg(
 				array(
-					'return' => urlencode( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ),
+					'return' => urlencode( esc_url_raw( remove_query_arg( wp_removable_query_args(), wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ),
 				),
 				wp_customize_url( $slug )
 			) );
@@ -609,12 +629,10 @@ function wp_prepare_themes_for_js( $themes = null ) {
  * @since 4.2.0
  */
 function customize_themes_print_templates() {
-	$preview_url = esc_url( add_query_arg( 'theme', '__THEME__' ) ); // Token because esc_url() strips curly braces.
-	$preview_url = str_replace( '__THEME__', '{{ data.id }}', $preview_url );
 	?>
 	<script type="text/html" id="tmpl-customize-themes-details-view">
 		<div class="theme-backdrop"></div>
-		<div class="theme-wrap wp-clearfix">
+		<div class="theme-wrap wp-clearfix" role="document">
 			<div class="theme-header">
 				<button type="button" class="left dashicons dashicons-no"><span class="screen-reader-text"><?php _e( 'Show previous theme' ); ?></span></button>
 				<button type="button" class="right dashicons dashicons-no"><span class="screen-reader-text"><?php _e( 'Show next theme' ); ?></span></button>
@@ -622,7 +640,7 @@ function customize_themes_print_templates() {
 			</div>
 			<div class="theme-about wp-clearfix">
 				<div class="theme-screenshots">
-				<# if ( data.screenshot[0] ) { #>
+				<# if ( data.screenshot && data.screenshot[0] ) { #>
 					<div class="screenshot"><img src="{{ data.screenshot[0] }}" alt="" /></div>
 				<# } else { #>
 					<div class="screenshot blank"></div>
@@ -635,29 +653,53 @@ function customize_themes_print_templates() {
 					<# } #>
 					<h2 class="theme-name">{{{ data.name }}}<span class="theme-version"><?php printf( __( 'Version: %s' ), '{{ data.version }}' ); ?></span></h2>
 					<h3 class="theme-author"><?php printf( __( 'By %s' ), '{{{ data.authorAndUri }}}' ); ?></h3>
-					<p class="theme-description">{{{ data.description }}}</p>
+
+					<# if ( data.stars && 0 != data.num_ratings ) { #>
+						<div class="theme-rating">
+							{{{ data.stars }}}
+							<span class="num-ratings">
+								<?php
+								/* translators: %s: number of ratings */
+								echo sprintf( __( '(%s ratings)' ), '{{ data.num_ratings }}' );
+								?>
+							</span>
+						</div>
+					<# } #>
+
+					<# if ( data.hasUpdate ) { #>
+						<div class="notice notice-warning notice-alt notice-large" data-slug="{{ data.id }}">
+							<h3 class="notice-title"><?php _e( 'Update Available' ); ?></h3>
+							{{{ data.update }}}
+						</div>
+					<# } #>
 
 					<# if ( data.parent ) { #>
 						<p class="parent-theme"><?php printf( __( 'This is a child theme of %s.' ), '<strong>{{{ data.parent }}}</strong>' ); ?></p>
 					<# } #>
 
+					<p class="theme-description">{{{ data.description }}}</p>
+
 					<# if ( data.tags ) { #>
-						<p class="theme-tags"><span><?php _e( 'Tags:' ); ?></span> {{ data.tags }}</p>
+						<p class="theme-tags"><span><?php _e( 'Tags:' ); ?></span> {{{ data.tags }}}</p>
 					<# } #>
 				</div>
 			</div>
 
-			<# if ( ! data.active ) { #>
-				<div class="theme-actions">
-					<div class="inactive-theme">
-						<?php
-						/* translators: %s: Theme name */
-						$aria_label = sprintf( __( 'Preview %s' ), '{{ data.name }}' );
-						?>
-						<a href="<?php echo $preview_url; ?>" target="_top" class="button button-primary" aria-label="<?php echo esc_attr( $aria_label ); ?>"><?php _e( 'Live Preview' ); ?></a>
-					</div>
-				</div>
-			<# } #>
+			<div class="theme-actions">
+				<# if ( data.active ) { #>
+					<button type="button" class="button button-primary customize-theme"><?php _e( 'Customize' ); ?></button>
+				<# } else if ( 'installed' === data.type ) { #>
+					<?php if ( current_user_can( 'delete_themes' ) ) { ?>
+						<# if ( data.actions && data.actions['delete'] ) { #>
+							<a href="{{{ data.actions['delete'] }}}" data-slug="{{ data.id }}" class="button button-secondary delete-theme"><?php _e( 'Delete' ); ?></a>
+						<# } #>
+					<?php } ?>
+					<button type="button" class="button button-primary preview-theme" data-slug="{{ data.id }}"><?php _e( 'Live Preview' ); ?></button>
+				<# } else { #>
+					<button type="button" class="button theme-install" data-slug="{{ data.id }}"><?php _e( 'Install' ); ?></button>
+					<button type="button" class="button button-primary theme-install preview" data-slug="{{ data.id }}"><?php _e( 'Install &amp; Preview' ); ?></button>
+				<# } #>
+			</div>
 		</div>
 	</script>
 	<?php

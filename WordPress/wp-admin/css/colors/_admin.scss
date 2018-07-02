@@ -408,12 +408,7 @@ ul#adminmenu > li.current > a.current:after {
 }
 
 .media-selection .attachment.selection.details .thumbnail {
-	-webkit-box-shadow:
-		0px 0px 0px 1px #fff,
-		0px 0px 0px 3px $highlight-color;
-	box-shadow:
-		0px 0px 0px 1px #fff,
-		0px 0px 0px 3px $highlight-color;
+	box-shadow: 0 0 0 1px #fff, 0 0 0 3px $highlight-color;
 }
 
 
@@ -465,26 +460,6 @@ body.more-filters-opened .more-filters:focus:before {
 .widgets-chooser li.widgets-chooser-selected:before,
 .widgets-chooser li.widgets-chooser-selected:focus:before {
 	color: $menu-highlight-text;
-}
-
-/* Customize */
-
-#customize-theme-controls .widget-area-select .selected {
-	background-color: $menu-highlight-background;
-	color: $menu-highlight-text;
-}
-
-#customize-footer-actions .devices button:focus {
-	border-bottom-color: $highlight-color;
-}
-
-#customize-controls .control-section:hover > .accordion-section-title,
-#customize-controls .control-section .accordion-section-title:hover,
-#customize-controls .control-section.open .accordion-section-title,
-#customize-controls .control-section .accordion-section-title:focus,
-#available-widgets .widget-tpl:hover,
-#available-widgets .widget-tpl.selected {
-	border-left-color: $highlight-color;
 }
 
 /* Responsive Component */
