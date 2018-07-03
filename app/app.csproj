@@ -6,11 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
+    <None Include="*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PeachPied.WordPress.AspNetCore\PeachPied.WordPress.AspNetCore.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
+    <PackageReference Include="PeachPied.WordPress.AspNetCore" Version="1.0.0-CI00002" />    
+    <ProjectReference Include="../PeachPied.WordPress.MyPlugin/PeachPied.WordPress.MyPlugin.msbuildproj">
+      <PrivateAssets>None</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

@@ -11,11 +11,7 @@ namespace peachserver
     {
         static void Main(string[] args)
         {
-            // make sure cwd is not app\ but its parent:
-            if (Path.GetFileName(Directory.GetCurrentDirectory()) == "app")
-            {
-                Directory.SetCurrentDirectory(Path.GetDirectoryName(Directory.GetCurrentDirectory()));
-            }
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(typeof(Program).Assembly.Location));
 
             //
             var host = WebHost.CreateDefaultBuilder(args)
@@ -33,9 +29,7 @@ namespace peachserver
         {
             // settings:
             var wpconfig = new WordPressConfig();
-            configuration
-                .GetSection("WordPress")
-                .Bind(wpconfig);
+            configuration.GetSection("WordPress").Bind(wpconfig);
 
             //
             if (env.IsDevelopment())
