@@ -22,8 +22,13 @@ namespace PeachPied.WordPress.AspNetCore
         public string DbHost { get; set; } = "localhost";
 
         /// <summary>
-        /// Set of WordPress plugins to be loaded.
+        /// Enumeration of WordPress plugins to be loaded.
         /// </summary>
         public IEnumerable<IWpPlugin> Plugins { get; set; }
+
+        /// <summary>
+        /// Enumeration of assembly names with compiled PHP plugins, themes or other additions.
+        /// </summary>
+        public IEnumerable<string> LegacyPluginAssemblies { get; set; }
     }
 }

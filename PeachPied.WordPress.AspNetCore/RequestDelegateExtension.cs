@@ -53,11 +53,6 @@ namespace PeachPied.WordPress.AspNetCore
             context.Result = RuleResult.SkipRemainingRules;
         }
 
-        static IEnumerable<IWpPlugin> CollectPlugins(WordPressConfig config, params IWpPlugin[] plugins)
-        {
-            return plugins.Concat(config.Plugins ?? Array.Empty<IWpPlugin>());
-        }
-
         /// <summary>
         /// Defines WordPress configuration constants and initializes runtime before proceeding to <c>index.php</c>.
         /// </summary>
@@ -78,8 +73,11 @@ namespace PeachPied.WordPress.AspNetCore
             ctx.DefineConstant("DB_HOST", (PhpValue)config.DbHost); // define('DB_HOST', 'localhost');
 
             // $peachpie-wp-loader : WpLoader
-            ctx.Globals["peachpie_wp_loader"] = PhpValue.FromClass(new WpLoader(CollectPlugins(config, plugins)));
+            ctx.Globals["peachpie_wp_loader"] = PhpValue.FromClass(new WpLoader(plugins.ConcatSafe(config.Plugins)));
         }
+
+        /// <summary> `WpApp` is compiled in PHP assembly WordPress.dll.</summary>
+        static string WordPressAssemblyName => typeof(WpApp).Assembly.FullName;
 
         /// <summary>
         /// Installs WordPress middleware.
@@ -105,7 +103,7 @@ namespace PeachPied.WordPress.AspNetCore
             // handling php files:
             app.UsePhp(new PhpRequestOptions()
             {
-                ScriptAssembliesName = new[] { typeof(WpApp).Assembly.FullName },   // `WpApp` is compiled in PHP assembly WordPress.dll
+                ScriptAssembliesName = WordPressAssemblyName.ArrayConcat(config.LegacyPluginAssemblies),
                 BeforeRequest = ctx => Apply(ctx, config, cachepolicy),
                 RootPath = root,
             });

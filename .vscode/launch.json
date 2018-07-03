@@ -1,6 +1,6 @@
 {
-   "version": "0.2.0",
-   "configurations": [
+    "version": "0.2.0",
+    "configurations": [
         {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
@@ -10,8 +10,10 @@
             "program": "${workspaceFolder}/app/bin/Debug/netcoreapp2.1/app.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
-            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
             "console": "internalConsole",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "justMyCode": false,

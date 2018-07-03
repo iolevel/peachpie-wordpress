@@ -18,7 +18,7 @@ namespace PeachPied.WordPress.Sdk.Internal
                 "<li>{1}</li>" +
                 "</ul>",
                 "https://raw.githubusercontent.com/peachpiecompiler/peachpie/master/docs/logos/round-orange-196x196.png",
-                "<b>Hello from .NET!</b><br/>The site is powered by .NET Core instead of PHP, compiled entirely to MSIL bytecode using PeachPie.");
+                "<b>Hello from .NET!</b><br/>The site is powered by .NET Core instead of PHP, compiled entirely to MSIL bytecode using <a href='https://www.peachpie.io/' target='_blank'>PeachPie</a>.");
         }
 
         static readonly string GeneratorHtml = "<meta name=\"generator\" content=\"WpDotNet (PeachPie) " + InformationalVersion + " \" />";
