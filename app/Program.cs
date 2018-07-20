@@ -3,9 +3,11 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PeachPied.WordPress.AspNetCore;
+using PeachPied.WordPress.Sdk;
 
-namespace peachserver
+namespace PeachPied.Demo
 {
     class Program
     {
@@ -25,19 +27,19 @@ namespace peachserver
 
     class Startup
     {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc();
+        }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IConfiguration configuration)
         {
-            // settings:
-            var wpconfig = new WordPressConfig();
-            configuration.GetSection("WordPress").Bind(wpconfig);
-
-            //
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseWordPress(wpconfig);
+            app.UseWordPress(plugins: new WpPluginContainer().Add<DashboardPlugin>());
 
             app.UseDefaultFiles();
         }
