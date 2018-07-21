@@ -3,7 +3,7 @@ using Peachpie.AspNetCore.Mvc;
 using Peachpie.AspNetCore.Web;
 using PeachPied.WordPress.Sdk;
 
-namespace PeachPied.Demo
+namespace PeachPied.Demo.Plugins
 {
     public class DashboardPlugin : IWpPlugin
     {

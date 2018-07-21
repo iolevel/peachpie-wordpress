@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PeachPied.Demo.Plugins;
 using PeachPied.WordPress.AspNetCore;
 using PeachPied.WordPress.Sdk;
 
@@ -39,7 +40,9 @@ namespace PeachPied.Demo
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseWordPress(plugins: new WpPluginContainer().Add<DashboardPlugin>());
+            app.UseWordPress(plugins: new WpPluginContainer()
+                .Add<DashboardPlugin>()
+                .Add<ShortcodePlugin>());
 
             app.UseDefaultFiles();
         }
