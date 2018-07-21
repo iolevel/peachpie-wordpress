@@ -20,6 +20,7 @@ namespace PeachPied.Demo.Plugins
         {
             app.DashboardWidget("peachpied.widget.1", "Razor Partial View", writer =>
             {
+                // TODO: this is still a technical demo, it does not allow to use a bunch of Razor View features
                 app.Context.GetHttpContext().RenderViewAsync(writer, _viewEngine, "DashboardWidget", this);
             });
         }
