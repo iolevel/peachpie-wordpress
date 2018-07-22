@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PeachpieVersion>0.9.0-CI01028</PeachpieVersion>
-    <WordPressVersion>1.0.0-CI00020</WordPressVersion>
+    <WordPressVersion>1.0.0-CI00023</WordPressVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**" />
