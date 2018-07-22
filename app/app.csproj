@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
     <PackageReference Include="PeachPied.WordPress.AspNetCore" Version="1.0.0-CI00023" />    
-    <PackageReference Include="Peachpie.AspNetCore.Mvc" Version="0.9.0-CI01028" />    
+    <PackageReference Include="Peachpie.AspNetCore.Mvc" Version="0.9.0-CI01034" />    
     <ProjectReference Include="../PeachPied.WordPress.MyPlugin/PeachPied.WordPress.MyPlugin.msbuildproj">
       <PrivateAssets>None</PrivateAssets>
     </ProjectReference>

@@ -10,11 +10,8 @@ namespace PeachPied.Demo.Plugins
 {
     public class ShortcodePlugin : IWpPlugin
     {
-        readonly IViewEngine _viewEngine;
-
-        public ShortcodePlugin(ICompositeViewEngine viewEngine)
+        public ShortcodePlugin()
         {
-            _viewEngine = viewEngine;
         }
 
         public void Configure(WpApp app)

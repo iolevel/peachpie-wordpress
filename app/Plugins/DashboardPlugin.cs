@@ -7,13 +7,10 @@ namespace PeachPied.Demo.Plugins
 {
     public class DashboardPlugin : IWpPlugin
     {
-        readonly IViewEngine _viewEngine;
-
         public string Title { get; } = "Dashboard Widget";
 
-        public DashboardPlugin(ICompositeViewEngine viewEngine)
+        public DashboardPlugin()
         {
-            _viewEngine = viewEngine;
         }
 
         public void Configure(WpApp app)
@@ -21,7 +18,7 @@ namespace PeachPied.Demo.Plugins
             app.DashboardWidget("peachpied.widget.1", "Razor Partial View", writer =>
             {
                 // TODO: this is still a technical demo, it does not allow to use a bunch of Razor View features
-                app.Context.GetHttpContext().RenderViewAsync(writer, _viewEngine, "DashboardWidget", this);
+                app.Context.GetHttpContext().RenderPartialAsync(writer, "DashboardWidget", this);
             });
         }
     }
