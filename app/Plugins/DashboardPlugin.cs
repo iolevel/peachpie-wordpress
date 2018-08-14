@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Pchp.Core;
 using Peachpie.AspNetCore.Mvc;
 using Peachpie.AspNetCore.Web;
 using PeachPied.WordPress.Sdk;
@@ -17,7 +18,6 @@ namespace PeachPied.Demo.Plugins
         {
             app.DashboardWidget("peachpied.widget.1", "Razor Partial View", writer =>
             {
-                // TODO: this is still a technical demo, it does not allow to use a bunch of Razor View features
                 app.Context.GetHttpContext().RenderPartialAsync(writer, "DashboardWidget", this);
             });
         }

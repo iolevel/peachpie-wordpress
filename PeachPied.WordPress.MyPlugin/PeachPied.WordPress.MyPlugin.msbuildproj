@@ -9,8 +9,8 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <PeachpieVersion>0.9.0-CI01034</PeachpieVersion>
-    <WordPressVersion>1.0.0-CI00023</WordPressVersion>
+    <PeachpieVersion>0.9.0-CI01042</PeachpieVersion>
+    <WordPressVersion>1.0.0-CI00027</WordPressVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**" />
