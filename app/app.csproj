@@ -10,9 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
-    <PackageReference Include="PeachPied.WordPress.AspNetCore" Version="1.0.0-CI00027" />    
-    <PackageReference Include="Peachpie.AspNetCore.Mvc" Version="0.9.0-CI01042" />    
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
+    <PackageReference Include="PeachPied.WordPress.AspNetCore" Version="1.0.0-CI00040" />    
+    <PackageReference Include="Peachpie.AspNetCore.Mvc" Version="0.9.0-CI01120" />    
     <ProjectReference Include="../PeachPied.WordPress.MyPlugin/PeachPied.WordPress.MyPlugin.msbuildproj">
       <PrivateAssets>None</PrivateAssets>
     </ProjectReference>
