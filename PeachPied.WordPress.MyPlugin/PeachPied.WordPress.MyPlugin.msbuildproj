@@ -9,8 +9,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <PeachpieVersion>0.9.0-CI01120</PeachpieVersion>
-    <WordPressVersion>1.0.0-CI00040</WordPressVersion>
+    <PeachpieVersion>0.9.0-CI01122</PeachpieVersion>
+    <WordPressVersion>1.0.0-CI00042</WordPressVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**" />
@@ -23,7 +23,6 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="$(PeachpieVersion)" />
     <PackageReference Include="Peachpie.NET.Sdk" Version="$(PeachpieVersion)" PrivateAssets="Build" />
-    <PackageReference Include="Peachpie.Library.Graphics" Version="$(PeachpieVersion)" />
     <PackageReference Include="PeachPied.WordPress" Version="$(WordPressVersion)" />
   </ItemGroup>
 </Project>
