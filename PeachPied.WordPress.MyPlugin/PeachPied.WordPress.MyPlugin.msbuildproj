@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Peachpie.NET.Sdk/0.9.9">
   <PropertyGroup Label="Globals">
     <ProjectGuid>0e51d101-0992-4aa6-a134-26ea3f2e3935</ProjectGuid>
   </PropertyGroup>
@@ -9,8 +9,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <PeachpieVersion>0.9.0-CI01154</PeachpieVersion>
-    <WordPressVersion>1.0.0-CI00048</WordPressVersion>
+    <WordPressVersion>1.0.0-CI00049</WordPressVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**" />
@@ -21,8 +20,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Peachpie.Compiler.Tools" Version="$(PeachpieVersion)" />
-    <PackageReference Include="Peachpie.NET.Sdk" Version="$(PeachpieVersion)" PrivateAssets="Build" />
     <PackageReference Include="PeachPied.WordPress" Version="$(WordPressVersion)" />
   </ItemGroup>
 </Project>
