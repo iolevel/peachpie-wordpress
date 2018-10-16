@@ -18,7 +18,7 @@ namespace PeachPied.Demo.Plugins
         {
             app.DashboardWidget("peachpied.widget.1", "Razor Partial View", writer =>
             {
-                app.Context.GetHttpContext().RenderPartialAsync(writer, "DashboardWidget", this);
+                app.Context.RenderPartial("DashboardWidget", this);
             });
         }
     }
