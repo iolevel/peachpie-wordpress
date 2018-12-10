@@ -2,7 +2,7 @@ This project demonstrates how to start an ASP.NET Core server, integrate WordPre
 
 # WordPress
 
-Even though the project is noticeably small, it contains the entire WordPress CMS. How? This complex PHP web framework was already compiled into the .NET Standard library (see [PeachPie compiler platform](https://github.com/peachpiecompiler/peachpie) for more information) and packed into a NuGet package. This demo may just reference it.
+Even though the project is noticeably small, it contains the entire WordPress CMS. How? This complex PHP web framework was already compiled into the .NET Standard library (see [wpdotnet-sdk](https://github.com/iolevel/wpdotnet-sdk) for more information) and packed into a NuGet package. This demo may just reference it.
 
 To find out more about PeachPie, check out our [resources](https://www.peachpie.io/resources), which includes tutorials, benchmarks and articles on PeachPie.
 
@@ -17,15 +17,11 @@ The build process will do following:
 
 # WordPress C# plugin
 
-The project takes advantage of the `wpdotnet SDK` which provides a C# abstraction `IWpPlugin`. Objects of this type can be passed to the WordPress middleware (see `UseWordPress`) and hook onto filters and actions available in the WordPress API.
-
-// TODO: add link to additional info about the wpdotnet SDK & WordPress API
+The project takes advantage of the `WpDotNet SDK` which provides a C# abstraction `IWpPlugin`. Objects of this type can be passed to the WordPress middleware (see `UseWordPress`) and hook onto filters and actions available in the WordPress API.
 
 # Configuration
 
 The configuration itself serves as a demonstration of combining a legacy PHP application with .NET. The demo takes advantage of the ASP.NET Core configuration mechanism, namely the files `appsettings.json`, `appsettings.deployment.json` and `appsettings.production.json`. This allows for having a different configuration for each environment without the need of altering the source code of the project.
-
-// TODO: add read more about asp.net core config
 
 # Sourceless Distribution
 

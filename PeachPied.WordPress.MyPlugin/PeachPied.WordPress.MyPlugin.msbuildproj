@@ -1,4 +1,4 @@
-<Project Sdk="Peachpie.NET.Sdk/0.9.18">
+<Project Sdk="Peachpie.NET.Sdk/0.9.24">
   <PropertyGroup Label="Globals">
     <ProjectGuid>0e51d101-0992-4aa6-a134-26ea3f2e3935</ProjectGuid>
   </PropertyGroup>
@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**/*.php" Exclude="obj/**;bin/**" />
+    <Compile Include="**/*.php" Exclude="obj/**;bin/**;**/tests/**;**/test/**;**/cli/**;**/composer-php52/**" />
     <Content Include="**" Exclude="obj/**;bin/**;*.msbuildproj" CopyToOutputDirectory="PreserveNewest">
       <PackagePath>contentFiles/any/netcoreapp2.0/wordpress/</PackagePath>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -17,6 +17,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-CI00064" />
+    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-alpha2" />
   </ItemGroup>
 </Project>
