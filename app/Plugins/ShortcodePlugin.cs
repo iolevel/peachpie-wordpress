@@ -8,7 +8,7 @@ using PeachPied.WordPress.Sdk;
 
 namespace PeachPied.Demo.Plugins
 {
-    public class ShortcodePlugin : IWpPlugin
+    class ShortcodePlugin : IWpPlugin
     {
         public ShortcodePlugin()
         {

@@ -31,6 +31,7 @@ namespace PeachPied.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddResponseCompression();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IConfiguration configuration)
@@ -40,10 +41,8 @@ namespace PeachPied.Demo
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseWordPress(plugins: new WpPluginContainer()
-                .Add<DashboardPlugin>()
-                .Add<ShortcodePlugin>());
-
+            app.UseResponseCompression();
+            app.UseWordPress();
             app.UseDefaultFiles();
         }
     }
