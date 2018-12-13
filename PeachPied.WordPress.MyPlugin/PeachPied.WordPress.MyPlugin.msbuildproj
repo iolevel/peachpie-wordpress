@@ -1,4 +1,4 @@
-<Project Sdk="Peachpie.NET.Sdk/0.9.25">
+<Project Sdk="Peachpie.NET.Sdk/0.9.26">
   <PropertyGroup Label="Globals">
     <ProjectGuid>0e51d101-0992-4aa6-a134-26ea3f2e3935</ProjectGuid>
   </PropertyGroup>
@@ -17,6 +17,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-alpha3" />
+    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-alpha4" />
   </ItemGroup>
 </Project>
