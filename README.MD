@@ -1,3 +1,6 @@
+Chat with the community on Gitter if you need help:
+<a href="https://gitter.im/iolevel/peachpie"><img src="https://badges.gitter.im/iolevel/peachpie.svg"></a>
+
 This project demonstrates how to start an ASP.NET Core server, integrate WordPress into its pipeline and add additional PHP plugins into it.
 
 # WordPress
