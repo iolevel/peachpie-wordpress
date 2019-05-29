@@ -17,6 +17,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-beta6" />
+    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-beta7" />
   </ItemGroup>
 </Project>
