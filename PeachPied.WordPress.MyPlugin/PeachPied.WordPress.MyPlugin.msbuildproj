@@ -1,9 +1,9 @@
-<Project Sdk="Peachpie.NET.Sdk/0.9.44">
+<Project Sdk="Peachpie.NET.Sdk">
   <PropertyGroup Label="Globals">
     <ProjectGuid>0e51d101-0992-4aa6-a134-26ea3f2e3935</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Version>0.1.0-test</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -17,6 +17,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="PeachPied.WordPress" Version="1.0.0-beta8" />
+    <PackageReference Include="PeachPied.WordPress" Version="$(WpDotNetVersion)" />
   </ItemGroup>
 </Project>
