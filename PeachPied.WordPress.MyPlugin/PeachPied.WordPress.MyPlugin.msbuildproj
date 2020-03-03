@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**;**/tests/**;**/test/**;**/cli/**;**/composer-php52/**" />
     <Content Include="**" Exclude="obj/**;bin/**;*.msbuildproj" CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>contentFiles/any/netcoreapp2.0/wordpress/</PackagePath>
+      <PackagePath>contentFiles/any/netcoreapp3.0/wordpress/</PackagePath>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <Link>wordpress\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
