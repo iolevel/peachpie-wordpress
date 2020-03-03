@@ -7,13 +7,14 @@
     <Version>0.1.0-test</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PhpRelativePath>wp-content/plugins/hellodolly/</PhpRelativePath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**/*.php" Exclude="obj/**;bin/**;**/tests/**;**/test/**;**/cli/**;**/composer-php52/**" />
     <Content Include="**" Exclude="obj/**;bin/**;*.msbuildproj" CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>contentFiles/any/netcoreapp3.0/wordpress/</PackagePath>
+      <PackagePath>contentFiles/any/netcoreapp3.0/wordpress/$(PhpRelativePath)</PackagePath>
       <PackageCopyToOutput>true</PackageCopyToOutput>
-      <Link>wordpress\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Link>wordpress\$(PhpRelativePath)%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
   </ItemGroup>
   <ItemGroup>
