@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "app", "app\app.csproj", "{371840CB-3D6C-43EE-8E73-B74710F4CDE7}"
 EndProject
-Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "PeachPied.WordPress.MyPlugin", "PeachPied.WordPress.MyPlugin\PeachPied.WordPress.MyPlugin.msbuildproj", "{0E51D101-0992-4AA6-A134-26EA3F2E3935}"
+Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "MyContent", "MyContent\MyContent.msbuildproj", "{0E51D101-0992-4AA6-A134-26EA3F2E3935}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

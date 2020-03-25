@@ -11,10 +11,10 @@ To find out more about PeachPie, check out our [resources](https://www.peachpie.
 
 # WordPress PHP Plugin
 
-With this approach it is finally possible to have a project containing only the plugin. WordPress itself is already compiled and the plugin has a dependency on it (like any other C# app you would make).
+With this approach it is possible to have a project containing only the plugin. WordPress itself is already compiled and the plugin has a dependency on it (like any other C# app you would make).
 
 The build process will do following:
-- compiles `.php` files within the `PeachPied.WordPress.MyPlugin` directory. Note that the path `wp-content/plugins` matters.
+- compiles `.php` files within the `MyContent` directory. The content is implicitly nested within `wp-content` subdirectory.
 - packs the compiled DLL together with content files (like images, scripts etc.) into a NuGet package.
 - copies the project content into the application output directory, together with WordPress content files extracted from its NuGet.
 
