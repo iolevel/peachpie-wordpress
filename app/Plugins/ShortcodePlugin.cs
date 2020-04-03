@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Pchp.Core;
 using Peachpie.AspNetCore.Mvc;
 using Peachpie.AspNetCore.Web;
-using PeachPied.WordPress.Sdk;
+using PeachPied.WordPress.Standard;
 
 namespace PeachPied.Demo.Plugins
 {

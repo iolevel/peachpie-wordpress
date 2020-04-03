@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Composition;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Pchp.Core;
-using PeachPied.WordPress.Sdk;
+using PeachPied.WordPress.Standard;
 
 namespace PeachPied.Demo.Plugins
 {
