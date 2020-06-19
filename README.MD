@@ -9,6 +9,15 @@ Even though the project is noticeably small, it contains the entire WordPress CM
 
 To find out more about PeachPie, check out our [peachpie.io](https://www.peachpie.io/), which includes tutorials, benchmarks and articles on PeachPie.
 
+## Create MySQL database
+
+WordPress requires you to start your database server with a database in it. By default it expects a database server on localhost, port 3306, with a database named *"wordpress"*.
+
+You can use *docker* to quickly start a database server in virtual environment:
+```
+docker run -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=wordpress -p 3306:3306 -d mysql
+```
+
 # Configuration
 
 The configuration itself serves as a demonstration of combining a legacy PHP application with .NET. The demo takes advantage of the ASP.NET Core configuration mechanism, namely the files `appsettings.json`, `appsettings.deployment.json` and `appsettings.production.json`. This allows for having a different configuration for each environment without the need of altering the source code of the project.
