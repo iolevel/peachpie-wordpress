@@ -1,0 +1,9 @@
+{
+    "php.problems.exclude": {
+        "bin/**" : true,
+        "**" : [417]
+    },
+    "[php]": {
+        "editor.wordSeparators": "`~!@#%^&*()=+[{]}\\|;:'\",.<>/?",
+    }
+}
