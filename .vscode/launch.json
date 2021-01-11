@@ -7,9 +7,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/app/bin/Debug/netcoreapp3.1/app.dll",
+            "program": "${workspaceFolder}/app/bin/Debug/net50/app.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/app/bin/Debug/netcoreapp3.1/",
+            "cwd": "${workspaceFolder}/app/bin/Debug/net50/",
             "console": "internalConsole",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
@@ -31,9 +31,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/app/bin/Debug/netcoreapp3.1/app.dll",
+            "program": "${workspaceFolder}/app/bin/Debug/net50/app.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/app/bin/Debug/netcoreapp3.1/",
+            "cwd": "${workspaceFolder}/app/bin/Debug/net50/",
             "console": "internalConsole",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
