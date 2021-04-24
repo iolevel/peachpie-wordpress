@@ -10,7 +10,7 @@ namespace PeachPied.Demo.Plugins
     [Export(typeof(IWpPluginProvider))]
     class Provider : IWpPluginProvider
     {
-        public IEnumerable<IWpPlugin> GetPlugins(IServiceProvider provider)
+        public IEnumerable<IWpPlugin> GetPlugins(IServiceProvider provider, string rootpath)
         {
             // provide plugins that will be loaded into wpdotnet:
 
