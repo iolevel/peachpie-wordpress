@@ -18,6 +18,14 @@ You can use *docker* to quickly start a database server in virtual environment:
 docker run -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=wordpress -p 3306:3306 -d mysql
 ```
 
+## Build &amp; Run
+
+Note, this is a regular ASP.NET web project. Building, running, debugging, and deploying the site take advantage of `dotnet`, optionally Visual Studio.
+
+```
+dotnet run
+```
+
 # Configuration
 
 The configuration itself serves as a demonstration of combining a legacy PHP application with .NET. The demo takes advantage of the ASP.NET Core configuration mechanism, namely the files `appsettings.json`, `appsettings.deployment.json` and `appsettings.production.json`. This allows for having a different configuration for each environment without the need of altering the source code of the project.
