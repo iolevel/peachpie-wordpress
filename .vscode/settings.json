@@ -3,6 +3,7 @@
         "bin/**" : true,
         "**" : [417]
     },
+    "php.stubs": ["*", "zip", "zlib"],
     "[php]": {
         "editor.wordSeparators": "`~!@#%^&*()=+[{]}\\|;:'\",.<>/?",
     }
