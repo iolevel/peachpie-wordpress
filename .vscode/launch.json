@@ -7,9 +7,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/app/bin/Debug/net5.0/app.dll",
+            "program": "${workspaceFolder}/app/bin/Debug/net6.0/app.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/app/bin/Debug/net5.0/",
+            "cwd": "${workspaceFolder}/app/bin/Debug/net6.0/",
             "console": "internalConsole",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
