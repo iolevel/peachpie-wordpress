@@ -1,6 +1,6 @@
 {
     "msbuild-sdks": {
-        "Peachpie.NET.Sdk": "1.1.1",
-        "PeachPied.WordPress.Build.Plugin": "6.0.1-rc-007"
+        "Peachpie.NET.Sdk": "1.1.2",
+        "PeachPied.WordPress.Build.Plugin": "6.0.1-rc-008"
     }
 }

@@ -5,6 +5,6 @@
 
     <!-- global properties -->
     <PropertyGroup>
-        <WpDotNetVersion>6.0.1-rc-007</WpDotNetVersion>
+        <WpDotNetVersion>6.0.1-rc-008</WpDotNetVersion>
     </PropertyGroup>
 </Project>
