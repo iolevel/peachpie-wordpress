@@ -37,7 +37,7 @@ namespace PeachPied.Demo
                 // options.SiteUrl =
                 // options.HomeUrl = "http://localhost:5004";
                 
-                // options.PluginContainer.Add(new DashboardPlugin());
+                // options.PluginContainer.Add<DashboardPlugin>(); // add plugin using dependency injection
             });
         }
 
