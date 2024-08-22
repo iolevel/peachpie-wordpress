@@ -3,8 +3,10 @@
     <!-- $(PeachpieVersion) property from the current Peachpie.NET.Sdk -->
     <Import Project="Version.props" Sdk="Peachpie.NET.Sdk" Condition=" '$(PeachpieVersion)'=='' " />
 
-    <!-- global properties -->
-    <PropertyGroup>
-        <WpDotNetVersion>6.0.1-rc-008</WpDotNetVersion>
-    </PropertyGroup>
+    <!-- $(WpDotNetVersion) property from the current PeachPied.WordPress.Build.Plugin -->
+    <Import Project="Version.props" Sdk="PeachPied.WordPress.Build.Plugin" Condition=" '$(WpDotNetVersion)'=='' " />
+    <!--PropertyGroup>
+        <WpDotNetVersion>6.5.4-rc-020</WpDotNetVersion>
+    </PropertyGroup-->
+
 </Project>
